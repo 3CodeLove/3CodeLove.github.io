@@ -150,4 +150,81 @@
         <tag>差分约束</tag>
       </tags>
   </entry>
+  <entry>
+    <title>雇佣收银员</title>
+    <url>/2021/07/10/%E7%AE%97%E6%B3%95%E6%8F%90%E9%AB%98%E8%AF%BE/%E7%AC%AC%E4%B8%89%E7%AB%A0---%E5%9B%BE%E8%AE%BA/%E5%B7%AE%E5%88%86%E7%BA%A6%E6%9D%9F/%E9%9B%87%E4%BD%A3%E6%94%B6%E9%93%B6%E5%91%98/</url>
+    <content><![CDATA[<h1 id="雇佣收银员"><a href="#雇佣收银员" class="headerlink" title="雇佣收银员"></a>雇佣收银员</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210710201724.png" alt="image-20210710201724728"></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>这题需要用差分约束来求解，具体思路如下：</p>
+<p>我们定义以下变量的含义：</p>
+<ul>
+<li><code>num[i]</code>表示在$t_i$时刻来应聘的人数</li>
+<li><code>x[i]</code>表示在$t_i$时刻公司选择雇佣的人数</li>
+<li><code>R[i]</code>表示在$t_i$时刻需要的员工的最小需求量</li>
+<li><code>S[i]</code>表示满足能在$t_i$时刻上岗工作的公司已经聘用的员工总数。比如当$t_i=24h$时，$S_i=100$，则说明这100个人，它们的工作服务时间段是包括$t_i$的，即在$t_i$时刻他们在岗工作</li>
+</ul>
+<p>根据以上定义，我们再来梳理一下不等式的关系：</p>
+<ul>
+<li><p>$0\leq x_i\leq num[i]$，因为聘用的人数不可能大于来应该的人数，因此有$x_i\leq num[i]$，而且公司选择聘用的人数不可能为-1，要么都不聘用，因此有$x_i\geq 0$</p>
+</li>
+<li><p>$x_{i-7}+x_{i-6}+x_{i-5}+x_{i-4}+x_{i-3}+x_{i-2}+x_{i-1}+x_i\geq R_i$，即公司聘用的能够在$t_i$时刻处于工作服务状态的员工总数，应该$\geq$在$t_i$时刻最小需要的员工总数</p>
+<blockquote>
+<p> <strong>问题：如何理解$x_{i-7}+x_{i-6}+x_{i-5}+x_{i-4}+x_{i-3}+x_{i-2}+x_{i-1}+x_i$这个式子呢？</strong></p>
+<p>由于题目说了，员工一定会连续工作8个小时，即每个员工的工作服务时常为$8h$。那么我们就想，哪些员工他们的工作服务时间段是包括$t_i$这个时刻的呢？如果包括，则说明他们在$t_i$这个时刻，一定可以上岗工作服务。因此$x_{i-7}+x_{i-6}+x_{i-5}+x_{i-4}+x_{i-3}+x_{i-2}+x_{i-1}+x_i$就表示能在$t_i$时刻上岗工作服务的员工总数，那么这个总数就应该要$\geq t_i$时刻需要的员工的最小需求量$R_i$。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210710211018.png" alt="image-20210710211017955"></p>
+</blockquote>
+</li>
+</ul>
+<p>$x_{i-7}+x_{i-6}+x_{i-5}+x_{i-4}+x_{i-3}+x_{i-2}+x_{i-1}+x_i$这个是连加的形式，那么很容易想到用前缀和来表示，即用$S[i]$来表示，其中$1\leq i\leq 24$。由于前缀和需要用到$S[0]$，因此我们需要把时间都向右平移一个单位，即现在时间为$1,2,\cdots,24$而不是再是原来的$0,1,2,\cdots,23$了。</p>
+<p>那么则会由如下的不等式关系：</p>
+<ul>
+<li>$0\leq x_i\leq num[i]$，用前缀和来代替，那么就是$0\leq S_i-S_{i-1}\leq num[i]$</li>
+<li>$S_i\geq R_i$</li>
+</ul>
+<p>由于题目要求的是变量的最小值，那么就需要跑单源最长路，求出最长距离。因此把不等式关系都改写为$x_i\geq x_j+c$的形式：</p>
+<ul>
+<li>$S_i\geq S_{i-1}+0$</li>
+<li>$S_{i-1}\geq S_i-num[i]$</li>
+</ul>
+<p>对于$S_i\geq R_i$要分类讨论，因为时间它是循环的，当到了24之后就会变为0，又重新开始了。</p>
+<ul>
+<li><p>当$i\geq 8$时，则有$S_i-S_{i-8}\geq R_i$，分析如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210710213044.png" alt="image-20210710213044097"></p>
+</li>
+<li><p>当$0&lt;i\leq 7$时，则要分为两部分了。一部分是$1$到$7$这个时间段，由于不足8h，因此说明需要向$24$(包括它)之前的借一些时间，这主要就是因为时间是循环的。那么会得到$S_i+(S_{24}-S_{i+16})\geq R[i]$分析如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210710214154.png" alt="image-20210710214002246"></p>
+</li>
+</ul>
+<p>进一步梳理不等式关系：</p>
+<ul>
+<li>$S_i\geq S_{i-1}+0$</li>
+<li>$S_{i-1}\geq S_i-num[i]$</li>
+<li>当$i\geq 8$时，$S_i\geq S_{i-8}+R[i]$</li>
+<li>当$0&lt;i\leq 7$时，$S_i\geq S_{i+16}-S_{24}+R[i]$</li>
+</ul>
+<p>但是我们发现第四个约束条件中，有三个变量，平时我们都是遇到两个变量。其实，我们可以把$S_{24}$当作常量。那么如何把它作为常量呢？由于题目说要求最少需要雇佣多少名收银员，那么其实也就是说要求出$S_{24}$是多少。由于题目说了$0\leq N\leq 1000$，因此最坏情况下是至少聘用了$1000$个人。那么我们可以依次从0开始枚举到1000，我们把枚举的这个值$i$其实就是$S_{24}$，每次枚举一个$i$，都去跑一下spfa，当第一次枚举到某个值时，它满足所有的约束条件，那么这个值就是我们要求的最小的$S_{24}$，找到第一个就直接break。</p>
+<p>注意这里当我们枚举到某个$S_{24}=c$时，也要把它写成差分约束的形式，即$S_{24}\geq c$和$S_{24}\leq c$，建立一个超级源点$S_0$（为0），那么有$S_{24}\geq S_0+c$和$S_{0}\geq S_{24}-c$</p>
+<p>因此，总结一下，总共有以下的约束条件：</p>
+<ul>
+<li>$S_i\geq S_{i-1}+0$</li>
+<li>$S_{i-1}\geq S_i-num[i]$</li>
+<li>当$i\geq 8$时，$S_i\geq S_{i-8}+R[i]$</li>
+<li>当$0&lt;i\leq 7$时，$S_i\geq S_{i+16}-S_{24}+R[i]$</li>
+<li>$S_{24}\geq S_0+c$</li>
+<li>$S_{0}\geq S_{24}-c$</li>
+</ul>
+<p>由第一个约束条件$S_i\geq S_{i-1}+0$可知，设立一个超级源点0号节点，则可以从超级源点出发，0-&gt;1-&gt;2-&gt;$\cdots$-&gt;$24$，因此可以到达所有节点，那么一定可以到达所有边。所以，这里满足了 “<strong>从源点出发，能遍历到所有边</strong>”这个条件，因此可以用差分约束。</p>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">30</span>,M=<span class="number">100</span>,INF=<span class="number">0x3f3f3f3f</span>;</span><br><span class="line"><span class="keyword">int</span> n;</span><br><span class="line"><span class="keyword">int</span> h[N],e[M],ne[M],w[M],idx;</span><br><span class="line"><span class="comment">//R[i]表示i时刻公司需要雇佣的最小的员工的需求量</span></span><br><span class="line"><span class="comment">//num[i]表示i时刻来应聘的员工的数量</span></span><br><span class="line"><span class="keyword">int</span> R[N],num[N];</span><br><span class="line"><span class="comment">//dist[i]表示i节点到起点的最长距离</span></span><br><span class="line"><span class="keyword">int</span> dist[N];</span><br><span class="line"><span class="comment">//循环队列q来存储入队节点</span></span><br><span class="line"><span class="keyword">int</span> q[N];</span><br><span class="line"><span class="comment">//cnt[i]表示从起点到达节点i一共经过了多少条边</span></span><br><span class="line"><span class="keyword">int</span> cnt[N];</span><br><span class="line"><span class="comment">//判断某个节点是否已经加入了q队列中</span></span><br><span class="line"><span class="keyword">bool</span> st[N];</span><br><span class="line"><span class="comment">//建图函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b,<span class="keyword">int</span> c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    e[idx]=b;</span><br><span class="line">    w[idx]=c;</span><br><span class="line">    ne[idx]=h[a];</span><br><span class="line">    h[a]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//将约束条件建成图</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">build</span><span class="params">(<span class="keyword">int</span> c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//初始化表头</span></span><br><span class="line">    <span class="built_in">memset</span>(h,<span class="number">-1</span>,<span class="keyword">sizeof</span> h);</span><br><span class="line">    idx=<span class="number">0</span>;</span><br><span class="line">    <span class="comment">//S[24]=c,写成了两个约束条件</span></span><br><span class="line">    <span class="built_in">add</span>(<span class="number">0</span>,<span class="number">24</span>,c);</span><br><span class="line">    <span class="built_in">add</span>(<span class="number">24</span>,<span class="number">0</span>,-c);</span><br><span class="line">    <span class="comment">//当0&lt;i&lt;=7时,给这个约束条件建图</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=<span class="number">7</span>;i++)</span><br><span class="line">    <span class="built_in">add</span>(i+<span class="number">16</span>,i,R[i]-c);</span><br><span class="line">    <span class="comment">//当i&gt;=8时,给这个约束条件建图</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">8</span>;i&lt;=<span class="number">24</span>;i++)</span><br><span class="line">    <span class="built_in">add</span>(i<span class="number">-8</span>,i,R[i]);</span><br><span class="line">    <span class="comment">//给S[i]&gt;=S[i-1]+0和S[i-1]&gt;=S[i]-num[i]建图</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=<span class="number">24</span>;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">add</span>(i<span class="number">-1</span>,i,<span class="number">0</span>);</span><br><span class="line">        <span class="built_in">add</span>(i,i<span class="number">-1</span>,-num[i]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//spfa算法用来  判断是否存在正环  和 求出最长距离</span></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">spfa</span><span class="params">(<span class="keyword">int</span> c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//对于枚举的每一个S[24]都去建图</span></span><br><span class="line">    <span class="built_in">build</span>(c);</span><br><span class="line">    <span class="comment">//初始化</span></span><br><span class="line">    <span class="built_in">memset</span>(dist,<span class="number">-0x3f</span>,<span class="keyword">sizeof</span> dist);</span><br><span class="line">    <span class="built_in">memset</span>(st,<span class="number">0</span>,<span class="keyword">sizeof</span> st);</span><br><span class="line">    <span class="built_in">memset</span>(cnt,<span class="number">0</span>,<span class="keyword">sizeof</span> cnt);</span><br><span class="line">    <span class="keyword">int</span> hh=<span class="number">0</span>,tt=<span class="number">1</span>;</span><br><span class="line">    <span class="comment">//由于真正地建立了超级源点S[0]</span></span><br><span class="line">    dist[<span class="number">0</span>]=<span class="number">0</span>;</span><br><span class="line">    q[<span class="number">0</span>]=<span class="number">0</span>;</span><br><span class="line">    st[<span class="number">0</span>]=<span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">while</span>(hh!=tt)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> t=q[hh++];</span><br><span class="line">        <span class="keyword">if</span>(hh==N)</span><br><span class="line">        hh=<span class="number">0</span>;</span><br><span class="line">        st[t]=<span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=h[t];~i;i=ne[i])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> j=e[i];</span><br><span class="line">            <span class="keyword">if</span>(dist[j]&lt;dist[t]+w[i])</span><br><span class="line">            &#123;</span><br><span class="line">                dist[j]=dist[t]+w[i];</span><br><span class="line">                cnt[j]=cnt[t]+<span class="number">1</span>;</span><br><span class="line">                <span class="comment">//本来1~24共有24个节点,但是建立了1个超级源点,因此总共25个节点</span></span><br><span class="line">                <span class="comment">//cnt[j]&gt;=25说明从超级源点到节点j经过了25条边,那么则有26个节点</span></span><br><span class="line">                <span class="comment">//这与实际的25个节点不符合,因此存在正环</span></span><br><span class="line">                <span class="keyword">if</span>(cnt[j]&gt;=<span class="number">25</span>)</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">                <span class="keyword">if</span>(!st[j])</span><br><span class="line">                &#123;</span><br><span class="line">                    q[tt++]=j;</span><br><span class="line">                    <span class="keyword">if</span>(tt==N)</span><br><span class="line">                    tt=<span class="number">0</span>;</span><br><span class="line">                    st[j]=<span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//说明不存在正环  且找到了最小的满足所有约束条件的S[24]</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> T;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;T);</span><br><span class="line">    <span class="keyword">while</span>(T--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=<span class="number">24</span>;i++)</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;R[i]);</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;n);</span><br><span class="line">        <span class="built_in">memset</span>(num,<span class="number">0</span>,<span class="keyword">sizeof</span> num);</span><br><span class="line">        <span class="keyword">while</span>(n--)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> t;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;t);</span><br><span class="line">            <span class="comment">//由于前缀和S[0]占用0这个位置,因此我们让时间都向右平移一位</span></span><br><span class="line">            t++;</span><br><span class="line">            num[t]++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//用来判断是否有解</span></span><br><span class="line">        <span class="keyword">bool</span> flag=<span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;=<span class="number">1000</span>;i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//枚举找到最小的满足所有约束条件的S[24]</span></span><br><span class="line">            <span class="keyword">if</span>(<span class="built_in">spfa</span>(i))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,i);</span><br><span class="line">                flag=<span class="literal">true</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//说明无解</span></span><br><span class="line">        <span class="keyword">if</span>(!flag)</span><br><span class="line">        <span class="built_in">puts</span>(<span class="string">&quot;No Solution&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+]]></content>
+      <categories>
+        <category>图论</category>
+      </categories>
+      <tags>
+        <tag>差分约束</tag>
+      </tags>
+  </entry>
 </search>
