@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>排队布局 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,排队布局
+题目描述
+
+核心思路这题是需要用到差分约束。对于差分约束，我们最主要的是根据题目描述，找出题目中的所有不等式关系，我们设$x_i$表示第$i$头牛的位置：
+
+根据“一些奶牛相互间存有好感，,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">排队布局</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">排队布局</h1>
+        <div class="stuff">
+            <span>七月 10, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%B7%AE%E5%88%86%E7%BA%A6%E6%9D%9F/" rel="tag">差分约束</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+                <style>
+                        .bubbles > .particle {
+                            /*初始透明度为0*/
+                            opacity: 0;
+                            position: absolute;
+                            /*初始颜色为荧光色，透明度为0.7*/
+                            background-color: rgba(128,255,0,0.7);
+                            /*使用bubbles动画，持续时间18秒，缓慢进入，无限循环*/
+                            animation: bubbles 18s ease-in infinite;
+                            border-radius: 100%;
+                        }
+                        /*css keyframes 动画*/
+                        @keyframes bubbles {
+                            0% {
+                                opacity: 0;
+                            }
+                            5% {
+                                opacity: 1;
+                                transform: translate(0, -20%);
+                            }
+                            /*这里-8000%表示是气泡的8000%*/
+                            100% {
+                                opacity: 0;
+                                transform: translate(0, -8000%);
+                            }
+                        }
+                        </style>
+            <h1 id="排队布局"><a href="#排队布局" class="headerlink" title="排队布局"></a>排队布局</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210710145142.png" alt="image-20210710145142511"></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>这题是需要用到差分约束。对于差分约束，我们最主要的是根据题目描述，找出题目中的所有不等式关系，我们设$x_i$表示第$i$头牛的位置：</p>
+<ul>
+<li>根据“一些奶牛相互间存有好感，它们希望两者之间的距离不超过一个给定的数 L”，可以得到奶牛$a$和奶牛$b$之间至多相隔距离$L$，即有$x_b-x_a\leq L$</li>
+<li>根据“一些奶牛相互间非常反感，它们希望两者间的距离不小于一个给定的数 D”，可以得到奶牛$a$和奶牛$b$之间至少相隔距离$D$，即有$x_b-x_a\geq D$</li>
+<li>根据“奶牛排在队伍中的顺序和它们的编号是相同的，且同一位置上可以站多头牛”，可以得到$x_{i+1}\geq x_i$</li>
+</ul>
+<p>那么，我们再来观察题目要求的是$1$号奶牛和$N$号奶牛之间的最大距离，即要求变量$x_n$的最大值。那么，由差分约束可知，需要跑单源最短路，求出最短距离。</p>
+<p>但是，我们要考虑，是否满足 <strong>从源点出发，可以到达所有边</strong>这个条件。由于从上面的三个不等式中，并不能看出，从某个点出发，一定能走完所有边。因此，我们就需要添加一个虚拟源点了，所以我们添加超级源点$x_0$，然后从它出发，就可以到达所有边了，那么就可以使用差分约束的方法了。</p>
+<p>需要找一个超级源点（记超级源点为$x_0$），发现这里求的距离都是牛之间的相对距离，所以联想到令$x_0=0$，又因为求的是形如$x_i\leq x_j+c$的不等式，所以将所有点放在超级源点$0$号点的左侧就可以得出 $x_i\leq x_0+0$的不等式,这样从源点出发可以遍历所有的点，那么就可以遍历到所有的边。</p>
+<p>因此，我们重新整理一下，上面的三个式子，统一写成$\leq$的形式（因为这是差分约束中求变量最大值的写法）：</p>
+<ul>
+<li>$x_b\leq x_a+L$，则从节点$x_a$向节点$x_b$连一条长度为$L$的边</li>
+<li>$x_a\leq x_b-D$，则从节点$x_b$向节点$x_a$连一条长度为$-D$的边</li>
+<li>$x_{i}\leq x_{i+1}+0$，则从节点$x_{i+1}$向节点$x_i$连一条长度为0的边</li>
+</ul>
+<p>对于建立虚拟源点问题，有两种方法：</p>
+<ul>
+<li>真正开辟一个超级源点0号点，那么此时建立好图后，就有$n+1$个节点</li>
+<li>并不需要真正开辟一个虚拟源点，我们只需要刚开始的时候就把所有节点都放入队列中就行了，这种情况就等效于建立一个超级源点了（注意此时仍是$n$个节点，因为并没有把超级源点0号节点建立出来）。如何理解呢？<ul>
+<li>我们这么想：对于spfa算法来说，假设我们真正设立了一个超级源点，这个源点连向其余的$n$个节点。那么第一次扩展时，就会把超级源点的所有邻接点都加入队列q中，然后更新这$n$个节点到超级源点的距离为0。也就是说，如果我们真的建立了一个超级源点，那么第一次扩展时，就会把它的所有邻接点（$n$个顶点）都更新最短距离为0。那么这不就等效于 《我们不用真的开辟一个超级源点，而是一开始就把这$n$个顶点都放入spfa算法的队列q中，然后初始化这$n$个点的距离为$0$》嘛？只不过这里并不需要第一次扩展而已啦，想法都是一样的，只不过实现方法有所不同而已</li>
+</ul>
+</li>
+</ul>
+<p>下面使用两种方法来分别实现以上的两种想法</p>
+<p>然后这一题，有三个问题：</p>
+<ul>
+<li>对于第一个问题，我们可以跑一遍spfa算法求负环，如果存在负环，那么在说明不存在满足要求的方案，输出-1即可</li>
+<li>对于第二个问题，想要求的是“1号牛和n号牛的最小距离是多少？即求$x_n-x_1$”，因此我们可以让1号节点称为起点，即设$x_1=0$，然后用spfa算法求出1号节点到其他各点的最短距离，最终求出$dist[n]$，如果$dist[n]\geq INF$则说明1号奶牛到$n$号奶牛之间不存在约束关系，距离可以无限远，输出-2。</li>
+<li>对于第三个问题，如果求出的$dist[n]&lt;INF$，那么就直接输出此时的$dist[n]$即可</li>
+</ul>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p><strong>算法一：真正开辟一个超级源点0号节点</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">1010</span>,M=<span class="number">3e4</span>+<span class="number">10</span>,INF=<span class="number">0x3f3f3f3f</span>;</span><br><span class="line"><span class="keyword">int</span> n,m1,m2;</span><br><span class="line"><span class="keyword">int</span> h[N],e[M],ne[M],w[M],idx;</span><br><span class="line"><span class="comment">//记录每个点到起点的最短距离</span></span><br><span class="line"><span class="keyword">int</span> dist[N];</span><br><span class="line"><span class="comment">//spfa算法的循环队列</span></span><br><span class="line"><span class="keyword">int</span> q[N];</span><br><span class="line"><span class="comment">//记录每个点到起点一共经过了多少条边,用来判断负环</span></span><br><span class="line"><span class="keyword">int</span> cnt[N];</span><br><span class="line"><span class="comment">//用来判断某个节点是否已经放进q队列中</span></span><br><span class="line"><span class="keyword">bool</span> st[N];</span><br><span class="line"><span class="comment">//建图</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b,<span class="keyword">int</span> c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    e[idx]=b;</span><br><span class="line">    w[idx]=c;</span><br><span class="line">    ne[idx]=h[a];</span><br><span class="line">    h[a]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//spfa算法进行 判断负环和求出最短距离</span></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">spfa</span><span class="params">(<span class="keyword">int</span> s)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(dist,<span class="number">0x3f</span>,<span class="keyword">sizeof</span> dist);</span><br><span class="line">    <span class="built_in">memset</span>(cnt,<span class="number">0</span>,<span class="keyword">sizeof</span> cnt);</span><br><span class="line">    <span class="built_in">memset</span>(st,<span class="number">0</span>,<span class="keyword">sizeof</span> st);</span><br><span class="line">    <span class="keyword">int</span> hh=<span class="number">0</span>,tt=<span class="number">1</span>;</span><br><span class="line">    dist[s]=<span class="number">0</span>;</span><br><span class="line">    q[<span class="number">0</span>]=s;</span><br><span class="line">    st[s]=<span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">while</span>(hh!=tt)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//取出队头元素</span></span><br><span class="line">        <span class="keyword">int</span> t=q[hh++];</span><br><span class="line">        <span class="comment">//队满</span></span><br><span class="line">        <span class="keyword">if</span>(hh==N)</span><br><span class="line">        hh=<span class="number">0</span>;</span><br><span class="line">        st[t]=<span class="literal">false</span>;<span class="comment">//队头元素出队</span></span><br><span class="line">        <span class="comment">//遍历t的所有邻接点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=h[t];~i;i=ne[i])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> j=e[i];<span class="comment">//取出t的邻接点j</span></span><br><span class="line">            <span class="comment">//松弛</span></span><br><span class="line">            <span class="keyword">if</span>(dist[j]&gt;dist[t]+w[i])</span><br><span class="line">            &#123;</span><br><span class="line">                dist[j]=dist[t]+w[i];</span><br><span class="line">                <span class="comment">//记录j到起点所走过的边数</span></span><br><span class="line">                cnt[j]=cnt[t]+<span class="number">1</span>;</span><br><span class="line">                <span class="comment">//有n个点,如果此时节点j到起点所经历的边数&gt;=n,则说明有n+1个顶点,则有负环</span></span><br><span class="line">                <span class="keyword">if</span>(cnt[j]&gt;=n)</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">                <span class="comment">//如果j还没有放入队列q中</span></span><br><span class="line">                <span class="keyword">if</span>(!st[j])</span><br><span class="line">                &#123;</span><br><span class="line">                    q[tt++]=j;  <span class="comment">//把j放入队列q中</span></span><br><span class="line">                    <span class="comment">//如果走到队尾</span></span><br><span class="line">                    <span class="keyword">if</span>(tt==N)</span><br><span class="line">                    tt=<span class="number">0</span>;</span><br><span class="line">                    st[j]=<span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//说明不存在负环</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//初始化表头</span></span><br><span class="line">    <span class="built_in">memset</span>(h,<span class="number">-1</span>,<span class="keyword">sizeof</span> h);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>,&amp;n,&amp;m1,&amp;m2);</span><br><span class="line">    <span class="comment">//建立了一个真正的超级源点,因此需要从超级源点0号点到其他n个节点连一条长度为0的边</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">    <span class="built_in">add</span>(<span class="number">0</span>,i,<span class="number">0</span>);</span><br><span class="line">    <span class="comment">//第一个约束条件,节点i+1向节点i连一条长度为0的边</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;n;i++)</span><br><span class="line">    <span class="built_in">add</span>(i+<span class="number">1</span>,i,<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">while</span>(m1--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b,L;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>,&amp;a,&amp;b,&amp;L);</span><br><span class="line">        <span class="comment">//保证b要&gt;=a</span></span><br><span class="line">        <span class="keyword">if</span>(a&gt;b)</span><br><span class="line">        <span class="built_in">swap</span>(a,b);</span><br><span class="line">        <span class="comment">//第二个约束条件,节点a向节点b连一条长度为L的边</span></span><br><span class="line">        <span class="built_in">add</span>(a,b,L);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span>(m2--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b,D;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>,&amp;a,&amp;b,&amp;D);</span><br><span class="line">        <span class="comment">//保证b要&gt;=a</span></span><br><span class="line">        <span class="keyword">if</span>(a&gt;b)</span><br><span class="line">        <span class="built_in">swap</span>(a,b);</span><br><span class="line">        <span class="comment">//第三个约束条件,节点b向节点a连一条长度为-D的边</span></span><br><span class="line">        <span class="built_in">add</span>(b,a,-D);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//存在负环</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">spfa</span>(<span class="number">0</span>))</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;-1&quot;</span>);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//把1号节点当作起点</span></span><br><span class="line">        <span class="built_in">spfa</span>(<span class="number">1</span>);</span><br><span class="line">        <span class="comment">//说明1号奶牛到N号奶牛的距离可以任意大</span></span><br><span class="line">        <span class="keyword">if</span>(dist[n]==INF)</span><br><span class="line">        <span class="built_in">puts</span>(<span class="string">&quot;-2&quot;</span>);</span><br><span class="line">        <span class="comment">//否则就输出1号奶牛到N号奶牛的最短距离</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,dist[n]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>算法二：不需要开辟一个超级源点0号节点</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">1010</span>,M=<span class="number">3e4</span>+<span class="number">10</span>,INF=<span class="number">0x3f3f3f3f</span>;</span><br><span class="line"><span class="keyword">int</span> n,m1,m2;</span><br><span class="line"><span class="keyword">int</span> h[N],e[M],ne[M],w[M],idx;</span><br><span class="line"><span class="comment">//记录每个点到起点的最短距离</span></span><br><span class="line"><span class="keyword">int</span> dist[N];</span><br><span class="line"><span class="comment">//spfa算法的循环队列</span></span><br><span class="line"><span class="keyword">int</span> q[N];</span><br><span class="line"><span class="comment">//记录每个点到起点一共经过了多少条边,用来判断负环</span></span><br><span class="line"><span class="keyword">int</span> cnt[N];</span><br><span class="line"><span class="comment">//用来判断某个节点是否已经放进q队列中</span></span><br><span class="line"><span class="keyword">bool</span> st[N];</span><br><span class="line"><span class="comment">//建图</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b,<span class="keyword">int</span> c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    e[idx]=b;</span><br><span class="line">    w[idx]=c;</span><br><span class="line">    ne[idx]=h[a];</span><br><span class="line">    h[a]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//spfa算法进行 判断负环和求出最短距离</span></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">spfa</span><span class="params">(<span class="keyword">int</span> num)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(dist,<span class="number">0x3f</span>,<span class="keyword">sizeof</span> dist);</span><br><span class="line">    <span class="built_in">memset</span>(cnt,<span class="number">0</span>,<span class="keyword">sizeof</span> cnt);</span><br><span class="line">    <span class="built_in">memset</span>(st,<span class="number">0</span>,<span class="keyword">sizeof</span> st);</span><br><span class="line">    <span class="keyword">int</span> hh=<span class="number">0</span>,tt=<span class="number">1</span>;</span><br><span class="line">    <span class="comment">//将这num个节点都加入队列中,并且每个节点的最短距离初始化为0,标记每个节点都放入q队列中了</span></span><br><span class="line">    <span class="comment">//那么就等效于开辟了一个超级源点</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=num;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        q[tt++]=i;</span><br><span class="line">        dist[i]=<span class="number">0</span>;</span><br><span class="line">        st[i]=<span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span>(hh!=tt)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//取出队头元素</span></span><br><span class="line">        <span class="keyword">int</span> t=q[hh++];</span><br><span class="line">        <span class="comment">//队满</span></span><br><span class="line">        <span class="keyword">if</span>(hh==N)</span><br><span class="line">        hh=<span class="number">0</span>;</span><br><span class="line">        st[t]=<span class="literal">false</span>;<span class="comment">//队头元素出队</span></span><br><span class="line">        <span class="comment">//遍历t的所有邻接点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=h[t];~i;i=ne[i])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> j=e[i];<span class="comment">//取出t的邻接点j</span></span><br><span class="line">            <span class="comment">//松弛</span></span><br><span class="line">            <span class="keyword">if</span>(dist[j]&gt;dist[t]+w[i])</span><br><span class="line">            &#123;</span><br><span class="line">                dist[j]=dist[t]+w[i];</span><br><span class="line">                <span class="comment">//记录j到起点所走过的边数</span></span><br><span class="line">                cnt[j]=cnt[t]+<span class="number">1</span>;</span><br><span class="line">                <span class="comment">//有n个点,如果此时节点j到起点所经历的边数&gt;=n,则说明有n+1个顶点,则有负环</span></span><br><span class="line">                <span class="keyword">if</span>(cnt[j]&gt;=n)</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">                <span class="comment">//如果j还没有放入队列q中</span></span><br><span class="line">                <span class="keyword">if</span>(!st[j])</span><br><span class="line">                &#123;</span><br><span class="line">                    q[tt++]=j;  <span class="comment">//把j放入队列q中</span></span><br><span class="line">                    <span class="comment">//如果走到队尾</span></span><br><span class="line">                    <span class="keyword">if</span>(tt==N)</span><br><span class="line">                    tt=<span class="number">0</span>;</span><br><span class="line">                    st[j]=<span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//说明不存在负环</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//初始化表头</span></span><br><span class="line">    <span class="built_in">memset</span>(h,<span class="number">-1</span>,<span class="keyword">sizeof</span> h);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>,&amp;n,&amp;m1,&amp;m2);</span><br><span class="line">    <span class="comment">//第一个约束条件,节点i+1向节点i连一条长度为0的边</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;n;i++)</span><br><span class="line">    <span class="built_in">add</span>(i+<span class="number">1</span>,i,<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">while</span>(m1--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b,L;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>,&amp;a,&amp;b,&amp;L);</span><br><span class="line">        <span class="comment">//保证b要&gt;=a</span></span><br><span class="line">        <span class="keyword">if</span>(a&gt;b)</span><br><span class="line">        <span class="built_in">swap</span>(a,b);</span><br><span class="line">        <span class="comment">//第二个约束条件,节点a向节点b连一条长度为L的边</span></span><br><span class="line">        <span class="built_in">add</span>(a,b,L);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span>(m2--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b,D;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>,&amp;a,&amp;b,&amp;D);</span><br><span class="line">        <span class="comment">//保证b要&gt;=a</span></span><br><span class="line">        <span class="keyword">if</span>(a&gt;b)</span><br><span class="line">        <span class="built_in">swap</span>(a,b);</span><br><span class="line">        <span class="comment">//第三个约束条件,节点b向节点a连一条长度为-D的边</span></span><br><span class="line">        <span class="built_in">add</span>(b,a,-D);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//存在负环</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">spfa</span>(n))</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;-1&quot;</span>);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//把1号节点当作起点</span></span><br><span class="line">        <span class="built_in">spfa</span>(<span class="number">1</span>);</span><br><span class="line">        <span class="comment">//说明1号奶牛到N号奶牛的距离可以任意大</span></span><br><span class="line">        <span class="keyword">if</span>(dist[n]==INF)</span><br><span class="line">        <span class="built_in">puts</span>(<span class="string">&quot;-2&quot;</span>);</span><br><span class="line">        <span class="comment">//否则就输出1号奶牛到N号奶牛的最短距离</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,dist[n]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
