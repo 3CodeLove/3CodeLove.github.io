@@ -94,13 +94,10 @@
 <ul>
 <li><p>首先来证明，如果$G$中不存在负环时，那么可以求出一个可行解。考察任意边$(v_i,v_j)\in E$，由三角不等式$\delta (v_0,v_j)\leq \delta (v_0,v_i)+w(v_i,v_j)$，即$\delta (v_0,v_j)-\delta (v_0,v_i)\leq w(v_i,v_j)$。因此，设$x_i=\delta (v_0,v_i),x_j=\delta(v_0,v_j)$，带入上式子可知满足对应边$(v_i,v_j)$的差分约束$x_j-x_i\leq w(v_i,v_j)$</p>
 </li>
-<li><p>接下来再来证明，如果$G$中存在负环，那么差分约束系统不存在可行解。设负权回路为$c=<v_1,v_2,\cdots,v_k>$，其中$v_1=v_k$（因为节点$v_0$没有入边，所以它不可能再回路$c$上）。回路$c$对应着如下的差分约束：</p>
+<li><p>接下来再来证明，如果$G$中存在负环，那么差分约束系统不存在可行解。设负权回路为$c=$&lt;$v_1,v_2,\cdots,v_k$&gt;，其中$v_1=v_k$（因为节点$v_0$没有入边，所以它不可能再回路$c$上）。回路$c$对应着如下的差分约束：</p>
 <ul>
 <li>$x_2-x_1\leq w(v_1,v_2)$</li>
-</ul>
-</li>
-<li><p>$x_3-x_2\leq w(v_2,v_3)$</p>
-<ul>
+<li>$x_3-x_2\leq w(v_2,v_3)$</li>
 <li>$\cdots $</li>
 <li>$x_k-x_{k-1}\leq w(v_{k-1},v_k)$</li>
 <li>$x_1-x_k\leq w(v_k,v_1)$</li>
@@ -164,7 +161,7 @@
 </ul>
 <p>其中$x_0=0,c_0=0$</p>
 <p>解释一样$x_0+c_0+c_3$的含义：它表示从源点$v_0$到达节点$v_3$所走过的路径上的权值之和。$x_0+c_0+c_1+c_2$也是一样的含义。</p>
-<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210707094207.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210707094207.png"></p>
 <p>对应有两条路径：</p>
 <ul>
 <li>$v_0\implies v_1\implies v_3$，从源点$v_0$走到节点$v_3$，所走过的路径之和为$c_0+c_3$</li>
