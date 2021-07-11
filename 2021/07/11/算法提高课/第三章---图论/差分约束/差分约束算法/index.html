@@ -11,7 +11,7 @@
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="3Code_Love,"> 
     <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,差分约束系统
-差分约束系统是一种特殊的$N$元一次不等式组。它包含$N$个变量$X_1$~$X_N$以及$M$个约束条件，每个约束条件都是由两个变量做差构成的，形如$X_i-X_j\leq c_k$,"> 
+$$f(n)=\begin{cases}n/2, &amp;amp; \text{如果$ x&amp;lt;=2 $}\3n+1, &amp;amp; \text{如果$ x&amp;gt;2 $}\end{case,"> 
     <meta name="author" content="3Code_Love"> 
     <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -60,6 +60,7 @@
         </div>
         <div class="content markdown">
             <h1 id="差分约束系统"><a href="#差分约束系统" class="headerlink" title="差分约束系统"></a>差分约束系统</h1><hr>
+<p>$$<br>f(n)=\begin{cases}<br>n/2, &amp; \text{如果$ x&lt;=2 $}\<br>3n+1, &amp; \text{如果$ x&gt;2 $}<br>\end{cases}<br>$$</p>
 <p>差分约束系统是一种特殊的$N$元一次不等式组。它包含$N$个变量$X_1$~$X_N$以及$M$个约束条件，每个约束条件都是由两个变量做差构成的，形如$X_i-X_j\leq c_k$，其中$c_k$是常数（可以是非负数，也可以是负数），$1\leq i,j\leq N,1\leq k\leq M$。我们要解决的问题就是：求一组解$X_1=a_1,X_2=a_2,\cdots,X_N=a_N$，即解$X=(a_1,a_2,\cdots,a_N)$使得所有约束条件都能得到满足。</p>
 <p>差分约束系统的每个约束条件$X_i-X_j\leq c_k$可以变形为$X_i\leq X_j+c_k$，这与单源最短路径问题中的三角不等式$dist[y]\leq dist[x]+z$非常相似，注意这个式子是更新过后的。因此，我们可以把每个变量$X_i$看作是有向图中的一个节点$i$，对于每个约束条件$X_i-X_j\leq c_k$，从节点$j$向节点$i$连一条长度为$c_k$的有向边。</p>
 <p><strong>引理：</strong></p>
