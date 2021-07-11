@@ -11,7 +11,7 @@
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="3Code_Love,"> 
     <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,差分约束系统
-$$f(n)=\begin{cases}n/2, &amp;amp; \text{如果$ x&amp;lt;=2 $}\3n+1, &amp;amp; \text{如果$ x&amp;gt;2 $}\end{case,"> 
+差分约束系统是一种特殊的$N$元一次不等式组。它包含$N$个变量$X_1$~$X_N$以及$M$个约束条件，每个约束条件都是由两个变量做差构成的，形如$X_i-X_j\leq c_k$,"> 
     <meta name="author" content="3Code_Love"> 
     <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -60,7 +60,6 @@ $$f(n)=\begin{cases}n/2, &amp;amp; \text{如果$ x&amp;lt;=2 $}\3n+1, &amp;amp; 
         </div>
         <div class="content markdown">
             <h1 id="差分约束系统"><a href="#差分约束系统" class="headerlink" title="差分约束系统"></a>差分约束系统</h1><hr>
-<p>$$<br>f(n)=\begin{cases}<br>n/2, &amp; \text{如果$ x&lt;=2 $}\<br>3n+1, &amp; \text{如果$ x&gt;2 $}<br>\end{cases}<br>$$</p>
 <p>差分约束系统是一种特殊的$N$元一次不等式组。它包含$N$个变量$X_1$~$X_N$以及$M$个约束条件，每个约束条件都是由两个变量做差构成的，形如$X_i-X_j\leq c_k$，其中$c_k$是常数（可以是非负数，也可以是负数），$1\leq i,j\leq N,1\leq k\leq M$。我们要解决的问题就是：求一组解$X_1=a_1,X_2=a_2,\cdots,X_N=a_N$，即解$X=(a_1,a_2,\cdots,a_N)$使得所有约束条件都能得到满足。</p>
 <p>差分约束系统的每个约束条件$X_i-X_j\leq c_k$可以变形为$X_i\leq X_j+c_k$，这与单源最短路径问题中的三角不等式$dist[y]\leq dist[x]+z$非常相似，注意这个式子是更新过后的。因此，我们可以把每个变量$X_i$看作是有向图中的一个节点$i$，对于每个约束条件$X_i-X_j\leq c_k$，从节点$j$向节点$i$连一条长度为$c_k$的有向边。</p>
 <p><strong>引理：</strong></p>
@@ -95,8 +94,17 @@ $$f(n)=\begin{cases}n/2, &amp;amp; \text{如果$ x&amp;lt;=2 $}\3n+1, &amp;amp; 
 <ul>
 <li><p>首先来证明，如果$G$中不存在负环时，那么可以求出一个可行解。考察任意边$(v_i,v_j)\in E$，由三角不等式$\delta (v_0,v_j)\leq \delta (v_0,v_i)+w(v_i,v_j)$，即$\delta (v_0,v_j)-\delta (v_0,v_i)\leq w(v_i,v_j)$。因此，设$x_i=\delta (v_0,v_i),x_j=\delta(v_0,v_j)$，带入上式子可知满足对应边$(v_i,v_j)$的差分约束$x_j-x_i\leq w(v_i,v_j)$</p>
 </li>
-<li><p>接下来再来证明，如果$G$中存在负环，那么差分约束系统不存在可行解。设负权回路为$c=&lt;v_1,v_2,\cdots,v_k&gt;$，其中$v_1=v_k$（因为节点$v_0$没有入边，所以它不可能再回路$c$上）。回路$c$对应着如下的差分约束：</p>
-<p>$\begin{cases}x_2-x_1\leq w(v_1,v_2)\ x_3-x_2\leq w(v_2,v_3)\ \cdots \ x_k-x_{k-1}\leq w(v_{k-1},v_k)\ x_1-x_k\leq w(v_k,v_1) \end{cases}$</p>
+<li><p>接下来再来证明，如果$G$中存在负环，那么差分约束系统不存在可行解。设负权回路为$c=<v_1,v_2,\cdots,v_k>$，其中$v_1=v_k$（因为节点$v_0$没有入边，所以它不可能再回路$c$上）。回路$c$对应着如下的差分约束：</p>
+<ul>
+<li>$x_2-x_1\leq w(v_1,v_2)$</li>
+</ul>
+</li>
+<li><p>$x_3-x_2\leq w(v_2,v_3)$</p>
+<ul>
+<li>$\cdots $</li>
+<li>$x_k-x_{k-1}\leq w(v_{k-1},v_k)$</li>
+<li>$x_1-x_k\leq w(v_k,v_1)$</li>
+</ul>
 <p>假设存在满足$k$个不等式的一个解$X$，那么也满足上述$k$个不等式相加所得到的不等式。如果把这些不等式相加，就会发现每个变量$x_i$的正负项相互抵消了，结果左边项和为0，而右边项和为$w(c)$，因此有$0\leq w(c)$。但是由于$c$是一个负权回路，因此有$w(c)&lt;0$，因此得到矛盾$0\leq w(c)&lt;0$，由此得证</p>
 </li>
 </ul>
@@ -138,15 +146,25 @@ $$f(n)=\begin{cases}n/2, &amp;amp; \text{如果$ x&amp;lt;=2 $}\3n+1, &amp;amp; 
 <p>那么$x_i$的最小值，要注意$F$可能多很多个，因此，我们取$F$中最大的那个值，就是$x_i$的最小值</p>
 <p>例如$x_i\geq 5,x_i\geq 7,x_i\geq 9$，那么$x_i$的最大值为9。假设$x_i$取最小值为5，那么就不满足$x_i\geq 7$和$x_i\geq 9$了。</p>
 <p>下面举个图例：</p>
-<p>$X=\begin{cases}x_2-x_1\leq c_1\ x_3-x_2\leq c_2\ x_3-x_1\leq c_3 \end{cases}$</p>
+<ul>
+<li>$x_2-x_1\leq c_1$</li>
+<li>$x_3-x_2\leq c_2$</li>
+<li>$x_3-x_1\leq c_3$</li>
+</ul>
 <p>那么，我们可以求出这样的：</p>
-<p>$\begin{cases}x_3\leq x_1+c_3\ x_3\leq x_1+c_1+c_2 \end{cases}$</p>
+<ul>
+<li>$x_3\leq x_1+c_3$</li>
+<li>$x_3\leq x_1+c_1+c_2$</li>
+</ul>
 <p>可以看出，约束变量$x_3$的有两个条件，如果画到图中，就对应于有2条路径。那么当我们要求$x_3$的最大值时，取的肯定是$x_1+c_3$和$x_1+c_1+c_2$中的最小值，这样才能保证满足这两个约束条件，进而满足题目给定的所有原始的约束条件。</p>
 <p>我们添加超级源点$s$即$v_0$，那么有$x_1-x_0\leq c_0$，因此有如下：</p>
-<p>$\begin{cases}x_3\leq x_0+c_0+c_3\ x_3\leq x_0+c_0+c_1+c_2 \end{cases}$</p>
+<ul>
+<li>$x_3\leq x_0+c_0+c_3$</li>
+<li>$x_3\leq x_0+c_0+c_1+c_2$</li>
+</ul>
 <p>其中$x_0=0,c_0=0$</p>
 <p>解释一样$x_0+c_0+c_3$的含义：它表示从源点$v_0$到达节点$v_3$所走过的路径上的权值之和。$x_0+c_0+c_1+c_2$也是一样的含义。</p>
-<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210707094207.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210707094207.png" alt=""></p>
 <p>对应有两条路径：</p>
 <ul>
 <li>$v_0\implies v_1\implies v_3$，从源点$v_0$走到节点$v_3$，所走过的路径之和为$c_0+c_3$</li>
