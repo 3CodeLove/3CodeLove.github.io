@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>观光奶牛 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,观光奶牛
+题目描述
+
+核心思路一般来说，求 点权之和/边权之和 的最值问题，都属于01分数规划问题。
+图论的01分数规划问题的步骤：
+
+确认答案区间，然后用二分算法，判断性质
+借助二分出来的中点，推,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">观光奶牛</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">观光奶牛</h1>
+        <div class="stuff">
+            <span>七月 12, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E8%B4%9F%E7%8E%AF/" rel="tag">负环</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="观光奶牛"><a href="#观光奶牛" class="headerlink" title="观光奶牛"></a>观光奶牛</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210712160410.png" alt="image-20210712160410274"></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>一般来说，求 点权之和/边权之和 的最值问题，都属于01分数规划问题。</p>
+<p>图论的01分数规划问题的步骤：</p>
+<ul>
+<li>确认答案区间，然后用二分算法，判断性质</li>
+<li>借助二分出来的中点，推导出性质的公式</li>
+<li>套用图论模板</li>
+</ul>
+<p>本题要求我们求一个环内$\dfrac {\sum f_i}{\sum t_i}$的最大值，而这个答案本身就是具有单调性，因此可以用二分算法，来二分出最终的答案。</p>
+<p>首先来确定答案的区间：</p>
+<p>我们设$c =\dfrac {\sum f_i}{\sum t_i}$</p>
+<ul>
+<li>要想求出区间的左范围，那么分子应该最小，分母应该最大，那么分子应该取一个点，该点的点权为1；分母应该取5000条边，边权为1000，那么此时$c=\dfrac {1<em>1}{5000</em>1000}$，很难明显，这个$c$不为0，肯定是大于0的，注意这里不能理解为C++中的整除会向下取整，这里应该理解为浮点数的除法，因为题目说了要保留两位小数。因此，我们确定了左范围是大于0的</li>
+<li>要想求出区间的右范围，那么分子应该最大，分母应该最小，那么分子应该取1000个点，每个点的点权都为1000；由于有了1000个点，那么对于环来说，至少得是1000条边（注意不可能说有1000个点，然后取1条边，这样不能形成环），这1000条边的权值都为1，那么此时$c=\dfrac {1000<em>1000}{1000</em>1}=1000$。因此，我们确定了右范围是1000</li>
+<li>所以，答案区间就是<code>(0,1000]</code></li>
+</ul>
+<p>由于我们发现答案区间是单调递增的，也就是说具有单调性，那么就可以用二分算法，来快速地求出$c$。我们设$L=0,R=1000$，假设某个时刻，我们设中点为$mid$，那么：</p>
+<p>$\dfrac {\sum f_i}{\sum t_i}&gt;mid$</p>
+<p>$\iff$ $\sum f_i&gt;mid*\sum t_i$</p>
+<p>$\iff$ $\sum f_i-mid*\sum t_i&gt;0$</p>
+<p>$\iff$ $\sum (f_i-mid*t_i)&gt;0$</p>
+<p>根据上述推导的公式可知，对于满足要求的$mid$，就是要满足图中存在一个<code>环</code>，它的$\sum (f_i-mid*t_i)&gt;0$ ，要求一个环，它的权值之和大于0，这不就是想让我们求正环嘛？</p>
+<p>因此，原问题就转换为 求图中是否存在一个正环 的问题了</p>
+<p>我们每次二分出一个$mid$，然后$check(mid)$，如果它满足上面的这个式子，那么由于答案是单调递增的，我们想要求出最大的$mid$，因此此时左范围$L$应该往右侧收缩，即$L=mid$，不可能让右范围往左收缩吧，即不可能是$R=mid$（如果这样的话，那么更新过后的区间的最大值不就小于$mid$了嘛，这就不可能找到最大值了）。因此一旦二分出的$mid$满足上述式子，那么就往右侧收缩$L=mid$，这样会更快地逼近最大值；如果二分出的这个$mid$不满足上述式子，则说明答案肯定比当前二分的$mid$还小，那么就要往左侧收缩$R=mid$，因为右边已经不可能了。</p>
+<p>浮点数的二分比较简单，就是执行$L=mid$或者$R=mid$。</p>
+<p>这里还有个问题，就是我们该怎么处理点权和边权呢？我们以前都只是见过有边权的情况。其实，我们可以把节点的点权放到它的出边上，那么此时就只有边权的情况了，不存在点权。为什么可以这么做呢？</p>
+<ul>
+<li>假设同时存在点权和边权，那么所有点权之和为$\sum f_i$，所有边权之和为$\sum t_i$，因此，总的权值之和为$\sum f_i+\sum t_i$</li>
+<li>假设把点权放到出边上，此时只有边权，那么某个出边的权值为$f_i+t_i$，因此，总的权值之和为$\sum (f_i+t_i)$</li>
+<li>由于$\sum$是可以分开的，因此$\sum(f_i+t_i)=\sum f_i+\sum t_i$</li>
+</ul>
+<p>有了上面的处理之和，我们建图就会更加方便了，只需要处理边权就好了。</p>
+<p>我们来看这个式子$\sum (f_i-mid<em>t_i)$，那么其实就是$\sum (f_i+(-mid</em>t_i))&gt;0=\sum f_i+\sum-mid<em>t_i$，也就是说把原来的边权$t_i$换成了$f_i-mid</em>t_i$来存储了，把每个点的权值都放入它的出边中。</p>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">1010</span>,M=<span class="number">5010</span>;</span><br><span class="line"><span class="keyword">int</span> n,m;</span><br><span class="line"><span class="comment">//点权</span></span><br><span class="line"><span class="keyword">int</span> wf[N];</span><br><span class="line"><span class="keyword">int</span> h[N],e[M],ne[M],wt[M],idx;  <span class="comment">//wt是边权</span></span><br><span class="line"><span class="keyword">int</span> q[N],cnt[N];</span><br><span class="line"><span class="keyword">double</span> dist[N];</span><br><span class="line"><span class="keyword">bool</span> st[N];</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b,<span class="keyword">int</span> c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    e[idx]=b;</span><br><span class="line">    wt[idx]=c;</span><br><span class="line">    ne[idx]=h[a];</span><br><span class="line">    h[a]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//spfa判断正环</span></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">check</span><span class="params">(<span class="keyword">double</span> mid)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(dist,<span class="number">-0x3f</span>,<span class="keyword">sizeof</span> dist);</span><br><span class="line">    <span class="built_in">memset</span>(st,<span class="number">0</span>,<span class="keyword">sizeof</span> st);</span><br><span class="line">    <span class="built_in">memset</span>(cnt,<span class="number">0</span>,<span class="keyword">sizeof</span> cnt);</span><br><span class="line">    <span class="keyword">int</span> hh=<span class="number">0</span>,tt=<span class="number">1</span>;</span><br><span class="line">    <span class="comment">//一开始将原图中所有点加入队列q中就  等效于建立了一个带有虚拟源点的新图 </span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        q[tt++]=i;</span><br><span class="line">        dist[i]=<span class="number">0</span>;</span><br><span class="line">        st[i]=<span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span>(hh!=tt)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> t=q[hh++];</span><br><span class="line">        <span class="keyword">if</span>(hh==N)</span><br><span class="line">        hh=<span class="number">0</span>;</span><br><span class="line">        st[t]=<span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=h[t];~i;i=ne[i])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> j=e[i];</span><br><span class="line">            <span class="comment">//wf[t]-mid*wt[i]是将点权放到了边上</span></span><br><span class="line">            <span class="keyword">if</span>(dist[j]&lt;dist[t]+wf[t]-mid*wt[i])</span><br><span class="line">            &#123;</span><br><span class="line">                dist[j]=dist[t]+wf[t]-mid*wt[i];</span><br><span class="line">                cnt[j]=cnt[t]+<span class="number">1</span>;</span><br><span class="line">                <span class="comment">//说明存在正环</span></span><br><span class="line">                <span class="keyword">if</span>(cnt[j]&gt;=n)</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">                <span class="keyword">if</span>(!st[j])</span><br><span class="line">                &#123;</span><br><span class="line">                    q[tt++]=j;</span><br><span class="line">                    <span class="keyword">if</span>(tt==N)</span><br><span class="line">                    tt=<span class="number">0</span>;</span><br><span class="line">                    st[j]=<span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//说明不存在正环</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(h,<span class="number">-1</span>,<span class="keyword">sizeof</span> h);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;n,&amp;m);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;wf[i]);</span><br><span class="line">    <span class="keyword">while</span>(m--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b,c;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>,&amp;a,&amp;b,&amp;c);</span><br><span class="line">        <span class="built_in">add</span>(a,b,c);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">double</span> l=<span class="number">0</span>,r=<span class="number">1e4</span>;</span><br><span class="line">    <span class="comment">//二分找到答案</span></span><br><span class="line">    <span class="keyword">while</span>(l+<span class="number">1e-4</span>&lt;r)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">double</span> mid=(l+r)/<span class="number">2</span>;</span><br><span class="line">        <span class="comment">//满足条件 则向右侧收缩</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">check</span>(mid))</span><br><span class="line">        l=mid;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        r=mid;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%.2lf\n&quot;</span>,l);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
