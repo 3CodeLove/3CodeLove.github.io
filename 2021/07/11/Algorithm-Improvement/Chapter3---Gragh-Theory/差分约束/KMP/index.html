@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KMP - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,KMP算法详解
+求解next[]数组之前要先明白以下数组的概念：
+
+前缀：包含首位字符但是不包含末位字符的子串
+后缀：包含末位字符但是不包含首位字符的子串
+next[]数组的含义：当主串S与模式串P,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">KMP</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">KMP</h1>
+        <div class="stuff">
+            <span>七月 11, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/KMP/" rel="tag">KMP</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="KMP算法详解"><a href="#KMP算法详解" class="headerlink" title="KMP算法详解"></a>KMP算法详解</h1><hr>
+<p>求解<code>next[]</code>数组之前要先明白以下数组的概念：</p>
+<ul>
+<li>前缀：包含首位字符但是不包含末位字符的子串</li>
+<li>后缀：包含末位字符但是不包含首位字符的子串</li>
+<li><code>next[]</code>数组的含义：当主串S与模式串P的某一位字符不匹配时，模式串P应该回退的位置（数组下标）</li>
+<li>$next[i]=j$的含义：即模式串P的前i个字符(包括i)组成的字符串中，最长公共前后缀子串的长度为$j$</li>
+</ul>
+<p><strong>注意：我们的算法中，字符串的下标都是从1开始，不用下标0，下标为0可以表示空字符。</strong></p>
+<p>如下图所示，来看看什么是最长公共前后缀：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210711105744.png" alt="image-20210711105734389"></p>
+<ol start="0">
+<li>当i=0时，空字符，最长公共前后缀为0</li>
+<li>当i=1时，对于单个字符来说，不存在前缀和后缀，因此最长公共前后缀为0</li>
+<li>当i=2时，字符串为“AB”，前缀为A，后缀为B，前缀与后缀并不相同，因此最长公共前后缀为0</li>
+<li>当i=3时，字符串为“ABC”，前缀为A，AB；后缀为C，BC，前缀与后缀并不相同，因此最长公共前后缀为0</li>
+<li>当i=4时，字符串为“ABCA”，前缀为<strong>A</strong>，AB，ABC；后缀为<strong>A</strong>，CA，BCA；有最长的相同的前后缀A，因此最长公共前后缀为1</li>
+<li>当i=5时，字符串为“ABCAB”，前缀为A，<strong>AB</strong>，ABC，ABCA；后缀为B，<strong>AB</strong>，CAB，BCAB；有最长的相同的前后缀AB，因此最长公共前后缀为2</li>
+<li>当i=6时，字符串“ABCABD”，前缀为A，AB，ABC，ABCA，ABCAB；后缀为D，BD，ABD，CABD，BCABD，前缀与后缀并不相同，因此有相同的前后缀，因此最长公共前后缀为0</li>
+</ol>
+<p>该栗子中，<code>next[]</code>数组元素的值分别为：</p>
+<p>一般来说，我们都可以预定义$next[0]$和$next[1]$都为0</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">next[<span class="number">0</span>]=<span class="number">0</span>;	<span class="comment">//空字符  弃用</span></span><br><span class="line">next[<span class="number">1</span>]=<span class="number">0</span>;	<span class="comment">//单个字符,不存在前缀和后缀,因此next[1]固定为0</span></span><br><span class="line">next[<span class="number">2</span>]=<span class="number">0</span>;</span><br><span class="line">next[<span class="number">3</span>]=<span class="number">0</span>;</span><br><span class="line">next[<span class="number">4</span>]=<span class="number">1</span>;</span><br><span class="line">next[<span class="number">5</span>]=<span class="number">2</span>;</span><br><span class="line">next[<span class="number">6</span>]=<span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>我们用图示来形象地理解<code>next[]</code>的含义：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210711111510.png" alt="image-20210711111454805"></p>
+<p>如上图所示，对于由$i$个字符组成的字符串来说，前面的绿色部分和后面的绿色部分就表示该字符串相同的前缀和后缀，值为$next[i]$</p>
+<hr>
+<p>那么，我们怎么求解<code>next[]</code>数组呢？</p>
+<p>根据<code>next[]</code>数组的含义，可以分为两种情况讨论，找到规律：</p>
+<ul>
+<li>如果新加入的字符与前一个最长公共前后缀子串的后面一个字符相同时，即$p[j+1]==p[i]$</li>
+<li>如果新加入的字符与前一个最长公共前后缀子串的后面一个字符不同时，即$p[j+1]\neq p[i]$</li>
+</ul>
+<p><strong>讨论第一种情况：如果新加入的字符与前一个最长公共前后缀子串的后面一个字符相同时</strong></p>
+<p>代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(p[i]==p[j+<span class="number">1</span>])</span><br><span class="line">    j++;</span><br><span class="line"><span class="comment">//用此时j的值来填充i所指向的这个字符的next数组的内容</span></span><br><span class="line">ne[i]=j;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210711112121.png" alt="image-20210711112121418"></p>
+<p>新加入的字符为$p[i]$，前一个最长公共前后缀子串的后一个字符是$p[j+1]$，可以发现，$p[j+1]==p[i]$，那么绿色部分就可以扩展一格，那么就是$next[i]=next[i-1]+1$，其实也就是$j=j+1$嘛，因为之前$j=next[i-1]$，然后由于$p[j+1]==p[i]$，那么$next[i]=next[i-1]+1$，就等效于此时$j=j+1$，即$j$++</p>
+<p>注意：绿色部分是可以为0的，那么含义就是：最长公共前后缀为0，即不存在相同的前缀和后缀。也就是说此时$j$回退到0，指向了那个空字符</p>
+<p><strong>讨论第二种情况：如果新加入的字符与前一个最长公共前后缀子串的后面一个字符不相同时</strong></p>
+<p>代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//当j没有回退到下标0所在的那个空字符,并且绿色部分内部一直都没有相同的前缀和后缀</span></span><br><span class="line"><span class="keyword">while</span>(j&amp;&amp;p[i]!=p[j+<span class="number">1</span>])</span><br><span class="line">    j=ne[j];</span><br><span class="line"><span class="comment">//用此时j的值来填充i所指向的这个字符的next数组的内容</span></span><br><span class="line">ne[i]=j;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>当出现这种情况时，在KMP算法中，就会执行$j=next[j]$，但是很难理解为什么要这么做。</p>
+<p>下面我们看这张图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210711121243.png" alt="image-20210711121242198"></p>
+<p>那么蓝色的部分该怎么求解呢？在KMP中，就是用$j=next[j]$，这是回退操作</p>
+<p>这个蓝色部分，首先要内容都完全相同，其次还要位于绿色部分的开头和结尾，那么这不就是绿色部分的最长公共前后缀的子串嘛？</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210711122308.png" alt="image-20210711122239056"></p>
+<p>更新$j=next[j]$后，又回到原来的问题了，接着判断$p[j+1]$是否与$p[i]$相同就行了</p>
+<p>至此，我们弄明白了那个令人费解的回退操作到底是什么意思了，其实就是在当前的这个最长公共前后缀已经不能使用时，那么就继续去寻找这个最长公共前后缀，看看它内部是否也存在最长公共前后缀，就这样一直迭代去寻找，一直尝试到成功或者是最长公共前后缀的长的为0时，就停止迭代循环</p>
+<hr>
+<p>下面给出求出<code>next[]</code>数组的完整代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">ne[<span class="number">0</span>]=<span class="number">0</span>;	<span class="comment">//空字符的最长公共前后缀长度为0</span></span><br><span class="line">ne[<span class="number">1</span>]=<span class="number">0</span>;	<span class="comment">//单个字符不存在前缀和后缀，那么最长公共前后缀长度也为0</span></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">2</span>,j=<span class="number">0</span>;i&lt;=n;i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span>(j&amp;&amp;p[i]!=p[j+<span class="number">1</span>])</span><br><span class="line">        j=ne[j];</span><br><span class="line">    <span class="keyword">if</span>(p[i]==p[j+<span class="number">1</span>])</span><br><span class="line">        j++;</span><br><span class="line">    ne[i]=j;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>上面我们求出了<code>next[]</code>数组，那么如何进行主串和模式串的匹配呢？</p>
+<p>其实进行主串和模式串的匹配，与求解<code>next[]</code>数组是一样的。</p>
+<p>主循环中，$i$是用来遍历主串S的，$j$是用来遍历模式串p的。初始时$i$指向主串的第一个字符，即$i=1$，$j$指向模式串的空字符，即$j=0$。要注意：主串的$i$是不会回退的，它是一直往前遍历，但是模式串的$j$会进行回退操作，即会执行$j=next[j]$。</p>
+<p><strong>讨论第一种情况：如果新加入的字符与前一个最长公共前后缀子串的后面一个字符相同时</strong></p>
+<p>这里新加入的字符是指主串中的$S[i]$，前一个最长公共前后缀子串的后一个字符是指模式串中的$p[j+1]$，也就是说$S[i]==p[j+1]$，那么此时主串的下标$i$往前移动一位，模式串的下标$j$也往前移动一位</p>
+<p>代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(s[i]==p[j+<span class="number">1</span>])</span><br><span class="line">    j++;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>讨论第二种情况：如果新加入的字符与前一个最长公共前后缀子串的后面一个字符不相同时</strong></p>
+<p>这里新加入的字符是指主串中的$S[i]$，前一个最长公共前后缀子串的后一个字符是指模式串中的$p[j+1]$，也就是说$S[i]\neq p[j+1]$，那么此时模式串的$j$就要执行回退操作了，即$j=next[j]$</p>
+<p>代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(j&amp;&amp;s[i]!=p[j+<span class="number">1</span>])</span><br><span class="line">    j=ne[j];</span><br></pre></td></tr></table></figure>
+
+<p>可以发现，其实进行主串与模式串的匹配时，与求解<code>next[]</code>数组是如出一辙的</p>
+<hr>
+<h1 id="KMP字符串"><a href="#KMP字符串" class="headerlink" title="KMP字符串"></a>KMP字符串</h1><h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210711125013.png" alt="image-20210711125013111"></p>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">1e5</span>+<span class="number">10</span>,M=<span class="number">1e6</span>+<span class="number">10</span>;</span><br><span class="line"><span class="comment">//n是模式串P的长度  m是主串S的长度</span></span><br><span class="line"><span class="keyword">int</span> n,m;</span><br><span class="line"><span class="keyword">char</span> p[N];  <span class="comment">//模式串</span></span><br><span class="line"><span class="keyword">char</span> s[M];  <span class="comment">//主串</span></span><br><span class="line"><span class="comment">//next数组</span></span><br><span class="line"><span class="keyword">int</span> ne[N];</span><br><span class="line"><span class="comment">//求解出模式串P的next数组   next数组是对于模式串来说的,主串并不存在next数组</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">getNext</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ne[<span class="number">0</span>]=<span class="number">0</span>,ne[<span class="number">1</span>]=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">2</span>,j=<span class="number">0</span>;i&lt;=n;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(j&amp;&amp;p[i]!=p[j+<span class="number">1</span>])</span><br><span class="line">        j=ne[j];</span><br><span class="line">        <span class="keyword">if</span>(p[i]==p[j+<span class="number">1</span>])</span><br><span class="line">        j++;</span><br><span class="line">        <span class="comment">//用此时j的值来填充i所指向当前这个字符的ne数组的内容</span></span><br><span class="line">        <span class="comment">//next[i] = j 表示下标以i-j为起点，i为终点的后缀和下标以1为起点，j为终点的前缀相等</span></span><br><span class="line">        <span class="comment">//且此字符串的长度最长。用符号表示为p[1~j] == p[i-j~i]</span></span><br><span class="line">        ne[i]=j;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//进行主串S和模式串P的匹配操作</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">solve</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//主循环，遍历主串字符 i是用来遍历主串的，j是用来遍历模式串的</span></span><br><span class="line">    <span class="comment">//初始时i指向主串的第一个字符，j指向空字符</span></span><br><span class="line">    <span class="comment">//主串数组和模式串数组都是舍去数组下标0不用，从数组下标1开始存入字符</span></span><br><span class="line">    <span class="comment">//主串的i是不会回溯的，只有模式串的j才能回溯</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>,j=<span class="number">0</span>;i&lt;=m;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(j&amp;&amp;s[i]!=p[j+<span class="number">1</span>])</span><br><span class="line">        j=ne[j];</span><br><span class="line">        <span class="keyword">if</span>(s[i]==p[j+<span class="number">1</span>])</span><br><span class="line">        j++;</span><br><span class="line">        <span class="comment">//如果j能走到n,那么一定是成功匹配了,因为如果不匹配的话,那么进行回退操作</span></span><br><span class="line">        <span class="comment">//j就不会到达n</span></span><br><span class="line">        <span class="keyword">if</span>(j==n)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,i-n);</span><br><span class="line">            <span class="comment">//这一句可以不用</span></span><br><span class="line">            j=ne[j];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//模式串和主串的下标都是从1开始</span></span><br><span class="line">    cin &gt;&gt;n&gt;&gt;p+<span class="number">1</span>&gt;&gt;m&gt;&gt;s+<span class="number">1</span>;</span><br><span class="line">    <span class="comment">//求解next数组</span></span><br><span class="line">    <span class="built_in">getNext</span>();</span><br><span class="line">    <span class="comment">//进行模式串和主串匹配操作</span></span><br><span class="line">    <span class="built_in">solve</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
