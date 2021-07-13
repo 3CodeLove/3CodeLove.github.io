@@ -1,0 +1,248 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>二分图的最大匹配 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,二分图的最大匹配
+题目描述
+
+二分图的最大匹配从题目中给出的二分图匹配的定义可知，匹配其实也是一张图，并且图中的点数是边数的2倍。
+如下图所示：二分图的匹配
+红色边组成的 4 个结点、2条边就是这个,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">二分图的最大匹配</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">二分图的最大匹配</h1>
+        <div class="stuff">
+            <span>七月 13, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%8C%88%E7%89%99%E5%88%A9%E7%AE%97%E6%B3%95/" rel="tag">匈牙利算法</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="二分图的最大匹配"><a href="#二分图的最大匹配" class="headerlink" title="二分图的最大匹配"></a>二分图的最大匹配</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210713135825.png" alt="image-20210713135825492"></p>
+<hr>
+<h3 id="二分图的最大匹配-1"><a href="#二分图的最大匹配-1" class="headerlink" title="二分图的最大匹配"></a>二分图的最大匹配</h3><p>从题目中给出的二分图匹配的定义可知，匹配其实也是一张图，并且图中的点数是边数的2倍。</p>
+<p>如下图所示：二分图的匹配</p>
+<p>红色边组成的 4 个结点、2条边就是这个二分图的一个匹配了；</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210713140235.png" alt="image-20210713140235437"></p>
+<p><strong>二分图最大匹配定义</strong>：最大匹配就是找到一个子图，满足是匹配，并且边数（点数）最多。</p>
+<p>如下图所示：二分图的最大匹配</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210713140350.png" alt="image-20210713140350842"></p>
+<hr>
+<h3 id="匈牙利算法"><a href="#匈牙利算法" class="headerlink" title="匈牙利算法"></a>匈牙利算法</h3><p>匈牙利算法可以用来求解二分图的最大匹配问题。匈牙利算法也被戏称为“相亲算法”，它的大致过程是这样的：</p>
+<ul>
+<li><p>有两个点集，分别是男生和女生，$X$点集中全部都是男生，$Y$点集中全部都是女生</p>
+</li>
+<li><p>然后男生取追求女生，如果男生$X_a$对女生$Y_b$有好感，并且女生$Y_b$也有男生$X_a$有好感，那么男生$X_a$就有很大机会可以追到女生$Y_b$，否则如果女生$Y_b$不喜欢男生$X_a$，那么男生$X_a$就不会再追求女生$Y_b$，而是继续去寻找其他女生  （不想当<del>舔狗</del>)</p>
+</li>
+<li><p>作为一个男人，要主动出击。因此约定都是男生追女生，即开始先从点集$X$出发</p>
+</li>
+<li><p>每个男生可以选遍所有他喜欢的女生：如果某位女生还是单身并且没有其他男生追求她，那么 女人 拿来吧你，恭喜你，直接配对；如果特别喜欢的这个女生已经有男朋友了，则这个女生会让她男朋友再去找其他女生（爱情就是这么<del>不堪一击</del>)，又转化成了另一个男生去寻找女生的过程，继续递归找；</p>
+</li>
+<li><p>那么最终的结果就有两种情况：</p>
+<ul>
+<li><p>由于这个男生的插足，导致最后可能有一个男生被抛弃，这是不道德的行为，所以不能干这种事情！（如下图，结局好惨）</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210713142754.png" alt="image-20210713142754572"></p>
+</li>
+<li><p>由于这个男人的插足，导致所有的男女关系都进行了一次轮换，但是匹配的对数多了一对；（成功<del>横刀夺爱</del>）</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210713143031.png" alt="image-20210713143030993"></p>
+</li>
+</ul>
+</li>
+</ul>
+<p>以上就是匈牙利算法的相亲过程，算法很简单也很有趣，教会了<del>恋爱丛林法则</del></p>
+<hr>
+<h3 id="匈牙利算法实现"><a href="#匈牙利算法实现" class="headerlink" title="匈牙利算法实现"></a>匈牙利算法实现</h3><p>先来给出以下变量的定义：</p>
+<ul>
+<li><code>st[j]</code>这个是个bool类型数组，用来表示某个女生有没有被男生访问联系过，如果$st[j]=true$，表示$j$这个女生已经某个男生联系过了</li>
+<li><code>match[j]</code>是个int类型的数组，用来表示$j$这个女生她现任男友的编号，如果$match[j]=a$，表示$j$这个女生她现任男友的编号为$a$</li>
+</ul>
+<p>算法流程：</p>
+<ul>
+<li>将男生和女生分成点集$X$和$Y$</li>
+<li>由于是男生掌握主动权，所以只需要建立有向图，从男生节点向女生节点引出有向边即可</li>
+<li>从男生点集$X$出发，假设某个男生$u$，遍历$u$这个节点所有的邻接点$v$（即他喜欢的所有女生）<ul>
+<li>如果这个女生$v$处于单身状态，$v$还没有匹配，那么此时$(u,v)$就是一组成功的匹配（在一起了），所以匹配的数量+1</li>
+<li>如果这个女生$v$虽然有男朋友了，但是她可能对这个男生$u$有点意思，所以让她现任男友$c$去寻找其他女生，假设男生$c$是个<del>海王</del>（本来就是），他确实有很多青青草原，然后他找到了后宫中的女生$d$，最终女生$d$答应了他，于是他俩就在一起了，那么此时女生$v$就处于单身状态，于是男生$u$就成功和她在一起了，可以发现此时又成功匹配了一对情侣，所以匹配数目+1；但是如果后宫中的女生$d$知道男生$c$是海王，拒绝了他，那么男生$c$和她女友$v$说 我还是只爱你一人，因此他俩还是继续在一起，那么很可惜男生$u$还是<del>单身狗</del>。因此这次$u$的匹配失败。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N = <span class="number">510</span>, M = <span class="number">100010</span>;</span><br><span class="line"><span class="keyword">int</span> n1, n2, m;<span class="comment">//n1表示左侧男生的个数  n2表示右侧女生的个数</span></span><br><span class="line"><span class="keyword">int</span> h[N], e[M], ne[M], idx;</span><br><span class="line"><span class="comment">//match[j]=a,表示女孩j的现有配对男友是a</span></span><br><span class="line"><span class="keyword">int</span> match[N];<span class="comment">//右边女生所对应的左边男孩,即女生现在和哪个男生的在一起</span></span><br><span class="line"><span class="keyword">bool</span> st[N];<span class="comment">//临时预定数组，st[j]=a表示一轮模拟匹配中，女孩j被男孩a预定了。 避免重复搜索女孩</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    e[idx] = b;</span><br><span class="line">    ne[idx] = h[a];</span><br><span class="line">    h[a] = idx++;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//判断x这个男生能不能找到匹配的女生</span></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//依次遍历自己喜欢的女孩</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = h[x]; i != <span class="number">-1</span>; i = ne[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> j = e[i];<span class="comment">//获取女孩在图中的顶点的编号</span></span><br><span class="line">        <span class="comment">//如果j这个女孩之前还没有被考虑过，在这一轮模拟匹配中,这个女孩尚未被预定</span></span><br><span class="line">        <span class="keyword">if</span> (!st[j])<span class="comment">//j这个女孩还没有被男生x访问过</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//标记j这个女孩被男生x访问过了</span></span><br><span class="line">            st[j] = <span class="literal">true</span>;<span class="comment">//表示j这个女孩已经被x男孩看上了，被考虑过啦，x男孩已经预定了j这个女孩</span></span><br><span class="line">            <span class="comment">//match[j]==0表示j这个女孩还没有匹配任何男孩，即j女孩还没有男朋友 j目前没有任何可以匹配的节点</span></span><br><span class="line">            <span class="comment">//find(match[j])=true表示j这个女孩虽然已经匹配了某个男孩,但是她匹配的这个男孩是个海王</span></span><br><span class="line">            <span class="comment">//留有后手随时可以找到其他女孩来代替她，那么此时j女孩被甩处于单身状态,j告诉x说我们在一起吧</span></span><br><span class="line">            <span class="comment">//那么执着追j女孩的这个x男子就击败了j女孩的所有暗恋者，有机会了</span></span><br><span class="line">            <span class="comment">//也就是说j有和它匹配的点(现任男友),但是呢这个点(现任男友)能够通过一些办法来找到新的匹配</span></span><br><span class="line">            <span class="keyword">if</span> (match[j] == <span class="number">0</span> || <span class="built_in">find</span>(match[j]))</span><br><span class="line">            &#123;</span><br><span class="line">                match[j] = x;<span class="comment">//表示j女孩已经匹配成功了，现有配对男友是x</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;<span class="comment">//返回true表示配对成功</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//如果遍历过x男子所喜欢的女生中，都没能找到合适的，自己中意的全部都被预定了。</span></span><br><span class="line">    <span class="comment">//配对失败。即没有配对成功，则返回false</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>, &amp;n1, &amp;n2, &amp;m);</span><br><span class="line">    <span class="built_in">memset</span>(h, <span class="number">-1</span>, <span class="keyword">sizeof</span> h);</span><br><span class="line">    <span class="keyword">while</span> (m--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a, b;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>, &amp;a, &amp;b);</span><br><span class="line">        <span class="built_in">add</span>(a, b);<span class="comment">//虽然是无向图，但是因为是左侧男生去找女朋友，单向追求，所以用“有向图”就行</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> res = <span class="number">0</span>;<span class="comment">//res表示匹配的数量</span></span><br><span class="line">    <span class="comment">//依次枚举左半部分的男生该去找哪个女孩</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n1; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//要保证每个女孩只被考虑一遍</span></span><br><span class="line">        <span class="comment">//因为每次模拟匹配的预定情况都是不一样的所以每轮模拟都要初始化</span></span><br><span class="line">        <span class="comment">//如果不初始化则当男生i进行匹配操作后会修改st的内容  那么会保留这个内容</span></span><br><span class="line">        <span class="comment">//当下一个男生i+1进行匹配操作时 就会用到上一个男生i保留的st的内容  就会出错</span></span><br><span class="line">        <span class="built_in">memset</span>(st, <span class="literal">false</span>, <span class="keyword">sizeof</span> st);<span class="comment">//把每个女孩的匹配状态清空，表示这些女孩还没有被考虑过</span></span><br><span class="line">        <span class="comment">//如果i这个男子成功的找到了匹配的妹子  那么匹配个数+1</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">find</span>(i))</span><br><span class="line">            res++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, res);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
