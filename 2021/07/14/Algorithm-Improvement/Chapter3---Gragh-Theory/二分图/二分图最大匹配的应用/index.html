@@ -1,0 +1,304 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>二分图最大匹配的应用 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,二分图最大匹配的应用
+对于二分图最大匹配来说，更重要的是对一些实质问题的转化，比如通过求解二分图最大匹配，我们可以得到一个二分图的最小顶点覆盖，最小边覆盖，最大独立集、最大完全子图、最小路径覆盖 等,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">二分图最大匹配的应用</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">二分图最大匹配的应用</h1>
+        <div class="stuff">
+            <span>七月 14, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E4%BA%8C%E5%88%86%E5%9B%BE/" rel="tag">二分图</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="二分图最大匹配的应用"><a href="#二分图最大匹配的应用" class="headerlink" title="二分图最大匹配的应用"></a>二分图最大匹配的应用</h1><hr>
+<p>对于二分图最大匹配来说，更重要的是对一些实质问题的转化，比如通过求解二分图最大匹配，我们可以得到一个二分图的最小顶点覆盖，最小边覆盖，最大独立集、最大完全子图、最小路径覆盖 等等。</p>
+<p><strong>引理：</strong></p>
+<p>在二分图最大匹配中，每条匹配边连接的两个顶点$(u,v)$最多只有一个与非匹配点有连边。</p>
+<p><strong>证明：</strong></p>
+<p>假设存在一条匹配边连接的两个顶点$(u,v)$，分别存在非匹配边$(u,x)$和$(v,y)$，且$x$和$y$都是匹配点，可以让$(u,v)$断开，从而成为失配边，那么 $(u,x)$和$(v,y)$变成匹配边。因此此时匹配数目相对之前增加了1个，这与最大匹配矛盾。故得证</p>
+<p>如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714082435.png" alt="image-20210714082435281"></p>
+<p>假设我们已经找到了二分图最大匹配，并且$(1,6)$是匹配边，$(1,8)$和$(3,6)$是非匹配边，其中$3$和$8$是非匹配点，那么可以将$(1,8)$和$(6,3)$变成匹配边，$(1,6)$变成非匹配边，那么就会使得匹配数量+1，因此这与最大匹配矛盾了。</p>
+<hr>
+<h3 id="最小顶点覆盖"><a href="#最小顶点覆盖" class="headerlink" title="最小顶点覆盖"></a>最小顶点覆盖</h3><p><code>点覆盖</code>的含义：一个点集合$S\subseteq V$，使得每一条边中至少有一个端点是在点集合$S$中</p>
+<p><code>最小顶点覆盖</code>的含义：选择最少的点来覆盖所有的边</p>
+<p>如下图，最小顶点覆盖是$(2,4,6)$三个点组成的点集。因为顶点2覆盖的边有$(2,5)$和$(2,8)$，顶点4覆盖的边有$(4,7)$和$(4,6)$，顶点6覆盖的边有$(1,6)$和$(3,6)$，可以发现这个顶点集合就已经完全覆盖了图中所有的边，而且它也已经是最小点集了。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714084437.png" alt="image-20210714084437304"></p>
+<p><strong>结论：二分图最小顶点覆盖 = 二分图最大匹配</strong></p>
+<p>要想证明$=$，那么可以先证明$\geq$，然后再证明$\leq$，由夹逼定理可知，就可以证明出$=$了</p>
+<p>证明如下：</p>
+<p>对于二分图$G$，设匹配图为$M$，最大匹配数为$m$：</p>
+<ul>
+<li>先来证明二分图的最小顶点覆盖$\geq $二分图的最大匹配。我们可以构造一个点集，这个点集是从最大匹配$M$里面取出来的，对于每一条匹配边，选择那个与非匹配点有连边的点（根据引理，这个点最多只有一个）加入点集$S$；如果不存在非匹配点，也就是说这个二分图其实就是最大匹配，即$M$就是$G$，那么匹配边的两侧端点都是匹配点，因此我们只需要从这一条匹配边中随便选择一个点即可，那么有$m$条匹配边，因此就需要选择$m$个点来覆盖。如上图所示：三条匹配边$(1,6)、(2,5)、(4,7)$，点集$S$构造的时候，$(1,6)$这条边选择$6$这个顶点，$(2,5)$这条边选择$2$这个点，$(4,7)$这条边选择$4$这个点。因此这种对于存在非匹配点的二分图来说，对于这$m$条匹配边，就需要$m$个点来覆盖，还存在非匹配边，那么可能还需要用一些点来覆盖这些匹配边，因此最小顶点集$S$肯定是$\geq m$的，即<strong>二分图的最小顶点覆盖$\geq $二分图的最大匹配</strong>。</li>
+<li>再来证明二分图的最小顶点覆盖$\leq $二分图的最大匹配。如果$G$中的边除了$M$中匹配边以外没有其它非匹配边，那么最小顶点覆盖就是$m$。否则，还存在非匹配边，如果这条非匹配边的两个端点都在非匹配点上，那么可以构成一条新的匹配边，从而和最大匹配矛盾；所以这些非匹配边一定是其中一个端点在匹配点上，另一个端点在非匹配点上；令一条非匹配边上的一个端点为$u$，且$u$在非匹配点上，那么如果存在一条边$(u,v)$，点$v$必定是在我们构造出来的点集 $S$中的，于是边$(u,v)$一定可以被这个点集覆盖。所以<strong>二分图的最小顶点覆盖$\leq$二分图的最大匹配</strong>。</li>
+</ul>
+<p>简单理解为：</p>
+<ul>
+<li>$m$个点是必须的，即二分图的最小顶点覆盖$\geq $二分图的最大匹配。匹配的这$m$条边，它们的端点各不相同，因此要覆盖这$m$条匹配边，就需至少需要$m$个点。</li>
+<li>$m$个点是足够的，即二分图的最小顶点覆盖$\leq $二分图的最大匹配。假设最小顶点覆盖为$n$，那么一定可以构造出$n$条匹配边，又由于我们已经知道了二分图的最大匹配是$m$，也就是说最大匹配边是$m$，因此必定有$n\leq m$。即假设覆盖完这$m$条匹配边后，如果还有某条边$e$还没有被覆盖，那么把$e$加入后会使得匹配数量+1，那么就会大于给定的最大匹配数目$m$，这与二分图最大匹配矛盾。</li>
+</ul>
+<hr>
+<h3 id="最小边覆盖"><a href="#最小边覆盖" class="headerlink" title="最小边覆盖"></a>最小边覆盖</h3><p><code>边覆盖</code>的含义：选一条边就相当于覆盖了它的两个端点。</p>
+<p><code>最小边覆盖</code>的含义：选择最少的边集，覆盖所有的点集</p>
+<p>如下图所示，最小边覆盖为$E=${$(2,9),(3,8),(5,10),(4,9),(3,11)$}，答案是5。注意：<strong>孤立节点不需要用边来覆盖！</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714093506.png" alt="image-20210714093506209"></p>
+<p><strong>结论：二分图的最小边覆盖 = 顶点总数 - 孤立点数 - 二分图最大匹配</strong></p>
+<p>证明：</p>
+<p>为了使边数最少，又因为一条边最多能干掉两个点，所以尽量用边干掉两个点。也就是选择有匹配的那些边，因为它们一次能干掉两个节点，而且我们希望有匹配的边越多越好，那么就是最大匹配了，因为最大匹配才会有最多的匹配边。我们设左侧节点数目为$L$，右侧节点数目为$R$，孤立节点数目为$A$，设二分图最大匹配数目为$M$，节点总数就是$V=L+R$。由于孤立节点不需要边覆盖，因此需要考虑的点有$V-A$。</p>
+<p>我们先用最大匹配边去干掉两侧的节点，那么就可以干掉$2\times M$个节点，剩下的就是要解决那些没有被匹配的点，那么这些没有被匹配的点的数目为$(V-A)-2\times M$，那么这些没有被匹配的点就需要用边去覆盖，因此还需要$(V-A)-2\times M$条边。因此总的需要最少的边数=$M+(V-A-2\times M)=V-A-M$，即二分图的最小边覆盖=顶点总数-孤立点数-二分图最大匹配。</p>
+<p>如上图所示，绿色边表示匹配边，黑色边表示非匹配边。那么匹配边有3条，干掉了$2,3,5,8,9,10$节点，那么还剩下$4,11$没有被干掉，覆盖这两个点还需要2条边，因此最小边覆盖为$3+2=5$，这正好就是$12-4-3=5$</p>
+<hr>
+<h3 id="最大独立集"><a href="#最大独立集" class="headerlink" title="最大独立集"></a>最大独立集</h3><p><code>最大独立集合含义</code>：选取最多的点，使得图中任意两点都没有关系</p>
+<p>如下图所示，最大独立集合为$A=${$1,3,5,7,8$}</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714095317.png" alt="image-20210714095317247"></p>
+<p><strong>结论：二分图的最大独立集 = 顶点总数 - 最小顶点覆盖</strong></p>
+<p>证明：</p>
+<p>首先，由最小顶点覆盖的含义可知，它已经覆盖了图中的所有边，因此我们把最小顶点集$S$中的顶点都从图中去掉，那么所有的边也就消失了，那么还剩下$V-S$个顶点，这些节点两两之间都不相邻了（因为没有边相连，不存在关联），那么这些剩余的节点就构成了一个独立集（为$A=V-S)$。由这个式子可以知道，因为$V$是定值，要想$A$最大，那么需要$S$最小。又由于最小顶点覆盖已经是最少的能够覆盖图中所有边的点集了，不能再少了，因此当取到最小顶点覆盖时，$S$达到最小，那么剩下的节点就是最大的。因此二分图的最大独立集 = 顶点总数 - 最小顶点覆盖</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714101105.png" alt="image-20210714101105273"></p>
+<hr>
+<h3 id="最大完全子图（最大团）"><a href="#最大完全子图（最大团）" class="headerlink" title="最大完全子图（最大团）"></a>最大完全子图（最大团）</h3><p><code>完全图</code>的含义：任意两点都恰有一条边相连的图(任意两点都相邻)</p>
+<p><code>完全子图</code>的含义：满足任意两点都恰有一条边相连的<strong>子图</strong>，也叫<strong>团</strong></p>
+<p><code>最大完全子图</code>的含义：所有完全子图中<strong>顶点数最大的团</strong>，即<strong>最大团</strong>。最大指的是点数最多。即选取最多的点，使得图中任意两点都有关系</p>
+<p>如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714102723.png" alt="image-20210714102723336"></p>
+<p>图中{$a,b,d$}，${a,e}$，${c,f,g}$等都是完全子图，但是最大完全子图是${a,b,d,e}$</p>
+<p><code>补图</code>的含义：一个$n$阶完全图中去掉原图$G$上的所有边，剩下的所有边所构成的一个图就是该图$G$的补图$G’$</p>
+<p>如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714104214.png" alt="image-20210714104214360"></p>
+<p><strong>结论：二分图的最大团 = 补图的最大独立集</strong></p>
+<p>证明：</p>
+<p>对比最大团的含义和最大独立集的含义，我们知道它俩是相反的，那么我们就可以知道其实二分图的最大独立集的相反就是二分图的最大团。那么我们该怎么表达最大独立集的相反呢？这里就需要用到补图了。设原图为$G$，那么原图的相反其实就是原图的补图$G’$。因此我们想要求出原图$G$的最大团，那么就是要求出补图$G’$的最大独立集。</p>
+<p>求最大完全子图的问题，如果不是二分图，这将是一个 NP 问题，但如果是个二分图，我们可以用上面的方法求解</p>
+<hr>
+<h3 id="有向无环图的最小路径覆盖"><a href="#有向无环图的最小路径覆盖" class="headerlink" title="有向无环图的最小路径覆盖"></a>有向无环图的最小路径覆盖</h3><h4 id="不相交的情况"><a href="#不相交的情况" class="headerlink" title="不相交的情况"></a>不相交的情况</h4><p>定义：选择一些路径，覆盖所有的点集，且各路径的点集之间不允许有交集，要求路径数最少。</p>
+<p>如下图所示，得到的路径是：$(1\to2\to4\to5)$，$(6\to7)$，$(3)$。最小（不相交）路径覆盖为3</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714105315.png" alt="image-20210714105315325"></p>
+<p><strong>结论：有向无环图的最小(不相交)路径覆盖 = 原图结点数 - 拆点后二分图最大匹配数</strong></p>
+<p>证明：</p>
+<ul>
+<li><p>初始状态，所有顶点都是一条路径，那么总共有$n$条路径</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714111347.png" alt="image-20210714111347242"></p>
+</li>
+<li><p>每当增加一对匹配时，对应到原图中就是用一条边连接了两个节点，并且这两个结点一定不在同一个连通块（下文会证明），那么总的连通块数目减一（比如连接节点1和节点2，那么此时它俩处于同一个连通块，但它俩原来都是独立的连通块），也就是路径数目减一（二分图里找一条匹配边就相当于把两条路径合成了一条路径）；所以找到了几条匹配边，路径数就减少了多少。那么要想使得路径数最少，那么应该有更多的匹配边，因此想到应该是二分图的最大匹配。所以有最小路径覆盖=原图的结点数-拆点后新图的最大匹配数。</p>
+</li>
+<li><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714111920.png" alt="image-20210714111920874"></p>
+</li>
+</ul>
+<p>证明：每增加一条匹配边，在原图中的两个点必然不在一个连通块内</p>
+<ul>
+<li><p>每增加一对匹配边：$u_l\to v_r$，对应原图中就是增加了一条$u\to v$的边，反证法：假设$u$和$v$在同一个连通块内，那么会有如下的四种情况（橙色边为原本的连接情况，红色边为当前增加匹配后增加的新边）：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714112425.png" alt="image-20210714112425763"></p>
+</li>
+<li><p>(a)如上图，对于节点$u$来说，它有两条出边，对于节点$v$来说，它有两条入边，但是对于二分图匹配来说，两个节点之间应该是只有一条出边和一条入边，因此这与 二分图匹配的 定义矛盾，因此，这种情况是不合法的</p>
+</li>
+<li><p>(b)如上图，节点$u,v$产生了圈，形成了环，这与 二分图匹配的 定义矛盾，因此，这种情况是不合法的</p>
+</li>
+<li><p>(c)如上图，对于节点$u$来说，它有两条出边，分别连向两点不同的节点，这对应到二分图和两个点进行了匹配，但在二分图匹配中，是一夫一妻制，而不能一夫多妻，因此这与 二分图匹配的 定义矛盾，因此，这种情况是不合法的</p>
+</li>
+<li><p>(d)如上图，对于节点$v$来说，它有两条入边，分别有两个不同的节点指向它，这对应到二分图和两个点进行了匹配，但在二分图匹配中，是一妻一夫制，而不是一妻多夫，因此这与 二分图匹配的 定义矛盾，因此，这种情况是不合法的</p>
+</li>
+<li><p>基于以上四种情况都不合法，所以每增加一条匹配边，在原图中的两个点必然不在一个连通块内，得证</p>
+</li>
+</ul>
+<p>举个栗子：</p>
+<p>首先将每个节点$u$拆成两个节点$u_l$和$u_r$，如果原图存在边$u\to v$，则在拆点后的图上建立边：$u_l\to v_r$。由于原图是有向无环图，所以拆点后的图是一个二分图。如图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714141226.png" alt="image-20210714141226353"></p>
+<p>对拆点后的图求一次二分图最大匹配，得到：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714141427.png" alt="image-20210714141427393"></p>
+<p>那么有向无环图的最小(不相交)路径覆盖 = 原图结点数 -  拆点后二分图最大匹配数=$7-4=3$</p>
+<h4 id="相交的情况"><a href="#相交的情况" class="headerlink" title="相交的情况"></a>相交的情况</h4><p>定义：选择一些路径，覆盖所有的点集，且各路径的点集之间允许有交集，要求路径数最少。</p>
+<p>举个栗子：</p>
+<p>如下图所示，得到的路径为：$(1\to 2\to 4\to 5)$，$(3\to 4\to 6\to 7)$，最小（相交）路径覆盖为2</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714142307.png" alt="image-20210714142307071"></p>
+<p><strong>结论：首先对原图求一次传递闭包得到一个新图，有向无环图的最小(相交)路径覆盖 = 新图结点数 - 拆点后二分图最大匹配数</strong>。</p>
+<p>证明：</p>
+<p>因为路径之间是允许相交的，所以对于 2 条路径$x\to p\to y$和$a\to p\to b$，那么多建立两条边$(x\to y)$和$(a\to b)$，那么我们发现$x\to y$其实是 $x\to p$，$p\to y$求传递闭包得到的，同理分析$a\to b$也是求传递闭包得到的。对图中所有的这样的边都这样操作一次，相当于求了一个传递闭包。然后再求拆点二分图的最大匹配，就可以当成求最小不相交路径覆盖的情况来求解了。</p>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
+<li>二分图最小顶点覆盖 = 二分图最大匹配</li>
+<li>二分图的最小边覆盖 = 顶点总数 - 孤立点数 - 二分图最大匹配</li>
+<li>二分图的最大独立集 = 顶点总数 - 最小顶点覆盖</li>
+<li>有向无环图的最小(不相交)路径覆盖 = 原图结点数 - 拆点后二分图最大匹配数</li>
+<li>首先对原图求一次传递闭包得到一个新图，有向无环图的最小(相交)路径覆盖 = 新图结点数 - 拆点后二分图最大匹配数</li>
+</ol>
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
