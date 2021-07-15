@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>关押罪犯 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,关押罪犯
+题目描述
+
+核心思路从题干中，警察局长会把怒气值从大到小排序送给市长看，而市长只会看第一个最大的那个怒气值，如果这个最大的怒气值达到某种程度，则警察局长会被撤职。题目想让我们求的就是：有没,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">关押罪犯</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">关押罪犯</h1>
+        <div class="stuff">
+            <span>七月 14, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E4%BA%8C%E5%88%86%E7%AE%97%E6%B3%95-%E4%BA%8C%E5%88%86%E5%9B%BE/" rel="tag">二分算法+二分图</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="关押罪犯"><a href="#关押罪犯" class="headerlink" title="关押罪犯"></a>关押罪犯</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714161314.png" alt="image-20210714161314811"></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>从题干中，警察局长会把怒气值从大到小排序送给市长看，而市长只会看第一个最大的那个怒气值，如果这个最大的怒气值达到某种程度，则警察局长会被撤职。题目想让我们求的就是：有没有一个分配囚犯的方案，使得那个最大的怒气值，能够达到最小。</p>
+<p>一般求 最大值最小 或者 最小值最大，都可以考虑用二分算法。 这里是想求最大值最小，因此，我们可以考虑一下使用二分算法。那么该如何进行二分呢？</p>
+<p>考虑这样一个判定问题：是否存在一种分配罪犯的方案，使得$Z$市长看到的那个冲突事件的影响力不超过$mid$。对于当$mid$满足要求时，那么所有大于$mid$也是满足要求的。也就是说题目的答案是具有单调性的，一旦具有单调性，那么一定可以用二分算法。</p>
+<blockquote>
+<p>问题：为什么对于当$mid$满足要求时，那么所有大于$mid$也是满足要求的呢？</p>
+<p>设当前二分的值为$mid$，那么对于那些怒气值大于$mid$的囚犯应该关在不同的监狱。假设它俩关在同一所监狱，那么他们会产生更大的影响力（设其值为$a$)，这个影响力会大于现优解$mid$，即$a&gt;mid$，那么$a$就要在排行榜上当第一了，又由于市长只看第一，因此市长看到更大的$a$就会撤换警察局长，相对来说如果让$mid$在排行榜上当第一，那么影响力会更小一些。</p>
+<p>举个栗子，假设当前$mid=50$，如果有两个囚犯，他们之间的怒气值为$100$，假设它俩关在同一个监狱$A$，那么监狱$A$就会产生影响力$100$，但是如果我们让它俩关在不同的监狱$A$和$B$，那么此时监狱$A$产生的影响力为0。因此，我们发现，当怒气值大于$mid$时，我们就更应该把它俩放到不同的监狱，这样会使得同一个监狱内的怒气值相对降低。但是如果他们之间的怒气值小于$mid$，那么就算把他俩放到不同监狱，此时排行榜上第一仍然是$mid$，并没有让第一的值减小，反而还浪费了一次分配机，这导致后面如果有大于$mid$的囚犯本应该被分配到两个不同的监狱却因为位置不够而被迫关在同一个监狱，导致这个监狱内的怒气值大于$mid$，排行榜上第一的值增大，这与我们想要的结果事与愿违。</p>
+<p>这也就证明了 当$mid$满足要求时，那些怒气值大于$mid$就更能满足要求了，而那些怒气值$\leq mid$的就不满足条件了。</p>
+</blockquote>
+<p>二分答案，设当前二分的值为$mid$。此时，任意两个仇恨程度大于$mid$的囚犯都必须被安排在不同的监狱。我们把每个囚犯都看作是一个节点，如果两个囚犯之间的仇恨程度大于$mid$，那么我们就在这两个囚犯之间连一条无向边，这样最终就会得到一张无向图。由于两个囚犯被分配到两个不同的监狱，因此这两个节点属于不同的点集合，也就是说这张无向图需要被分成两个点集合。由于我们把怒气值大于$mid$的两个囚犯分别关到两个不同的监狱中了，那么此时同一个监狱内的囚犯之间的怒气值必然是$\leq mid$。而我们定义了当怒气值大于$mid$才连边，所以对于怒气值$\leq mid$都不需要连边。也就是说每个集合内部都没有边（同一个监狱内没有仇恨程度大于$mid$的罪犯）。我们发现，这种把节点划分成两种点集合，并且只能从一个点集合向另一个点集合连边，这种做法不正是二分图的定义嘛？</p>
+<p>刚开始，我们对输入的数据都进行无向图$T$，然后再这张图中，如果边权怒气值$\leq mid$，那么我们就不看这些边（可以认为是从原图$G$中删除这些边），然后如果边权怒气值$&gt;mid$，则保留，那么最终全部保留下来的这个子图也就是一张无向图，设为$G$。然后我们对这个无向图$G$判定是否为二分图。</p>
+<p>因此总的算法思路如下：</p>
+<ul>
+<li>先二分一个答案$mid$，此时$mid$其实就是对应一种分配罪犯的方案。</li>
+<li>对每一个$ mid$，都使用染色法来check一下，来判定这个无向图$G$是否为二分图<ul>
+<li>如果$check(mid)$成功，则说明是二分图，点$mid$位于右侧绿色满足性质的区间，那么对于所有大于$mid$的分配方案都是合理的，即$mid$右侧都满足，为了求最小，我们让$r=mid$，往左侧收缩，找到最小值</li>
+<li>如果$check(mid)$失败，则说明不是二分图，点$mid$位于左侧红色不满足性质的区间，那么此时应该让左侧边界跳到$mid$的下一个位置，即$l=mid+1$，这样才能满足性质</li>
+</ul>
+</li>
+</ul>
+<p>那么该如何确定二分的边界呢？由于题目说了$0\leq c\leq 1e9$，因此答案最小值为$0$，最大值为$1e9$，因此二分的区间为<code>[0,1e9]</code>。</p>
+<p>题目要求“如果本年内监狱中未发生任何冲突事件，请输出 $0$”，这个我们并不需要特殊处理，因为我们二分的答案区间中就包含了$0$。因此我们的算法一定可以考虑到这种情况。</p>
+<p>设二分的性质为 <strong>当同一个监狱的两个囚犯之间的怒气值很大，则分配到两个不同的监狱中</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210714170229.png" alt="image-20210714170229547"></p>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
