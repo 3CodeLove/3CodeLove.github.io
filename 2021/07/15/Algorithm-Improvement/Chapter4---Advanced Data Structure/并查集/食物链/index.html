@@ -1,0 +1,302 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>食物链 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,食物链题目描述
+
+核心思路这题刚开始看的时候，都想不到会用到并查集。那么，我们就来分析一下，为什么需要用到并查集呢？
+题目中提到，只有三类动物，但是每类动物中可能有很多个，每个动物都会有各自的编号。,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">食物链</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">食物链</h1>
+        <div class="stuff">
+            <span>七月 15, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%B9%B6%E6%9F%A5%E9%9B%86/" rel="tag">并查集</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="食物链"><a href="#食物链" class="headerlink" title="食物链"></a>食物链</h1><h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210715205916.png" alt="image-20210715205849019"></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>这题刚开始看的时候，都想不到会用到并查集。那么，我们就来分析一下，为什么需要用到并查集呢？</p>
+<p>题目中提到，只有三类动物，但是每类动物中可能有很多个，每个动物都会有各自的编号。并且$A$吃$B$，$B$吃$C$，$C$吃$A$，这三类动物的食物链构成了有趣的环形。我们设如果$x$吃了$y$，则记录表示为$y\to x$。那么$A$吃$B$，$B$吃$C$，$C$吃$A$，可以表达为$B\to A,C\to B,A\to C$，如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210715230906.png" alt="image-20210715230906789"></p>
+<p>题目会给出一些信息，那么我们如何根据这些信息来判断各个动物之间的关系呢？是同类呢还是天敌关系呢？</p>
+<p>我们把这些动物看成是军人，假设有$100$个军人，我们想知道每个军人是什么等级。</p>
+<ul>
+<li>如果我们是两两比较军人的关系，那么需要$O(n^2)$才能知道每个军人是什么等级</li>
+<li>但是如果我们知道编号为$1$的军人它是司令，然后知道了剩下的$99$个军人与司令的关系，那么就可以在$O(n)$内知道每个军人是什么等级了。比如$2$号说：我比司令低一级，那么$2$号军人的等级就是军长，$5$号军人说：我比司令低两级，那么$5$号军人的等级就是师长。如果$90$号军人说：我比司令低一级，那么$90$号军人的等级就是军长。那么$2$号和$90$就是同类，处于同一个等级。不要被编号迷惑了，可以理解为$2$号成为军长的时间较早，$90$号成为军长较晚，但是他俩都是军长，是同类，处于同一个等级。</li>
+</ul>
+<p>因此，我们可以把司令看作是一个根节点，那么我们怎么知道每个点与司令这个根节点的关系呢？这其实就需要用到并查集呢！想要知道每个点与司令这个根节点的关系，其实就类似于并查集中的路径压缩。因此，我们可以使用并查集来查询和合并食物链中动物之间的关系。</p>
+<p>这里给出<code>d[]</code>数组的解释：</p>
+<p><code>d[i]</code>的含义：表示第$i$个动物在食物链中的深度，其实也就是第$i$个动物到它父节点的距离。</p>
+<p>设根节点的深度为0，我们有以下定义：</p>
+<ul>
+<li>如果某类动物，它到根节点距离为0，则表明该类动物与根节点这类动物是同一类动物</li>
+<li>如果某类动物，它到根节点距离为1，则表明根节点被该类动物吃</li>
+<li>如果某类动物，它到根节点距离为2，则表明该类动物可以吃上一种情况的动物，而且该类动物被根节点吃（因为三类动物形成环）</li>
+</ul>
+<p>在本题中，我们可以用深度来表达动物在食物链中的关系。由于本题只有三种类型的动物，这三类动物的食物链构成了有趣的环形。$A$吃$B$，$B$吃$C$，$C$吃$A$，那么深度也只有$0,1,2$，因此当深度$\geq3$时，则可以通过模$3$运算，将其转换成$0,1,2$中的某一个。</p>
+<p>现在来思考一个问题，我们 <strong>在查找时如何更新深度</strong>？</p>
+<p>首先，通过并查集的查询操作，找到祖宗节点，当集合号等于自身时回溯，在回溯过程中需要更新集合号为祖宗的集合号，并且要更新当前节点的深度累加其父节点的深度。当深度$\geq3$时，则可以通过模$3$运算即可。即$d[x]=(d[x]+d[f_x])%3$</p>
+<blockquote>
+<p>如何理解$d[x]=(d[x]+d[f_x])%3$这个式子呢？</p>
+<p>如图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210718000800.png" alt="image-20210718000753778"></p>
+</blockquote>
+<p>当输入1吃2、2吃3、3吃4时，并查集如下左图所示。当查询1的集合号时，首先找到祖宗节点4，回溯时更新3号节点的深度为1，集合号为4；更新2号节点的深度为2，集合号为4；更新1号节点的深度为0，集合号为4，如下右图所示：</p>
+<ul>
+<li>对于3号节点来说，路径压缩前，它的父节点是4，距离为1，所以$d[x]=d[3]=1$；路径压缩后，找到集合的根节点是4号节点，那么3号节点的父节点就是4，距离为1，所以$d[x]=d[3]=1$，其父节点的深度其实就是4号节点到4号节点的深度，所以$d[f_x]=0$；所以路径压缩后，3号节点的深度为$d[3]=(d[x]+d[f_x])%3=(1+0)%3=1$</li>
+<li>对于2号节点来说，路径压缩前，它的父节点是3，距离为1，所以$d[x]=d[2]=1$；路径压缩后，找到集合的根节点是4号节点，那么路径压缩后2号节点的父节点就是4，其父节点的深度其实就是3号节点到4号节点的深度，所以$d[f_x]=1$；所以路径压缩后，2号节点的深度为$d[2]=(d[x]+d[f_x])%3=(1+1)%3=2$</li>
+<li>对于1号节点来说，路径压缩前，它的父节点是2，距离为1，所以$d[x]=d[2]=1$；路径压缩后，找到集合的根节点是4号节点，那么路径压缩后1号节点的父节点就是4，其父节点的深度其实就是2号节点到4号节点的深度，所以$d[f_x]=2$；所以路径压缩后，1号节点的深度为$d[1]=(d[x]+d[f_x])%3=(1+2)%3=0$</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210718002228.png" alt="image-20210718002227975"></p>
+<p>再来考虑一个问题：<strong>合并时如何更新深度呢</strong>？</p>
+<p>假设节点$x$的集合号为$a$，节点$y$的集合号为$b$，如果$a\neq b$，则合并集合号$p[a]=b$，更新$a$的深度为$d[a]=(d[y]-d[x]+c-1)%3$。如何理解这个式子呢？</p>
+<p>路径压缩后，节点$x$到祖宗节点$a$的距离为$d[x]$，节点$y$到祖宗节点$b$的距离为$d[y]$，那么如果合并集合号$p[a]=b$后？那么如何求节点$a$到它的祖宗节点$b$的距离呢？</p>
+<p>由于$a\neq b$，说明$x$和$y$不在同一个集合中，所以才需要用到合并操作。</p>
+<ul>
+<li><p>当$x$和$y$是同类时，根据<code>d[]</code>的定义可知，同类的深度差为0。即$d[x]+?$与$dy$是相等的。因此有如下式子推导：</p>
+<p>$dx+?=dy$$\iff$</p>
+<p>$dx+?=dy+0$$\iff$</p>
+<p>$?=dy-dx+0$$\iff$</p>
+<p>$?=(dy-dx+3+0)%3$       由于$x$和$y$是同类， 根据题意，此时$c=1$，我们可以发现式子中的0其实就是$c-1=1-1=0$。因此用$c-1$代替0即可</p>
+<p>$\iff ?=(dy-dx+3+c-1)%3$   这里$dy-dx+3$之所以要加3是因为有可能$dy-dx$是负数，导致最终结果是负数，负数不能取模，所以需要转换为正数。模3是因为该食物链为环形</p>
+</li>
+<li><p>当$x$和$y$是异类时，不妨假设$x$吃$y$，根据<code>d[]</code>的定义可知，合并集合后，$x$到祖宗节点的距离 比 $y$到祖宗节点的距离 多1。即$d[x]+?$与$dy+1$是相等的。因此有如下式子推导：</p>
+<p>$dx+?=dy+1$$\iff$</p>
+<p>$?=(dy-dx+1)$$\iff$</p>
+<p>$?=(dy-dx+3+1)%3$     由于$x$和$y$是异类，$x$吃$y$， 根据题意，此时$c=2$，我们可以发现式子中的1其实就是$c-1=2-1=1$。因此用$c-1$代替1即可</p>
+<p>$\iff ?=(dy-dx+3+c-1)%3$  这里$dy-dx+3$之所以要加3是因为有可能$dy-dx$是负数，导致最终结果是负数，负数不能取模，所以需要转换为正数。模3是因为该食物链为环形</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210718094601.png" alt="image-20210718094601633">      </p>
+</li>
+</ul>
+<p>举个栗子：</p>
+<p>输入6吃2，两个节点属于不同的集合，其中6号节点属于4号集合，6号节点属于7号集合，执行合并，那么$p[7]=4$，更新7号节点的深度为$d[7]=(d[2]-d[6]+3+2-1)%3=2$，合并更新图如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210718210130.png" alt="image-20210718210130274"></p>
+<p>当下次查询6号节点的集合号时，找到它的祖宗节点4，回溯时同时更新6号节点的深度为$d[6]=(d[6]+d[7])%3=0$，查询更新图如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210718210557.png" alt="image-20210718210557278"></p>
+<p>因此，我们来总结以下就是，如果$x$的集合号$a$与$y$的集合号$b$不相同，则说明它俩不在同一个集合中，这是才需要用到并查集的合并操作。根据以上分析推导可知，最终合并时更新深度其实就只有一个式子：$?=(dy-dx+3+c-1)%3$ </p>
+<p>最后再来看一个问题，<strong>深度满足什么关系是真话</strong>？</p>
+<p>这里判断是否为真话或假话，是在$x$和$y$属于同一个集合中讨论的，因为属于同一个集合的话，则不需要合并操作，那么就没有未知变量$d[a]$，不需要求未知变量，而且在这里的全部变量都是已知的，因此我们可以用这些已知变量推导出一些式子，然后我们判断这些式子是否正确就可以判断是否为真话还是假话了。因此可以在这里讨论真假话：</p>
+<ul>
+<li><p>如果$x$和$y$是同类，那么深度差为0，那么有如下式子推导：</p>
+<p>$dx=dy\iff$</p>
+<p>$dx=dy+0\iff$</p>
+<p>$dx-dy=0\iff$</p>
+<p>$(dx-dy+3)%3=0$    由于$x$和$y$是同类， 根据题意，此时$c=1$，我们可以发现式子中的0其实就是$c-1=1-1=0$。因此用$c-1$代替0即可</p>
+<p>$\iff (dx-dy+3)%3=c-1$   也就是说当$x$和$y$在同一个集合，然后$x$和$y$是同类时，如果满足$(dx-dy+3)%3$与$c-1$相等，则说明是真话，否则就是假话</p>
+</li>
+<li><p>如果$x$和$y$是异类，假设$x$吃$y$，那么深度差为$d[x]-d[y]=1$或者$d[x]-d[y]=-2$。如上图所示，1吃2，那么深度差为$d[1]-d[2]=0-2=-2$；2吃3，那么深度差为$d[2]-d[3]=2-1=1$，对于深度差为-2的话，我们可以先加上3，然后就会变为1了，接着在模3即可，对于深度差为1的话，我们先加上3，然后就会变为4，接着再模3即可。那么有如下式子推导：</p>
+<p>$dx=dy+1\iff$</p>
+<p>$dx-dy=1\iff$</p>
+<p>$(dx-dy+3)%3=1\iff $    由于$x$和$y$是异类，$x$吃$y$，根据题意，此时$c=2$，我们可以发现式子中的1其实就是$c-1=2-1=1$。因此用$c-1$代替1即可</p>
+<p>$(dx-dy+3)%3=c-1$   也就是说当$x$和$y$在同一个集合，然后$x$和$y$是异类时，如果满足$(dx-dy+3)%3$与$c-1$相等，则说明是真话，否则就是假话</p>
+<p>因此，从上面分析可知，在同一个集合中，不论是同类还是被吃关系，公式统一为$(dx-dy+3)%3=c-1$，如果不满足此等式，则为假话</p>
+<p><strong>算法设计</strong>：</p>
+<ol>
+<li>若$x$或$y$大于$n$，或者$c=2$并且$x==y$，则为假话</li>
+<li>执行c x y指令时，首先查询$x$和$y$的集合号。查询集合号回归时，更新这条路径上每个节点的深度，$d[x]=(d[x]+d[f_x])%3$。设$x$的集合号为$a$，$y$的集合号为$b$，则分以下两种情况讨论：<ul>
+<li>当$a\neq b$时，说明$x$和$y$不在同一个集合中，那么需要合并$p[a]=b$，更新$a$的深度为$d[a]=(d[y]-d[x]+3+c-1)%3$</li>
+<li>当$a=b$时，说明$x$和$y$在同一个集合中，如果$(d[x]-d[y]+3)%3!=c-1$，则为假话</li>
+</ul>
+</li>
+</ol>
+<p><strong>算法实现：</strong></p>
+<p>（1）初始化：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">  &#123;</span><br><span class="line">    p[i]=i;</span><br><span class="line">      d[i]=<span class="number">0</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>（2）查找集合号。查询$x,y$的集合号，在返回过程中，除了要统一路径上每个节点的集合号外，还要更新$d[x]$的值（将当前节点的$d$值($d[x]$)累加其父节点的$d$值$d[f_x]$模3）</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(x!=p[x])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> u=<span class="built_in">find</span>(p[x]);</span><br><span class="line">        d[x]=(d[x]+d[p[x]])%<span class="number">3</span>;</span><br><span class="line">        p[x]=u;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> p[x];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>（3）判断假话数量。对输入的每一条指令，如果$x$或$y$大于$n$，或者$c=2$并且$x==y$，则为假话，$total$++；否则查询集合号，设$x$的集合号为$a$，$y$的集合号为$b$，当$a\neq b$时，合并集合号$p[a]=b$，更新$a$的深度为$d[a]=(d[y]-d[x]+3+c-1)%3$，当$a=b$时，说明$x$和$y$在同一个集合中，如果$(d[x]-d[y]+3)%3!=c-1$，则为假话，$total++$。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(k--)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>,&amp;c,&amp;x,&amp;y);</span><br><span class="line">    <span class="keyword">if</span>(x&gt;n||y&gt;n||(c==<span class="number">2</span>&amp;&amp;x==y))</span><br><span class="line">        total++;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a=<span class="built_in">find</span>(x);</span><br><span class="line">        <span class="keyword">int</span> b=<span class="built_in">find</span>(y);</span><br><span class="line">        <span class="keyword">if</span>(a==b)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>((dx-dy+<span class="number">3</span>)%<span class="number">3</span>!=c<span class="number">-1</span>)</span><br><span class="line">                total++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            p[a]=b;</span><br><span class="line">            d[a]=(d[y]-d[x]+<span class="number">3</span>+c<span class="number">-1</span>)%<span class="number">3</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> N 50010</span></span><br><span class="line"><span class="keyword">int</span> n,k;</span><br><span class="line"><span class="keyword">int</span> total;</span><br><span class="line"><span class="keyword">int</span> p[N],d[N];</span><br><span class="line"><span class="comment">//初始化</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">	&#123;</span><br><span class="line">        <span class="comment">//每个点都是独立的集合  集合号为它自身</span></span><br><span class="line">		p[i]=i;</span><br><span class="line">        <span class="comment">//每个节点到它自身的距离为0  即自身深度为0</span></span><br><span class="line">		d[i]=<span class="number">0</span>;</span><br><span class="line">	&#125;	</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//在查询点x的祖宗节点过程中  更新d[x]的新值</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(x!=p[x])</span><br><span class="line">	&#123;</span><br><span class="line">        <span class="comment">//寻找节点x的父节点</span></span><br><span class="line">		<span class="keyword">int</span> u=<span class="built_in">find</span>(p[x]);</span><br><span class="line">        <span class="comment">//更新d[x]的值</span></span><br><span class="line">		d[x]=(d[x]+d[p[x]])%<span class="number">3</span>;</span><br><span class="line">        <span class="comment">//回溯时进行了路径压缩,记录每个节点x的祖宗节点为u</span></span><br><span class="line">        p[x]=u;</span><br><span class="line">	&#125; 	</span><br><span class="line">    <span class="keyword">return</span> p[x];</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;n,&amp;k);</span><br><span class="line">    <span class="comment">//先进行初始化操作</span></span><br><span class="line">	<span class="built_in">init</span>();</span><br><span class="line">	<span class="keyword">while</span>(k--)</span><br><span class="line">	&#123;</span><br><span class="line">	    <span class="keyword">int</span> c,x,y;</span><br><span class="line">		<span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>,&amp;c,&amp;x,&amp;y);</span><br><span class="line">        <span class="comment">//x或y大于n,或者是x吃y,并且x==y,即同类吃同类  则为假话</span></span><br><span class="line">		<span class="keyword">if</span>(x&gt;n||y&gt;n||(c==<span class="number">2</span>&amp;&amp;x==y))</span><br><span class="line">			total++;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">int</span> a=<span class="built_in">find</span>(x);  <span class="comment">//查询节点x的集合号(祖宗节点)</span></span><br><span class="line">			<span class="keyword">int</span> b=<span class="built_in">find</span>(y);  <span class="comment">//查询节点y的集合号(祖宗节点)</span></span><br><span class="line">            <span class="comment">//如果集合号相同,说明x和y在同一个集合中,那么不需要合并</span></span><br><span class="line">			<span class="keyword">if</span>(a==b)</span><br><span class="line">			&#123;</span><br><span class="line">                <span class="comment">//如果d[x]-d[y]+3)%3不等于c-1,则为假话</span></span><br><span class="line">				<span class="keyword">if</span>((d[x]-d[y]+<span class="number">3</span>)%<span class="number">3</span>!=c<span class="number">-1</span>)</span><br><span class="line">					total++;</span><br><span class="line">			&#125;</span><br><span class="line">            <span class="comment">//否则说明集合号不同,说明x和y不在同一个集合中,那么就需要进行合并操作了</span></span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">			&#123;</span><br><span class="line">				p[a]=b; <span class="comment">//a的父节点是b</span></span><br><span class="line">                <span class="comment">//更新节点a到父节点的距离d[a]</span></span><br><span class="line">				d[a]=(d[y]-d[x]+<span class="number">3</span>+c<span class="number">-1</span>)%<span class="number">3</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,total);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+</li>
+</ul>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
