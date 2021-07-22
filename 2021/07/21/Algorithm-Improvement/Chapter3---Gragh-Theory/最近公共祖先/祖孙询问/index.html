@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>祖孙询问 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,祖孙询问
+题目描述
+
+前置知识最近公共祖先（LCA）是指有根树中距离两个节点最近的公共祖先。祖先是指从当前节点到树根路径上的所有节点。
+如下图所示：
+
+$u$和$v$的公共祖先是指一个节点它既是$u,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">祖孙询问</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">祖孙询问</h1>
+        <div class="stuff">
+            <span>七月 21, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/LCA/" rel="tag">LCA</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="祖孙询问"><a href="#祖孙询问" class="headerlink" title="祖孙询问"></a>祖孙询问</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210721211507.png" alt="image-20210721211507323"></p>
+<hr>
+<h3 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h3><p>最近公共祖先（LCA）是指有根树中距离两个节点最近的公共祖先。祖先是指从当前节点到树根路径上的所有节点。</p>
+<p>如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210721211850.png" alt="image-20210721211850774"></p>
+<p>$u$和$v$的公共祖先是指一个节点它既是$u$的祖先，又是$v$的祖先。$u$和$v$的最近公共祖先是指距离$u$和$v$最近的祖先。如果$v$是$u$的祖先，那么$u$和$v$的最近公共祖先就是$v$。</p>
+<p>如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210721212059.png" alt="image-20210721212059201"></p>
+<p>我们可以使用LCA来求解树上任意两点之间的距离。求$u$和$v$这两个之间的距离时，设为$L$，如果$u$和$v$的最近公共祖先为lca，则$u$和$v$之间的距离为$u$到树根的距离$dist[u]$加上$v$到树根的距离$dist[v]$再减去2倍的lca到树根的距离$2\times dist[lca]$。即有：$L=dist[u]+dist[v]-2\times dist[lca]$。</p>
+<p>如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210721212512.png" alt="image-20210721212511915"></p>
+<p>从图中可以看出$u$到lca的距离加上$v$到lca的距离，设为$L_1$，其实就是我们想要求的$u$和$v$之间的距离，设为$L_2$。可知：$dist[u]=L_1+dist[lca]$，所以$L_1=dist[u]-dist[lca]$；$dist[v]=L_2+dist[lca]$，所以$L_2=dist[v]-dist[lca]$。所以$L=L_1+L_2=dist[u]-dist[lca]+dist[v]-dist[lca]=dist[u]+dist[v]-2\times dist[lca]$。</p>
+<h4 id="树上倍增法"><a href="#树上倍增法" class="headerlink" title="树上倍增法"></a>树上倍增法</h4><p><code>F[i,j]</code>表示$i$的$2^j$辈祖先，即$i$节点向根节点走$2^j$步所到达的那个节点。</p>
+<p>$u$节点向上走$2^0$步，则为$u$的父节点$x$，$F[u,0]=x$；$u$节点向上走$2^1$步，到达节点$y$，$F[u,1]=y$；$u$节点向上走$2^2$步，到达节点$z$，$F[u,2]=z$；$u$节点向上走$2^3$步，节点不存在，$F[u,3]=0$；</p>
+<p>如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210721213504.png" alt="image-20210721213503867"></p>
+<p><code>F[i,j]</code>表示$i$的$2^j$辈祖先，即$i$节点向根节点走$2^j$步所到达的那个节点。那么该如何走到$F[i,j]$这个节点呢？可以分为两个步骤：</p>
+<ul>
+<li>$i$节点先向根节点走$2^{j-1}$步得到$F[i,j-1]$</li>
+<li>然后再从$F[i,j-1]$这个节点出发向根节点走$2^{j-1}$步，得到<code>F[F[i,j-1],j-1]</code>，那么此时走到的节点即为$F[i,j-1]$</li>
+</ul>
+<p>如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210721213844.png" alt="image-20210721213844186"></p>
+<p>递推公式：<code>F[i,j]=F[F[i][j-1],j-1]</code>，$i=1,2,\cdots,n$，$j=0,,1,2,\cdots,k$，$2^k\leq n$，$k=logn$</p>
+<p><strong>树上倍增法的两个关键步骤</strong>：</p>
+<ol>
+<li>先将两个点跳到同一层</li>
+<li>让两个点同时向上跳，一直跳到它们的<strong>最近公共祖先的下一层</strong>为止</li>
+</ol>
+<p>也就是说先让深度大的$y$向上走到与$x$处于同一深度，然后$x,y$一起向上走。但是这里是按照倍增思想走的，而不是一步一步往上走的，因此速度比较快。</p>
+<p>现在来思考两个问题：</p>
+<ul>
+<li>怎么让深度大的$y$向上走与$x$处于同一深度呢？</li>
+<li>$x$和$y$一起向上走，怎么找到最近的公共祖先呢？</li>
+</ul>
+<p>先来解决第一个问题：怎么让深度大的$y$向上走与$x$处于同一深度呢？</p>
+<p>假设$y$的深度比$x$的深度大，需要$y$向上走到与$x$处于同一深度，$k=3$，则求解过程如下：</p>
+<ul>
+<li>$y$向上走$2^3$步，如果此时到达节点的深度比$x$的深度小（说明跳的太远了，跳到了$x$的上面了），那么什么也不做</li>
+<li>减小增量，$y$向上走$2^2$步，如果此时到达节点的深度比$x$的深度大（说明此时还处于$x$的下面），则$y$向上移动，令$y=F[y][2]$</li>
+<li>减小增量，$y$向上走$2^1$步，如果此时到达节点的深度比$x$的深度相等（说明此时它俩处于同一深度），则$y$向上移动，令$y=F[y][2]$</li>
+<li>减小增量，$y$向上走$2^0$步，如果此时到达节点的深度比$x$的深度小，那么什么也不做。由于上一次$y$已经与$x$处于同一深度了，而这次啥也没做，因此$y$仍然与$x$处于同一深度。</li>
+</ul>
+<p>如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210721215346.png" alt="image-20210721215345942"></p>
+<p>总结：</p>
+<p>按照增量递减的方式，如果到达节点的深度比$x$的深度还要小，则什么也不做；如果到达节点的深度$\geq x$的深度时，则$y$向上移动，令$y=F[y][2]$，一直循环到增量为0，那么最后一定会有$x$和$y$处于同一深度。</p>
+<p>再来解决第二个问题：$x$和$y$一起向上走，怎么找到最近的公共祖先呢？</p>
+<p>假设$x,y$已经处于同一深度了，现在一起向上走，$k=3$，则其求解过程如下：</p>
+<ul>
+<li>$x$和$y$同时向上走$2^3$步，如果到达的节点相同，说明是公共祖先节点，但是不能保证是最近公共祖先，于是什么也不做</li>
+<li>减少增量，$x,y$同时向上走$2^2$步，如果此时到达的节点不相同，则说明肯定不是最近公共祖先节点，那么此时$x,y$都要向上移动，令$x=F[x][2]$，$y=F[y][2]$</li>
+<li><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210721220405.png" alt="image-20210721220404938"></li>
+<li>减少增量，$x,y$同时向上走$2^1$步，如果此时到达的节点不同，那么此时$x,y$都要向上移动，令$x=F[x][1]$，$y=F[y][1]$</li>
+<li>减少增量，$x$和$y$同时向上走$2^0$步，如果到达的节点相同，什么也不做</li>
+<li>因此经过这么做，那么最终我们一定让$x,y$都处于它俩的最近公共祖先的下一层了。此时$x,y$的父节点就是最近公共祖先节点了，那么最终只需要$x$或者$y$向上走一步就可以到达最近公共祖先了。即最终的$F[x][0]$或者$F[y][0]$就是答案</li>
+<li><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210721220600.png" alt="image-20210721220600144"></li>
+</ul>
+<p>完整的求解过程如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210721220655.png" alt="image-20210721220655472"></p>
+<p>总结：按照增量递减的方式，如果到达的节点相同时，说明是公共祖先，但是不能保证就是最近公共祖先节点，所以什么也不做；如果到达的节点不相同，那么$x,y$同时往上走，一直到增量为0。此时$x,y$的父节点就是最近公共祖先节点了。</p>
+<blockquote>
+<p>问题：为什么碰到$F[x][k]==F[y][k]$时什么都不做，而且为什么此时就是公共祖先而不能是最近公共祖先呢？</p>
+<p>如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210722134122.png" alt="image-20210722134122538"></p>
+<p>增量从大到小逐渐递减，设$k=2$，那么$F[x][2]=F[y][2]=0$，但是很明显，此时的$0$号节点只是它俩的公共祖先而已，此时我们啥也不做，也就是说$x$和$y$仍然原地踏步，并没有发生跳跃；然后$k–$，此时$k=1$，那么$F[x][1]=F[y][1]=2$，但是很明显，此时的$2$号节点只是它俩的公共祖先而已，此时我们啥也不做，也就是说$x$和$y$仍然原地踏步，并没有发生跳跃；然后$k–$，此时$k=0$，那么$F[x][0]=F[y][0]=4$，注意此时我们可以直观地看出来$4$是它俩的最近公共祖先，但是由于$F[x][0]=F[y][0]$，因此我们也是什么也不做，也就是说$x$和$y$仍然原地踏步，并没有发生跳跃；然后$k–$，此时$k$为-1，退出循环了。那么，我们发现$x$和$y$确实就是在最近公共祖先的下一层！所以最后$x$或者$y$再向上跳一步就到了最近公共祖先节点了，即$F[x][0]$或者$F[y][0]$就是答案了。</p>
+</blockquote>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>主要就是利用树上倍增法来求解$LCA$，</p>
+<p>这里最多有$N=40000$个节点，那么$2^k\leq40000$，所以$k\leq16$。也就是说我们要给这个<code>F[N][]</code>数组的第二维开的大小应该是$16$，即有$16$位二进制。</p>
+<p>还有就是我们用$depth[0]=0$来当作哨兵，它有什么用处呢？假设从$i$开始跳$2^j$步，那么有可能此时已经跳出了整棵树的根节点，那么<code>fa[fa[j][k-1]][k-1]=0</code>，那么到达的那个虚无节点$fa[i][j]=0$，于是$depth[fa[i][j]]=depth[0]=0$。</p>
+<blockquote>
+<p>如何理解处理超过根节点呢？</p>
+<p>举个栗子：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210722140317.png" alt="image-20210722140317627"></p>
+<p>因为我们没有对根节点$fa[1][0]$赋值，所以它使用的是全局变量，于是$fa[1][0]=0$。可以知道，$fa[2][0]=1$。假设从$2$节点跳了$2^1$步，那么就会跳出根节点，此时的处理是这样的：$fa[2][1]=fa[fa[2][0]][0]=fa[1][0]=0$，那么$depth[fa[1][0]=depth[0]$，但是此时$depth[0]$还没有定义，那么我们可以给它定义为0，此时就可以表示跳出了根节点了。</p>
+</blockquote>
+<p>还有个细节要注意，我们是让深度更大的先往上跳到与深度较小的节点处于同一层。我们不妨假设$a$是深度较大的，$b$是深度较小的，那么如果$depth(a)&lt;depth(b)$，则交换，也就是说必须保证$a$的深度是$\geq b$的深度，然后对$a$往上跳。</p>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="comment">//对于树来说 有n个顶点 则有n-1条边  </span></span><br><span class="line"><span class="comment">//由于题目说了是无向边,所以最多有2(n-1)条边</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">40010</span>,M=N*<span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> n,m;</span><br><span class="line"><span class="keyword">int</span> h[N],e[M],ne[M],idx;</span><br><span class="line"><span class="comment">//记录每个节点的在树中的深度</span></span><br><span class="line"><span class="keyword">int</span> depth[N];</span><br><span class="line"><span class="comment">//fa[i][j]表示从i节点出发跳2^j步后所到达的节点</span></span><br><span class="line"><span class="keyword">int</span> fa[N][<span class="number">16</span>];</span><br><span class="line"><span class="comment">//宽搜的队列</span></span><br><span class="line"><span class="keyword">int</span> q[N];</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    e[idx]=b;</span><br><span class="line">    ne[idx]=h[a];</span><br><span class="line">    h[a]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//采用bfs,在构建这棵有根树的过程中,预处理出fa[i][j],预处理的时间复杂度是nlogn</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bfs</span><span class="params">(<span class="keyword">int</span> root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//初始化深度为无穷大</span></span><br><span class="line">    <span class="built_in">memset</span>(depth,<span class="number">0x3f</span>,<span class="keyword">sizeof</span> depth);</span><br><span class="line">    <span class="comment">//由于已知了q[0]是根节点  所以这里直接让tt=0了</span></span><br><span class="line">    <span class="keyword">int</span> hh=<span class="number">0</span>,tt=<span class="number">0</span>;</span><br><span class="line">    q[<span class="number">0</span>]=root;</span><br><span class="line">    <span class="comment">//哨兵 如果跳超过了根节点,那么就设那些超过根节点的虚无节点的深度为0</span></span><br><span class="line">    depth[<span class="number">0</span>]=<span class="number">0</span>;</span><br><span class="line">    <span class="comment">//根节点的深度为1</span></span><br><span class="line">    depth[root]=<span class="number">1</span>;</span><br><span class="line">    <span class="comment">//进行宽搜</span></span><br><span class="line">    <span class="keyword">while</span>(hh&lt;=tt)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> t=q[hh++];<span class="comment">//取出队头元素</span></span><br><span class="line">        <span class="comment">//遍历t的所有邻接点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=h[t];~i;i=ne[i])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> j=e[i];<span class="comment">//取出t的邻接点j</span></span><br><span class="line">            <span class="comment">//说明j还没有倍搜索过</span></span><br><span class="line">            <span class="keyword">if</span>(depth[j]&gt;depth[t]+<span class="number">1</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//更新顶点j的深度</span></span><br><span class="line">                depth[j]=depth[t]+<span class="number">1</span>;</span><br><span class="line">                <span class="comment">//将j加入队列中</span></span><br><span class="line">                q[++tt]=j;</span><br><span class="line">                <span class="comment">//由于赋值后depth[j]=depth[t]+1 说明j的深度大于t的深度</span></span><br><span class="line">                <span class="comment">//那么从j出发跳2^0步后,到达的节点就是t</span></span><br><span class="line">                fa[j][<span class="number">0</span>]=t;</span><br><span class="line">                <span class="comment">//上面已经处理了从j出发跳2^0步了</span></span><br><span class="line">                <span class="comment">//这里是处理从j出发跳2^1,2^2,...,2^15步所能到达的节点</span></span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> k=<span class="number">1</span>;k&lt;=<span class="number">15</span>;k++)</span><br><span class="line">                    fa[j][k]=fa[fa[j][k<span class="number">-1</span>]][k<span class="number">-1</span>];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//树上倍增法求出顶点a和顶点b的最近公共祖先</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">LCA</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//约定顶点a的深度必须&gt;=顶点b的深度,否则就要交换</span></span><br><span class="line">    <span class="keyword">if</span>(depth[a]&lt;depth[b])</span><br><span class="line">        <span class="built_in">swap</span>(a,b);</span><br><span class="line">    <span class="comment">//让深度较大的顶点a先往上跳到与深度较小的顶点b处于同一层(有可能a跳到了b身上)</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> k=<span class="number">15</span>;k&gt;=<span class="number">0</span>;k--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> tmp=fa[a][k];</span><br><span class="line">        <span class="comment">//此时跳到了tmp这个节点 如果这节点的深度&gt;=顶点b的深度</span></span><br><span class="line">        <span class="comment">//说明tmp这个节点还没有跳超过顶点b这一层   那么则让a跳到tmp这个节点</span></span><br><span class="line">        <span class="keyword">if</span>(depth[tmp]&gt;=depth[b])</span><br><span class="line">            a=tmp;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//这里说明a跳到了b身上 此时两个重合 最近公共祖先就是a或者b</span></span><br><span class="line">    <span class="keyword">if</span>(a==b)</span><br><span class="line">        <span class="keyword">return</span> a;</span><br><span class="line">    <span class="comment">//如果能到这里,就说明a跳到了与b处于同一层</span></span><br><span class="line">    <span class="comment">//那么此时让a和b同时往上跳</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> k=<span class="number">15</span>;k&gt;=<span class="number">0</span>;k--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//说明它俩跳到的顶点不相同,那么不是公共祖先,则必然不可能是LCA</span></span><br><span class="line">        <span class="keyword">if</span>(fa[a][k]!=fa[b][k])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//让a跳到fa[a][k]这个顶点</span></span><br><span class="line">            a=fa[a][k];</span><br><span class="line">            <span class="comment">//让b跳到fa[b][k]这个顶点</span></span><br><span class="line">            b=fa[b][k];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="comment">//退出循环后,a和b一定是跳到了它俩的最近公共祖先节点的下一层</span></span><br><span class="line">    <span class="comment">//那么此时它俩再向上跳2^0=1步就可以找到LCA了</span></span><br><span class="line">    <span class="comment">//因此最终返回 fa[a][0] 或者 fa[b][0]  都是可以的</span></span><br><span class="line">    <span class="keyword">return</span> fa[a][<span class="number">0</span>];      </span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(h,<span class="number">-1</span>,<span class="keyword">sizeof</span> h);</span><br><span class="line">    <span class="comment">//整棵树的根节点</span></span><br><span class="line">    <span class="keyword">int</span> root=<span class="number">0</span>;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;n);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;a,&amp;b);</span><br><span class="line">        <span class="comment">//根据题目意思,如果b为-1,那么a就是整棵树的根节点</span></span><br><span class="line">        <span class="keyword">if</span>(b==<span class="number">-1</span>)</span><br><span class="line">            root=a;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//建立无向边</span></span><br><span class="line">            <span class="built_in">add</span>(a,b);</span><br><span class="line">            <span class="built_in">add</span>(b,a);</span><br><span class="line">        &#125;    </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//在构建这棵有根树的过程中,预处理出fa[i][j]</span></span><br><span class="line">    <span class="built_in">bfs</span>(root);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;m);</span><br><span class="line">    <span class="comment">//处理m个询问</span></span><br><span class="line">    <span class="keyword">while</span>(m--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;a,&amp;b);</span><br><span class="line">        <span class="comment">//找到顶点a和顶点b的最近公共祖先</span></span><br><span class="line">        <span class="keyword">int</span> p=<span class="built_in">LCA</span>(a,b);</span><br><span class="line">        <span class="comment">//如果a是它俩的最近公共祖先</span></span><br><span class="line">        <span class="keyword">if</span>(p==a)</span><br><span class="line">            <span class="built_in">puts</span>(<span class="string">&quot;1&quot;</span>);</span><br><span class="line">        <span class="comment">//如果b是它俩的最近公共祖先    </span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(p==b)</span><br><span class="line">            <span class="built_in">puts</span>(<span class="string">&quot;2&quot;</span>);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="built_in">puts</span>(<span class="string">&quot;0&quot;</span>);        </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
