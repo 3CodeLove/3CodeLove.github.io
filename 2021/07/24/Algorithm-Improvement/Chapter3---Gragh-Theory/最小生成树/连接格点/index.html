@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>连接格点 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,连接格点
+题目描述
+
+核心思路通过阅读题目，设有$n$行$m$列，那么总共有$n\times m$个点，就相当于图中有$n\times m$个顶点。然后想用一些边，来使得所有顶点都能够连通，并且这些,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">连接格点</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">连接格点</h1>
+        <div class="stuff">
+            <span>七月 24, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91/" rel="tag">最小生成树</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="连接格点"><a href="#连接格点" class="headerlink" title="连接格点"></a>连接格点</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210724180555.png" alt="image-20210724180555744"></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>通过阅读题目，设有$n$行$m$列，那么总共有$n\times m$个点，就相当于图中有$n\times m$个顶点。然后想用一些边，来使得所有顶点都能够连通，并且这些边权之和最小。那么这与最小生成树的含义是相同的。因此，透过题意我们知道其实就是想要求最小生成树。</p>
+<p>但是题目还是有点特殊的，一条纵向的连线花费一个单位，一条横向的连线花费两个单位，也就是说边权只能是1或者2，而且某些点之间已经有连线了，也就是说有些顶点已经有边连接起来了。</p>
+<p>我们将已有连线的这些点所形成的各个连通块都分别看作是一个个”新的节点”，设有x个”新的节点”，现在需要用 边 来连接这x个”新的节点”，并且使得所用边的权值总和最小。有x个”新的节点”,那么就需要x-1条边才能来连通,因为竖边的花费少,所以就先尽量用竖边,然后剩下的用横边,也就是贪心。</p>
+<p>由于有连通块和并查集，因此我们使用Kruskal算法来求解最小生成树。但是我们这里并不对所有边排序。因为：有$n\times(m-1)$条横边，有$m\times(n-1)$条竖边，因此最多有$n\times(m-1)+m\times(n-1)=2nm-n-m$，$n$和$m$最坏取到$1000$，所以最多有$2\times1000\times1000-1000-1000=1998000$，约两百万条边。如果给这两百万条边排序的话，时间其实也是可以的，但是这里提供一种更加优化的方法：</p>
+<p>由于Kruskal算法是排序后，优先选择边权小的那些边，然后再选择边权大的那些边。那么我们这里这么做：</p>
+<p>优先挑选了边权为1的边作为最小生成树中的边,然后再挑选边权为2的边作为最小生成树中的边，可以发现这种做法中选边也是按边权从小到大进行，这其实就等效于排序了。</p>
+<p>因此，我们只需要先尽量选择那些边权为1的竖边来建图，然后再选择那些边权为2的横边来建图，那么就可以不需要排序了，这样就省去了给所有边排序的时间。</p>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 在求解MST的过程之中，我们首先连好竖向的边，然后再连横向边.我们通过并差集解决这个问题.</span></span><br><span class="line"><span class="comment"> * 我们将已有连线的这些点所形成的各个连通块都分别看作是一个个&quot;新的节点&quot;,设有x个&quot;新的节点&quot;</span></span><br><span class="line"><span class="comment"> * 现在需要用 边 来连接这x个&quot;新的节点&quot;,并且使得所用边的权值总和最小</span></span><br><span class="line"><span class="comment"> * 有x个&quot;新的节点&quot;,那么就需要x-1条边才能来连通,因为竖边的花费少,所以就先尽量用竖边,然后剩下的用横边,也就是贪心</span></span><br><span class="line"><span class="comment"> * 过程分三个阶段:</span></span><br><span class="line"><span class="comment"> *      (1)先将已经连好的边加入并差集</span></span><br><span class="line"><span class="comment"> *      (2)然后是枚举所有竖向相邻的点</span></span><br><span class="line"><span class="comment"> *      (3)最后是横向相连的点</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="comment">//N是点的数量  M的边的数量</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> A=<span class="number">1010</span>,N=A*A,M=<span class="number">2</span>*A*A;</span><br><span class="line"><span class="keyword">int</span> n,m;</span><br><span class="line"><span class="keyword">int</span> p[N];</span><br><span class="line"><span class="comment">//将二维坐标转换成一维编号</span></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">get</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (x<span class="number">-1</span>)*m+y;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(x!=p[x])</span><br><span class="line">        p[x]=<span class="built_in">find</span>(p[x]);</span><br><span class="line">    <span class="keyword">return</span> p[x];</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> res=<span class="number">0</span>;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;n,&amp;m);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n*m;i++)</span><br><span class="line">        p[i]=i;</span><br><span class="line">    <span class="keyword">int</span> x1,y1,x2,y2;</span><br><span class="line">    <span class="keyword">while</span>(~<span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d%d&quot;</span>,&amp;x1,&amp;y1,&amp;x2,&amp;y2))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a=<span class="built_in">get</span>(x1,y1);</span><br><span class="line">        <span class="keyword">int</span> b=<span class="built_in">get</span>(x2,y2);</span><br><span class="line">        p[<span class="built_in">find</span>(a)]=<span class="built_in">find</span>(b);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//这里进行Kruskal算法时 为什么不需要对边排序呢？</span></span><br><span class="line">    <span class="comment">//因为我们是优先挑选了边权为1的边作为最小生成树中的边,然后再挑选边权为2的边作为最小生成树中的边</span></span><br><span class="line">    <span class="comment">//因此其实就相当于对边权排序了,因为Kruskal算法也是按边权从小到大先选择边权小的边,然后再选择边权大的边</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//先处理边权为1的竖边</span></span><br><span class="line">    <span class="comment">//这里不能写成i&lt;=n   因为我们用到了i+1 因此当i=n时,i+1就是n+1了,就会越界</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;n;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">1</span>;j&lt;=m;j++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//a和b这上下两个点就构成了一条竖边</span></span><br><span class="line">            <span class="keyword">int</span> a=<span class="built_in">get</span>(i,j);</span><br><span class="line">            <span class="keyword">int</span> b=<span class="built_in">get</span>(i+<span class="number">1</span>,j);</span><br><span class="line">            <span class="keyword">int</span> pa=<span class="built_in">find</span>(a);</span><br><span class="line">            <span class="keyword">int</span> pb=<span class="built_in">find</span>(b);</span><br><span class="line">            <span class="keyword">if</span>(pa!=pb)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//累加边权为1的竖边</span></span><br><span class="line">                res+=<span class="number">1</span>;</span><br><span class="line">                p[pa]=pb;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//再处理边权为2的横边</span></span><br><span class="line">    <span class="comment">//这里不能写成j&lt;=m   因为我们用到了j+1 因此当j=m时,j+1就是m+1了,就会越界</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">1</span>;j&lt;m;j++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//a和b这左右两个点就构成了一条横边</span></span><br><span class="line">            <span class="keyword">int</span> a=<span class="built_in">get</span>(i,j);</span><br><span class="line">            <span class="keyword">int</span> b=<span class="built_in">get</span>(i,j+<span class="number">1</span>);</span><br><span class="line">            <span class="keyword">int</span> pa=<span class="built_in">find</span>(a);</span><br><span class="line">            <span class="keyword">int</span> pb=<span class="built_in">find</span>(b);</span><br><span class="line">            <span class="keyword">if</span>(pa!=pb)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//累加边权为2的横边</span></span><br><span class="line">                res+=<span class="number">2</span>;</span><br><span class="line">                p[pa]=pb;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,res);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
