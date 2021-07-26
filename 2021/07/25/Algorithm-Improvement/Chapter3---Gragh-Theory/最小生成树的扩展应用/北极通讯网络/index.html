@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>北极通讯网络 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,北极通讯网络
+题目描述
+
+核心思路抽象一下题意，其实题目是想要求：
+找到一个最小的$d$值，使得在删除所有权值大于$d$的边后，所形成的连通块的个数不超过$k$
+因为题目中说到“两座村庄之间的距离如,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">北极通讯网络</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">北极通讯网络</h1>
+        <div class="stuff">
+            <span>七月 25, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91%E7%9A%84%E6%89%A9%E5%B1%95%E5%BA%94%E7%94%A8/" rel="tag">最小生成树的扩展应用</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="北极通讯网络"><a href="#北极通讯网络" class="headerlink" title="北极通讯网络"></a>北极通讯网络</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210725142226.png" alt="image-20210725142226728"></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>抽象一下题意，其实题目是想要求：</p>
+<p>找到一个最小的$d$值，使得在删除所有权值大于$d$的边后，所形成的连通块的个数不超过$k$</p>
+<p>因为题目中说到“两座村庄之间的距离如果不超过$d$，就可以用该型号的无线电收发机直接通讯”，也就是说，那些距离不超过$d$的节点都是可以直接或者间接连通的，但是那些距离超过$d$的节点之间就不能通过无线电进行通信了，而需要借助卫星设备。</p>
+<p>而且，我们发现一个事实：随着$d$值的不断递增，所形成的连通块的个数不断递减。</p>
+<p>下面一个图示解释了这个原因：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210725143740.png" alt="image-20210725143740580"></p>
+<p>一提到连通块和最小生成树，我们很容易想到Kruskal算法，回顾一下这个算法的流程，其实就是：</p>
+<ul>
+<li>将边权从小到大排序</li>
+<li>依次从小到大扫描每一条边，设这条边的一个端点为$A$，另一个端点为$B$，那么也就是合并$A$所在连通块和$B$所在连通块</li>
+</ul>
+<p>我们发现第二步本质上就是在维护连通块的个数，而且我们知道Kruskal算法每次选择的边权都是不断递增的，而且随着边权的不断递增，就会不断合并连通块，即<strong>随着边权的递增，所得到的连通块个数不断递减</strong>。而这个性质不正好与我们上面提到的题目事实是完全相同的嘛。</p>
+<p>也就是说，题目想要求的最小的距离$d$值，其实就是在Kruskal算法执行过程中的某个时刻，选择了某条边的权值，然后合并这条边后，使得连通块的个数是$k$。即距离$d$值其实就是边权。</p>
+<p>如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210725144429.png" alt="image-20210725144429219"></p>
+<p>因此，我们就直接跑Kruskal算法，然后挑选一条边后，就将这条边的权值赋给$d$，当某一时刻，合并某一条边后，设这条边的权值为$w$，使得所形成的连通块的个数$\leq k$，那么此时的这个$w$就是$d$值的最小值了，直接break即可，不再进行选边操作了。</p>
+<p>当然这一题也是可以用二分的，不过需要配合并查集算法：</p>
+<p>我们设 性质为：<strong>删除所有边权大于$d$的边后，对所有边权$\leq d$的边进行并查集操作后，所形成的连通块的数量$\leq k$</strong></p>
+<p>注意这里是浮点数的二分</p>
+<ul>
+<li>如果满足这个性质，则$r=mid$</li>
+<li>如果不满足这个性质，则$l=mid$</li>
+</ul>
+<p>如下图解释：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210725155710.png" alt="image-20210725155710521"></p>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p>写法1：直接用Kruskal算法</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cmath&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="comment">//边数M最坏情况下是 无向完全图即n(n-1)/2</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">510</span>,M=N*N/<span class="number">2</span>;</span><br><span class="line"><span class="keyword">typedef</span> pair&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt;PII;</span><br><span class="line"><span class="keyword">int</span> n,m,k;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Edge</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> a,b;</span><br><span class="line">    <span class="keyword">double</span> w;</span><br><span class="line">    <span class="keyword">bool</span> <span class="keyword">operator</span> &lt; (<span class="keyword">const</span> Edge&amp; W)<span class="keyword">const</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> w&lt;W.w;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;edges[M];</span><br><span class="line"><span class="keyword">int</span> p[N];</span><br><span class="line"><span class="comment">//存储每个节点的坐标</span></span><br><span class="line">PII q[M];</span><br><span class="line"><span class="comment">//获取两个点之间的距离  把这个距离当作这两个节点之间的边权</span></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">double</span> <span class="title">get</span><span class="params">(PII A,PII B)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> dx=A.first-B.first;</span><br><span class="line">    <span class="keyword">int</span> dy=A.second-B.second;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sqrt</span>(dx*dx+dy*dy);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(x!=p[x])</span><br><span class="line">        p[x]=<span class="built_in">find</span>(p[x]);</span><br><span class="line">    <span class="keyword">return</span> p[x];</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">Kruskal</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> cnt=n;  <span class="comment">//起初有n个独立的节点,也就是n个连通块</span></span><br><span class="line">    <span class="built_in">sort</span>(edges,edges+m);</span><br><span class="line">    <span class="comment">//注意这里初始化时是从0开始的 </span></span><br><span class="line">    <span class="comment">//因为我们用到的点是0~n-1而不是1~n</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)</span><br><span class="line">        p[i]=i;</span><br><span class="line">    <span class="keyword">double</span> res=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;m;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a=<span class="built_in">find</span>(edges[i].a);</span><br><span class="line">        <span class="keyword">int</span> b=<span class="built_in">find</span>(edges[i].b);</span><br><span class="line">        <span class="keyword">double</span> w=edges[i].w;</span><br><span class="line">        <span class="keyword">if</span>(a!=b)</span><br><span class="line">        &#123;</span><br><span class="line">            p[a]=b;</span><br><span class="line">            <span class="comment">//记录此时选的那条边的权值</span></span><br><span class="line">            res=w;</span><br><span class="line">            <span class="comment">//合并两个连通块了,因此连通块的数量-1</span></span><br><span class="line">            cnt--;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//如果合并完这条边后,所形成的连通块的个数&lt;=k  那么选中的这条边其实就是最小的d值</span></span><br><span class="line">        <span class="comment">//那么就不需要再 选择后面的边了</span></span><br><span class="line">        <span class="keyword">if</span>(cnt&lt;=k)</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;n,&amp;k);</span><br><span class="line">    <span class="comment">//读入这n个村庄的坐标</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)	<span class="comment">//村庄编号从0到n-1而不是从1到n</span></span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;q[i].first,&amp;q[i].second);</span><br><span class="line">    <span class="comment">//由于是无向边,因此是对称矩阵  那么我们只需要统计下三角的边就行了    </span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;i;j++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">double</span> w=<span class="built_in">get</span>(q[i],q[j]);</span><br><span class="line">            edges[m++]=&#123;i,j,w&#125;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">double</span> d=<span class="built_in">Kruskal</span>();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%.2lf\n&quot;</span>,d);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>写法2：二分+并查集</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cmath&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">510</span>,M=N*N/<span class="number">2</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">double</span> eps=<span class="number">1e-4</span>;</span><br><span class="line"><span class="keyword">typedef</span> pair&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt;PII;</span><br><span class="line"><span class="keyword">int</span> n,m,k;</span><br><span class="line"><span class="keyword">int</span> p[N];</span><br><span class="line">PII q[M];</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Edge</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> a,b;</span><br><span class="line">    <span class="keyword">double</span> w;</span><br><span class="line">    <span class="keyword">bool</span> <span class="keyword">operator</span>&lt;(<span class="keyword">const</span> Edge &amp;W)<span class="keyword">const</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> w&lt;W.w;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;edges[M];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">double</span> <span class="title">get</span><span class="params">(PII A,PII B)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> dx=A.first-B.first;</span><br><span class="line">    <span class="keyword">int</span> dy=A.second-B.second;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sqrt</span>(dx*dx+dy*dy);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(x!=p[x])</span><br><span class="line">        p[x]=<span class="built_in">find</span>(p[x]);</span><br><span class="line">    <span class="keyword">return</span> p[x];</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//判断mid是否满足该性质：删除所有边权大于d的边后,对所有边权&lt;=d的边进行并查集操作后</span></span><br><span class="line"><span class="comment">//所形成的连通块的数量&lt;=k</span></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">check</span><span class="params">(<span class="keyword">double</span> mid)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//注意这里初始化时是从0开始的 </span></span><br><span class="line">    <span class="comment">//因为我们用到的点是0~n-1而不是1~n</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++) </span><br><span class="line">        p[i]=i;</span><br><span class="line">    <span class="comment">//idx记录的是第一个大于权值为mid的那条边所对应的数组下标    </span></span><br><span class="line">    <span class="keyword">int</span> idx;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;m;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">double</span> w=edges[i].w;</span><br><span class="line">        <span class="comment">//浮点数做差会有精度问题  应该需要加入精度比较</span></span><br><span class="line">        <span class="keyword">if</span>(w&gt;mid+eps)</span><br><span class="line">        &#123;</span><br><span class="line">            idx=i;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> res=<span class="number">0</span>;  <span class="comment">//用多少条边来连接不同的连通块</span></span><br><span class="line">    <span class="comment">//由于第idx条边是首个权值大于mid的边,因此[0,idx-1]这些边都是权值&lt;=mid的边</span></span><br><span class="line">    <span class="comment">//而我们现在就是要对这些权值&lt;=mid的边进行合并 然后求出连通块的个数</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;idx;i++)<span class="comment">//注意这里是[0,idx)也就是[0,idx-1]</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a=<span class="built_in">find</span>(edges[i].a);</span><br><span class="line">        <span class="keyword">int</span> b=<span class="built_in">find</span>(edges[i].b);</span><br><span class="line">        <span class="keyword">if</span>(a!=b)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//合并两个连通块需要耗费一条边</span></span><br><span class="line">            res++;</span><br><span class="line">            p[a]=b;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//连通块的数目=总点数-耗费的连边数量</span></span><br><span class="line">    <span class="comment">//比如有u,v,w三个节点,起初是独立的三个连通块,耗费一条边连接u,v,那么u和v在同一个连通块中了,num=1;</span></span><br><span class="line">    <span class="comment">//耗费一条边连接(u,v),w,那么u,v,w在同一个连通块中了,num=2;最终只有一个连通块</span></span><br><span class="line">    <span class="comment">//因此连通块数量cnt=总点数n-耗费的连边数量num</span></span><br><span class="line">    <span class="keyword">int</span> cnt=n-res;</span><br><span class="line">    <span class="keyword">return</span> cnt&lt;=k;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;n,&amp;k);</span><br><span class="line">    <span class="comment">//读入这n个村庄的坐标</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)    <span class="comment">//村庄编号从0到n-1而不是从1到n</span></span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;q[i].first,&amp;q[i].second);</span><br><span class="line">    <span class="comment">//由于是无向边,因此是对称矩阵  那么我们只需要统计下三角的边就行了    </span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;i;j++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">double</span> w=<span class="built_in">get</span>(q[i],q[j]);</span><br><span class="line">            edges[m++]=&#123;i,j,w&#125;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//给所有边按从小到大排序</span></span><br><span class="line">    <span class="built_in">sort</span>(edges,edges+m);</span><br><span class="line">    <span class="comment">// 二分答案 答案区间是读入的边权的最小值和边权的最大值</span></span><br><span class="line">    <span class="keyword">double</span> l=<span class="number">0</span>,r=edges[m<span class="number">-1</span>].w;</span><br><span class="line">    <span class="comment">//进行浮点数二分</span></span><br><span class="line">    <span class="keyword">while</span>(l+eps&lt;r)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">double</span> mid=(l+r)/<span class="number">2</span>;</span><br><span class="line">        <span class="comment">//check是检查当前的mid是否满足删除所有d&gt;mid的边后，对所有&lt;=mid的边进行合并之后所形成的连通块数目&lt;=k</span></span><br><span class="line">        <span class="comment">//设答案为ans,对于d&gt;=ans的d都是满足的,如果满足,为了求出最小的d,则往左侧收缩</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">check</span>(mid)) </span><br><span class="line">            r=mid;  <span class="comment">//往左侧收缩</span></span><br><span class="line">        <span class="comment">//否则不满足该性质  应该往右边去寻找    </span></span><br><span class="line">        <span class="keyword">else</span> </span><br><span class="line">            l=mid;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%.2lf&quot;</span>,l);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
