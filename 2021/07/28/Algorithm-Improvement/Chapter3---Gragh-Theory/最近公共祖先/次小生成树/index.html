@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>次小生成树 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,次小生成树
+题目描述
+
+核心思路这题其实与秘密的牛奶运输是完全一样的，都是求解严格次小生成树。只不过在那一题中，我们是用$O(n^2)$的时间复杂度暴力求出了树中任意两点间的距离。但是我们知道LCA,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">次小生成树</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">次小生成树</h1>
+        <div class="stuff">
+            <span>七月 28, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/LCA-%E6%AC%A1%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91/" rel="tag">LCA+次小生成树</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="次小生成树"><a href="#次小生成树" class="headerlink" title="次小生成树"></a>次小生成树</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210728124557.png" alt="image-20210728124557605"></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>这题其实与<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45832461/article/details/119118597">秘密的牛奶运输</a>是完全一样的，都是求解严格次小生成树。只不过在那一题中，我们是用$O(n^2)$的时间复杂度暴力求出了树中任意两点间的距离。但是我们知道LCA可以快速地求解出树中任意两点间的距离。因此，在这一题中，我们将使用LCA来进行优化。</p>
+<p>如下图分析：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210728125115.png" alt="image-20210728125115083"></p>
+<p>这一题对求解MST中任意两点之间的距离进行了优化处理，即上图中的暴力枚举，将时间复杂度从$O(n^2)$优化到了$O(n\times log(n))$，具体优化过程如下：</p>
+<ul>
+<li>我们使用$d1[i,j]$表示从节点$i$往上跳$2^j$步路径过程中的边权的最大值，即这个路径上最大边的权值；$d2[i,j]$表示从节点$i$往上跳$2^j$步路径过程中的边权的严格次大值，即这个路径上严格次大边的权值；在向上跳的过程中，记录每次跳跃时的最大值和次大值，那么最终整个路径中的最大值和次大值一定在这些记录的值中，从中求出即可。</li>
+<li>那么该如何求解<code>d1[i][j]</code>和<code>d2[i][j]</code>呢？这里其实和求解<code>fa[][]</code>是类似的，可以在BFS的过程中递推求解，如下图：</li>
+<li><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210728125743.png" alt="image-20210728125743885"></li>
+</ul>
+<p><strong>算法设计：</strong></p>
+<ul>
+<li>使用Kruskal算法求出最小生成树，算出权值总和为$sum$</li>
+<li>将这棵最小生成树用图构建出来</li>
+<li>在BFS过程中预处理<code>fa[][]</code>和求解出<code>d1[][]</code>和<code>d2[][]</code></li>
+<li>依次枚举每条非树边$w$，将其加入树中，一定会形成环，去掉环中树边的最大值或者次大值得到另一棵树，这些树中权值最小的就是次小生成树。</li>
+</ul>
+<p><strong>注意点：</strong></p>
+<ol>
+<li>设树边为$w[i]$，非树边为$w$，那么次小生成树为$sum+w-w[i]$，我们设增量$\Delta=w-w[i]$，我们在LCA函数中求出了这个$w$（最大边或次大边），但是函数返回值的其实就是这个增量$\Delta$，而不是$w$，这点要注意哦</li>
+<li>对于数组$fa,d1,d2$，由于题目给定最多1e5个点，由于$2^{16}&lt;1e5&lt;2^{17}$，如果第二维取16的话，则不能存储完1e5个点；如果第二维取17的话，虽然说多了，但是可以完全存储1(⊙﹏⊙)个点，因此第二维的大小应该是17，其二进制位是从0到16。</li>
+<li>还有一点，题目中给定这个无向图的最大边数$M$是3e5，这是原图的最大边数。但是当我们对已经得到的最小生成树构建图时，由于树中的边是无向边，有$n$个顶点，那么有$n-1$条边，那么构建这个最小生成树的图时需要$2(n-1)$条边，不妨开大点就是$2\times n$条边，当$n$取最大为$N$时，则最多为$2\times N$条边。</li>
+</ol>
+<blockquote>
+<p>问题：为什么跳到了最近公共祖先下一层时，最后只加了最大边$distance[cnt++]=d1[a][0]$，$distance[cnt++]=d1[b][0]$，而没有添加次小边$distance[cnt++]=d2[a][0]$，$distance[cnt++]=d2[b][0]$呢？</p>
+<p>此时x和y距离他们的最近公共祖先只有一步了，也就是只有一条边了，显然只有它自身的权值作为最大距离，次大距离初始化为-INF了</p>
+<p>但其实写上了也是可以的</p>
+</blockquote>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">1e5</span>+<span class="number">10</span>,M=<span class="number">3e5</span>+<span class="number">10</span>,INF=<span class="number">0x3f3f3f3f</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> LL;</span><br><span class="line"><span class="keyword">int</span> n,m;    <span class="comment">//点数 边数</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Edge</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> a,b,w;</span><br><span class="line">    <span class="keyword">bool</span> flag;  <span class="comment">//判断是否为树边(是否为最小生成树中的边)</span></span><br><span class="line">    <span class="keyword">bool</span> <span class="keyword">operator</span> &lt; (<span class="keyword">const</span> Edge&amp; W)<span class="keyword">const</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> w&lt;W.w;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;edges[M];</span><br><span class="line"><span class="comment">//这个邻接表是用来给最小生成树建图的</span></span><br><span class="line"><span class="keyword">int</span> h[N],e[<span class="number">2</span>*N],ne[<span class="number">2</span>*N],w[<span class="number">2</span>*N],idx;</span><br><span class="line"><span class="keyword">int</span> p[N];   <span class="comment">//并查集的集合数组</span></span><br><span class="line"><span class="keyword">int</span> depth[N];   <span class="comment">//节点的深度</span></span><br><span class="line"><span class="keyword">int</span> fa[N][<span class="number">17</span>],d1[N][<span class="number">17</span>],d2[N][<span class="number">17</span>];  <span class="comment">//d1是最大边 d2是次大边</span></span><br><span class="line"><span class="keyword">int</span> q[N];   <span class="comment">// bfs使用到的队列</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b,<span class="keyword">int</span> c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    e[idx]=b;</span><br><span class="line">    w[idx]=c;</span><br><span class="line">    ne[idx]=h[a];</span><br><span class="line">    h[a]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(x!=p[x])</span><br><span class="line">        p[x]=<span class="built_in">find</span>(p[x]);</span><br><span class="line">    <span class="keyword">return</span> p[x];</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//Kruskal算法求出这棵最小生成树的权值总和</span></span><br><span class="line"><span class="function">LL <span class="title">Kruskal</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">sort</span>(edges,edges+m);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">        p[i]=i;</span><br><span class="line">    LL res=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;m;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a=<span class="built_in">find</span>(edges[i].a);</span><br><span class="line">        <span class="keyword">int</span> b=<span class="built_in">find</span>(edges[i].b);</span><br><span class="line">        <span class="keyword">int</span> w=edges[i].w;</span><br><span class="line">        <span class="keyword">if</span>(a!=b)</span><br><span class="line">        &#123;</span><br><span class="line">            p[a]=b;</span><br><span class="line">            res+=w;</span><br><span class="line">            edges[i].flag=<span class="literal">true</span>; <span class="comment">//标记i这条边是树边</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;   </span><br><span class="line">    <span class="keyword">return</span> res; </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//Kruskal算法只是求出了最小生成树的权值总和,但是并没有把这棵最小生成树构建出来</span></span><br><span class="line"><span class="comment">//这里是把这棵最小生成树构建成图</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">build</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(h,<span class="number">-1</span>,<span class="keyword">sizeof</span> h);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;m;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(edges[i].flag)<span class="comment">//如果是树边</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> a=edges[i].a;</span><br><span class="line">            <span class="keyword">int</span> b=edges[i].b;</span><br><span class="line">            <span class="keyword">int</span> w=edges[i].w;</span><br><span class="line">            <span class="comment">//树中的边都是无向边</span></span><br><span class="line">            <span class="built_in">add</span>(a,b,w);</span><br><span class="line">            <span class="built_in">add</span>(b,a,w);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//bfs预处理出fa[][]、d1[][]、d2[][]</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bfs</span><span class="params">(<span class="keyword">int</span> root)</span><span class="comment">//root是根节点  我们这里默认是1号点  其实任意一个点都可以作为根节点</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(depth,<span class="number">0x3f</span>,<span class="keyword">sizeof</span> depth);</span><br><span class="line">    <span class="keyword">int</span> hh=<span class="number">0</span>,tt=<span class="number">0</span>;</span><br><span class="line">    <span class="comment">// depth[0]=0是哨兵  depth[root]=1设置根节点的深度为1</span></span><br><span class="line">    depth[<span class="number">0</span>]=<span class="number">0</span>,depth[root]=<span class="number">1</span>;</span><br><span class="line">    q[<span class="number">0</span>]=root;  <span class="comment">//将根节点入队</span></span><br><span class="line">    <span class="comment">//进行广搜</span></span><br><span class="line">    <span class="keyword">while</span>(hh&lt;=tt)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> t=q[hh++];  <span class="comment">//取出队头元素</span></span><br><span class="line">        <span class="comment">//遍历t的所有邻接点j</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=h[t];~i;i=ne[i])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> j=e[i]; <span class="comment">//t的某个邻接点j</span></span><br><span class="line">            <span class="keyword">if</span>(depth[j]&gt;depth[t]+<span class="number">1</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                depth[j]=depth[t]+<span class="number">1</span>;    <span class="comment">//更新j的深度</span></span><br><span class="line">                q[++tt]=j;  <span class="comment">//将j入队</span></span><br><span class="line">                fa[j][<span class="number">0</span>]=t; <span class="comment">//节点j向上走2^0步就是节点t</span></span><br><span class="line">                <span class="comment">//由于此时节点j到节点t之间只有一条边,那么最大边就是这条边的权值w[i],由于最大边&gt;次大边</span></span><br><span class="line">                <span class="comment">//因此如果只有一条边,那么次大边不存在  我们设置为负无穷</span></span><br><span class="line">                d1[j][<span class="number">0</span>]=w[i];</span><br><span class="line">                d2[j][<span class="number">0</span>]=-INF;</span><br><span class="line">                <span class="comment">//由于已经处理了2^0,那么接下来就是2^1,2^2,...,2^16</span></span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> k=<span class="number">1</span>;k&lt;=<span class="number">16</span>;k++)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">int</span> anc=fa[j][k<span class="number">-1</span>]; <span class="comment">//先从j跳2^&#123;k-1&#125;到了anc节点</span></span><br><span class="line">                    fa[j][k]=fa[anc][k<span class="number">-1</span>];  <span class="comment">//然后从anc节点跳2^&#123;k-1&#125;到了fa[j][k]节点</span></span><br><span class="line">                    <span class="comment">//distance数组存储的是从节点j跳2^k到达节点fa[j][k]过程中的最大边和次大边</span></span><br><span class="line">                    <span class="comment">//由于这个过程分为两段：</span></span><br><span class="line">                    <span class="comment">//  (1)从j到anc,这段中的最大边是d1[j][k-1],次大边是d2[j][k-1]</span></span><br><span class="line">                    <span class="comment">//  (2)从anc到fa[j][k],这段中的最大边是d1[anc][k-1],次大边是d2[anc][k-1]</span></span><br><span class="line">                    <span class="comment">//由于我们并不知道这两段中应该选择哪个最大边和次大边,因此我们可以先都存储起来</span></span><br><span class="line">                    <span class="keyword">int</span> distance[<span class="number">4</span>]=&#123;d1[j][k<span class="number">-1</span>],d2[j][k<span class="number">-1</span>],d1[anc][k<span class="number">-1</span>],d2[anc][k<span class="number">-1</span>]&#125;;</span><br><span class="line">                    <span class="comment">//刚开始初始化从j节点到fa[j][k]不可达,因此最大边和次大边都为负无穷</span></span><br><span class="line">                    d1[j][k]=d2[j][k]=-INF;</span><br><span class="line">                    <span class="keyword">for</span>(<span class="keyword">int</span> u=<span class="number">0</span>;u&lt;<span class="number">4</span>;u++)<span class="comment">//遍历这四个  找到最大边和次大边</span></span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="keyword">int</span> d=distance[u];</span><br><span class="line">                        <span class="comment">//如果新边d大于最小生成树中的最大边d1[j][k]  则直接用这个新边去替代这个最大边即可</span></span><br><span class="line">                        <span class="keyword">if</span>(d&gt;d1[j][k])</span><br><span class="line">                        &#123;</span><br><span class="line">                            d2[j][k]=d1[j][k];</span><br><span class="line">                            d1[j][k]=d;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="comment">//如果新边d小于最小生成树中的最大边d1[j][k],但是大于最小生成树中的次大边d2[j][k]</span></span><br><span class="line">                        <span class="comment">//那么可以用这个新边去替代这个次大边即可</span></span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span>(d&lt;d1[j][k]&amp;&amp;d&gt;d2[j][k])</span><br><span class="line">                            d2[j][k]=d;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//次小生成树权值为sum+w-w[i],w是新边,w[i]是最大边,这里LCA返回的是w-w[i]这个增量的值而不是返回w[i]</span></span><br><span class="line"><span class="function">LL <span class="title">LCA</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b,<span class="keyword">int</span> w)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//缓存数组 记录上跳过程中每段的最大值和次大值</span></span><br><span class="line">    <span class="comment">//由于每个点可能有最大边和次大边,因此数组要开2*N,而不是N</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> distance[<span class="number">2</span>*N];</span><br><span class="line">    <span class="keyword">if</span>(depth[a]&lt;depth[b])</span><br><span class="line">        <span class="built_in">swap</span>(a,b);</span><br><span class="line">    <span class="keyword">int</span> cnt=<span class="number">0</span>;  <span class="comment">// 记录跳跃的次数，每跳一次，会记录两个数据</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> k=<span class="number">16</span>;k&gt;=<span class="number">0</span>;k--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(depth[fa[a][k]]&gt;=depth[b])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//记录节点a的最大边和次大边</span></span><br><span class="line">            distance[cnt++]=d1[a][k];</span><br><span class="line">            distance[cnt++]=d2[a][k];</span><br><span class="line">            a=fa[a][k];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(a!=b)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> k=<span class="number">16</span>;k&gt;=<span class="number">0</span>;k--)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(fa[a][k]!=fa[b][k])</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//记录节点a和节点b的最大边和次大边</span></span><br><span class="line">                distance[cnt++]=d1[a][k];</span><br><span class="line">                distance[cnt++]=d2[a][k];</span><br><span class="line">                distance[cnt++]=d1[b][k];</span><br><span class="line">                distance[cnt++]=d2[b][k];</span><br><span class="line">                a=fa[a][k];</span><br><span class="line">                b=fa[b][k];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//到这里,说明已经跳到了最大公共祖先的下一层,那么此时只需要再向上跳一步就可以到达了LCA</span></span><br><span class="line">        distance[cnt++]=d1[a][<span class="number">0</span>];</span><br><span class="line">        distance[cnt++]=d1[b][<span class="number">0</span>];</span><br><span class="line">        <span class="comment">//下面的这个写上也是可以的</span></span><br><span class="line">        <span class="comment">// distance[cnt++]=d2[a][0];</span></span><br><span class="line">        <span class="comment">// distance[cnt++]=d2[b][0]</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> dist1=-INF,dist2=INF;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;cnt;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> d=distance[i];</span><br><span class="line">        <span class="keyword">if</span>(d&gt;dist1)</span><br><span class="line">        &#123;</span><br><span class="line">            dist2=dist1;</span><br><span class="line">            dist1=d;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(d&lt;dist1&amp;&amp;d&gt;dist2)</span><br><span class="line">            dist2=d;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(w&gt;dist1)</span><br><span class="line">        <span class="keyword">return</span> w-dist1;</span><br><span class="line">    <span class="keyword">if</span>(w&gt;dist2)</span><br><span class="line">        <span class="keyword">return</span> w-dist2;</span><br><span class="line">    <span class="keyword">return</span> INF; </span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> root=<span class="number">1</span>; <span class="comment">//根节点  我们选择1号节点</span></span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;n,&amp;m);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;m;i++)<span class="comment">//读入m条边的信息</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b,w;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>,&amp;a,&amp;b,&amp;w);</span><br><span class="line">        edges[i]=&#123;a,b,w&#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    LL sum=<span class="built_in">Kruskal</span>();   <span class="comment">//求出这棵最小生成树的权值总和</span></span><br><span class="line">    <span class="comment">//这里是把这棵最小生成树构建成图</span></span><br><span class="line">    <span class="built_in">build</span>();</span><br><span class="line">    <span class="built_in">bfs</span>(root);</span><br><span class="line">    LL res=<span class="number">1e18</span>;</span><br><span class="line">    <span class="comment">//枚举将每一条非树边去替代最小生成树中的最大边或次大边</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;m;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(!edges[i].flag)<span class="comment">//非树边</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> a=edges[i].a;</span><br><span class="line">            <span class="keyword">int</span> b=edges[i].b;</span><br><span class="line">            <span class="keyword">int</span> w=edges[i].w;</span><br><span class="line">            <span class="comment">//有x条非树边,则会有x个res值,这里取最小的那个,那么就是次小生成树的权值总和了</span></span><br><span class="line">            res=<span class="built_in">min</span>(res,sum+<span class="built_in">LCA</span>(a,b,w));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%lld\n&quot;</span>,res);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
