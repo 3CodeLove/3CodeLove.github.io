@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>闇の連鎖 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,闇の連鎖
+题目描述
+
+核心思路题意：有$n-1$条主要边构成一棵树，然后有$m$条附加边，当把其中一条附加边添加到主要边构成的树中，则会与树上$x,y$之间的路径上一起形成一个环。我们需要砍掉一条主,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">闇の連鎖</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">闇の連鎖</h1>
+        <div class="stuff">
+            <span>七月 28, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/LCA-%E6%A0%91%E4%B8%8A%E5%B7%AE%E5%88%86/" rel="tag">LCA+树上差分</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="闇の連鎖"><a href="#闇の連鎖" class="headerlink" title="闇の連鎖"></a>闇の連鎖</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210728165603.png" alt="image-20210728165603872"></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>题意：有$n-1$条主要边构成一棵树，然后有$m$条附加边，当把其中一条附加边添加到主要边构成的树中，则会与树上$x,y$之间的路径上一起形成一个环。我们需要砍掉一条主要边和一条附加边，使得这棵树不再连通，成为两个独立的部分。我们需要统计有多少种不同的方案，使得这棵树不连通。</p>
+<p>显然， “主要边” 构成一棵树，而一条 “附加边” 必然会和其两端的LCA形成环，如图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210728170420.png" alt="image-20210728170420786"></p>
+<p>那么，对于每一条主要边，存在三种情况：</p>
+<ol>
+<li><p>没有被任何环覆盖</p>
+<p>如下图所示：红色表示附加边，粉红色表示一条主要边，这条主要边并不在 这条附加边所形成的环中</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210728170657.png" alt="image-20210728170657069"></p>
+</li>
+<li><p>只被一个环给覆盖</p>
+<p>如下图所示：红色表示附加边，粉红色表示一条主要边，这条主要边在 这条附加边所形成的环中</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210728170818.png" alt="image-20210728170817976"></p>
+</li>
+<li><p>被2个及以上的环覆盖</p>
+<p>如下图所示：红色表示附加边，粉红色表示一条主要边，这条主要边在 两条附加边所形成的两个环中</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210728170943.png" alt="image-20210728170943256"></p>
+</li>
+</ol>
+<ul>
+<li>对于情况一，枚举的那个主要边并不在环中，很明显，我们只要把这条主要边删除，那么这个图必然是不连通的。由于题目要求必须砍掉一条主要边和砍掉一条附加边。现在砍掉了这条枚举到的主要边，那么还需要砍掉一条附加边。由于有$m$条附加边，因此我们有$m$种选择，所以此时就有$m$种方案。所以让答案ans累加上m即可，$ans+=m$</li>
+<li>对于情况二，枚举的那个主要边在环中，可以发现，如果我们把这条主要边删除，要想让图不连通，必然还要再删除这条附加边，因此这是唯一的一种方案了（即必然是砍掉这条枚举到的主要边和这个附加边），所以让答案ans累加上1即可，$ans+=1$</li>
+<li>对于情况三，枚举的那个主要边在两个及以上的环中，以两个环为栗子，可以发现，如果我们把这条主要边砍掉，即使再砍掉一条附加边，这张图仍然是连通的，因此必须砍掉两条附加边，才能使得这张图变得不连通，但是题目要求只能砍掉一条主要边和砍掉一条附加边。因此，对于这种情况，不能得出方案，所以不需要累加答案。</li>
+</ul>
+<p>那么我们怎么统计每条边被环覆盖的次数呢？也就是说，我们如何统计附加边$(x,y)$所在的那个环中每条边上的权值呢？每条边上的权值表示被附加边覆盖的次数。</p>
+<p>也就是我们如何让从点$x$出发经过它俩的lca然后到达节点$y$所经过的每一条边都+c呢？这其实可以用<strong>树上差分</strong>来做。</p>
+<p>$d[x]$、$d[y]$ 会对它们到根节点上的每一条边都+c，$d[lca]$会对它们到根节点上的每一条边都-2c，那么这样最终的效果就是：让$x$到lca中和$y$到lca中的每条边都+c</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210728180813.png" alt="image-20210728180813869"></p>
+<p>树上差分可以分为以下三种：</p>
+<ul>
+<li>按点差分</li>
+<li>按边差分</li>
+<li>按深度差分</li>
+</ul>
+<p>我们这里是按边差分，因为我们想知道每条边上的覆盖次数（可以认为是这条边的边权）。但是呢，一般按边差分不好做，我们都是将边权转换为点权，然后用按点差分来做。我们知道，每个节点最多只有1个父节点，也就是向上连的边只有1条，所以我们把一条边的边权下放到它的子节点的点权上（注意根节点没有点权，因为根节点上面没有边，所以没有边权下放给根节点），这样我们就转化到按点差分了。我们可以采用DFS对这棵树进行深搜，在回溯时，把子树$v$中的所有节点上的权值都累加到节点$u$上，设总和为$sum$，节点$v$的父节点是$u$，那么$sum$其实就是节点$u$和节点$v$之间的边权了，那么也就是覆盖次数了。</p>
+<p>如下图所示</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210728181112.png" alt="image-20210728181112585"></p>
+<p>以节点$z$所在的子树为栗子，将节点$z$下面的所有点权$d[i]$累加然后统计到节点$z$上，设总和为$sum$，那么节点$p$和节点$z$之间的边权其实就是$sum$。</p>
+<p>注意点：对于数组<code>fa[][]</code>，因为点数最多是1e5，由于$2^{16}&lt;1e5&lt;2^{17}$，所以第二维的大小应该取到17，这样才能弄完全部1e5个点。因此$fa$的第二维有0~16一共17个数，第二维需要设置为17。</p>
+<p>虽然说题目中有附加边，但是我们建图时，只是把主要边给建立出来，并没有把附加边建到图中去。由于最多有$N$个点，这是树，是无向边，因此最多有$M=2\times N$条边。</p>
+<p><strong>算法设计：</strong></p>
+<ul>
+<li>先将主要边用图建立出来</li>
+<li>进行bfs预处理出<code>fa[][]</code></li>
+<li>枚举每一条附加边，对于附加边所在环上的所有主要边其两端的点权都+1，预处理出差分数组<code>d[]</code></li>
+<li>进行dfs，枚举每一条主要边，进行树上差分得到每条主要边上的权值。查看每条主要边上的权值：<ul>
+<li>如果$c=0$，则说明这条主要边并不在附加边所形成的环中，就是情况一，所以答案$ans+=m$</li>
+<li>如果$c=1$，则说明这条主要边在附加边所形成的环中，就是情况二，所以答案$ans+=1$</li>
+<li>如果$c&gt;1$，则说明这条主要边处于多条附加边所形成的多个环中，就是情况三，不用累加答案</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">1e5</span>+<span class="number">10</span>,M=<span class="number">2</span>*N;</span><br><span class="line"><span class="keyword">int</span> n,m;    <span class="comment">//点数 附加边数</span></span><br><span class="line"><span class="keyword">int</span> h[N],e[M],ne[M],w[M],idx;</span><br><span class="line"><span class="keyword">int</span> depth[N];</span><br><span class="line"><span class="keyword">int</span> d[N];   <span class="comment">//存储每个点的差分 树上差分，每个点上的权值，可以转化为边上的权值</span></span><br><span class="line"><span class="keyword">int</span> q[N];   <span class="comment">//bfs使用到的队列</span></span><br><span class="line"><span class="keyword">int</span> fa[N][<span class="number">17</span>];  </span><br><span class="line"><span class="keyword">int</span> ans;    <span class="comment">//方案数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    e[idx]=b,ne[idx]=h[a],h[a]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//预处理出fa[][]</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bfs</span><span class="params">(<span class="keyword">int</span> root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> hh=<span class="number">0</span>,tt=<span class="number">0</span>;</span><br><span class="line">    <span class="built_in">memset</span>(depth,<span class="number">0x3f</span>,<span class="keyword">sizeof</span> depth);</span><br><span class="line">    depth[<span class="number">0</span>]=<span class="number">0</span>,depth[root]=<span class="number">1</span>;</span><br><span class="line">    q[<span class="number">0</span>]=root;</span><br><span class="line">    <span class="keyword">while</span>(hh&lt;=tt)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> t=q[hh++];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=h[t];~i;i=ne[i])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> j=e[i];</span><br><span class="line">            <span class="keyword">if</span>(depth[j]&gt;depth[t]+<span class="number">1</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                depth[j]=depth[t]+<span class="number">1</span>;</span><br><span class="line">                q[++tt]=j;</span><br><span class="line">                fa[j][<span class="number">0</span>]=t;</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> k=<span class="number">1</span>;k&lt;=<span class="number">16</span>;k++)</span><br><span class="line">                    fa[j][k]=fa[fa[j][k<span class="number">-1</span>]][k<span class="number">-1</span>];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">LCA</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(depth[a]&lt;depth[b])</span><br><span class="line">        <span class="built_in">swap</span>(a,b);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> k=<span class="number">16</span>;k&gt;=<span class="number">0</span>;k--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(depth[fa[a][k]]&gt;=depth[b])</span><br><span class="line">        &#123;</span><br><span class="line">            a=fa[a][k];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(a==b)</span><br><span class="line">        <span class="keyword">return</span> a;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> k=<span class="number">16</span>;k&gt;=<span class="number">0</span>;k--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(fa[a][k]!=fa[b][k])</span><br><span class="line">        &#123;</span><br><span class="line">            a=fa[a][k];</span><br><span class="line">            b=fa[b][k];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> fa[a][<span class="number">0</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//返回以节点u为根的子树中各节点的权值总和</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> u,<span class="keyword">int</span> father)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> res=d[u];   <span class="comment">//记录节点u的点权</span></span><br><span class="line">    <span class="comment">//遍历节点u的所有邻接点</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=h[u];~i;i=ne[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> j=e[i]; <span class="comment">//邻接点j</span></span><br><span class="line">        <span class="keyword">if</span>(j!=father)   <span class="comment">///避免向上重复搜索已经遍历过的边</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//递归搜索以j为根的子树中个节点的权值总和</span></span><br><span class="line">            <span class="keyword">int</span> c=<span class="built_in">dfs</span>(j,u);</span><br><span class="line">            <span class="comment">//最终在回溯时就会算出以节点u为根的子树中各节点的权值总和c</span></span><br><span class="line">            <span class="comment">//而这个c其实就是节点u与它的父节点之间的边权</span></span><br><span class="line">            <span class="keyword">if</span>(c==<span class="number">0</span>)    <span class="comment">//如果为0则说明这条主要边并不在附加边所形成的环中</span></span><br><span class="line">                ans+=m;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(c==<span class="number">1</span>)<span class="comment">//如果为1则说明这条主要边在附加边所形成的环中</span></span><br><span class="line">                ans++;</span><br><span class="line">            <span class="comment">//相当于res=d[u]+dfs(j,u) 最开始res记录的是节点u的点权</span></span><br><span class="line">            <span class="comment">//而dfs(j,u)就是把节点u以下的全部节点的点权都累加到节点u身上</span></span><br><span class="line">            <span class="comment">//因此最终节点u的点权就是它自身拥有的d[u]+别上给它的c</span></span><br><span class="line">            res+=c; </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//返回以节点u为根的子树中各节点的权值总和</span></span><br><span class="line">    <span class="comment">//其实也就是返回节点u和它的父节点之间的这条边的边权 及被附加边覆盖的次数</span></span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> root=<span class="number">1</span>; <span class="comment">//树的根节点   我们设1号点为根节点  任意点都是可以的</span></span><br><span class="line">    <span class="built_in">memset</span>(h,<span class="number">-1</span>,<span class="keyword">sizeof</span> h);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;n,&amp;m);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n<span class="number">-1</span>;i++)  <span class="comment">//读入n-1条 主要边</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;a,&amp;b);</span><br><span class="line">        <span class="comment">//建图时只包括主要边  而没有把附加边建出来</span></span><br><span class="line">        <span class="built_in">add</span>(a,b),<span class="built_in">add</span>(b,a);  <span class="comment">//无向图</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//预处理出fa[][]</span></span><br><span class="line">    <span class="built_in">bfs</span>(root);</span><br><span class="line">    <span class="comment">//依次枚举每一条附加边</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;m;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;a,&amp;b);</span><br><span class="line">        <span class="comment">//找到当前枚举的这条附加边的两个端点的最近公共祖先</span></span><br><span class="line">        <span class="keyword">int</span> lca=<span class="built_in">LCA</span>(a,b);</span><br><span class="line">        <span class="comment">//差分</span></span><br><span class="line">        d[a]++,d[b]++,d[lca]-=<span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">dfs</span>(<span class="number">1</span>,<span class="number">-1</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%lld\n&quot;</span>,ans);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
