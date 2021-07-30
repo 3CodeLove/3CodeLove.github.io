@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>tarjan - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,tarjan算法求有向图的强连通分量
+连通性的相关知识无向图的连通分量在无向图中，如果从节点$v_i$到节点$v_j$有路径，则称节点$v_i$和节点$v_j$是连通的。如果图中任意两个节点之间都是,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">tarjan</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">tarjan</h1>
+        <div class="stuff">
+            <span>七月 30, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/tarjan%E6%B1%82%E6%9C%89%E5%90%91%E5%9B%BE%E7%9A%84%E5%BC%BA%E8%BF%9E%E9%80%9A%E5%88%86%E9%87%8F/" rel="tag">tarjan求有向图的强连通分量</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="tarjan算法求有向图的强连通分量"><a href="#tarjan算法求有向图的强连通分量" class="headerlink" title="tarjan算法求有向图的强连通分量"></a>tarjan算法求有向图的强连通分量</h1><hr>
+<h3 id="连通性的相关知识"><a href="#连通性的相关知识" class="headerlink" title="连通性的相关知识"></a>连通性的相关知识</h3><h4 id="无向图的连通分量"><a href="#无向图的连通分量" class="headerlink" title="无向图的连通分量"></a>无向图的连通分量</h4><p>在无向图中，如果从节点$v_i$到节点$v_j$有路径，则称节点$v_i$和节点$v_j$是连通的。如果图中任意两个节点之间都是连通的，则称图$G$为连通图。</p>
+<p>如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210730140441.png" alt="image-20210730140441026"></p>
+<p>无向图$G$的<strong>极大连通子图</strong>被称为图$G$的连通分量。极大连通子图是图$G$的连通子图，如果再向其中加入一个节点，则该子图就不再是连通的。连通图的连通分量就是它自身；非连通图则有两个及以上的连通分量。</p>
+<p>如下图所示，有3个连通分量：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210730141251.png" alt="image-20210730141251304"></p>
+<h4 id="有向图的强连通分量"><a href="#有向图的强连通分量" class="headerlink" title="有向图的强连通分量"></a>有向图的强连通分量</h4><p>在有向图中，如果图中的任意两个节点从$v_i$到$v_j$都有路径，且从$v_j$到$v_i$也有路径，则称图$G$为强连通图。</p>
+<p>有向图$G$的<strong>极大强连通子图</strong>被称为图$G$的强连通分量。极大强连通子图是图$G$的强连通子图，如果再向其中加入一个节点，则该子图就不再是强连通的。</p>
+<p>如下图所示，(a)是强连通图，(b)不是强连通图，(c)是(b)的强连通分量：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210730141824.png" alt="image-20210730141824251"></p>
+<hr>
+<h3 id="tarjan算法"><a href="#tarjan算法" class="headerlink" title="tarjan算法"></a>tarjan算法</h3><p>首先引入时间戳和追溯点的概念</p>
+<ul>
+<li>时间戳：<code>dfn[u]</code>表示节点$u$深度优先遍历的序号（也就是节点$u$被访问的时间点）</li>
+<li>追溯点：<code>low[u]</code>表示节点$u$或者节点$u$的子孙能够通过<strong>非父子边</strong>追溯到的dfn最小的节点序号，即回到最早的过去（也就是节点$u$通过有向边可回溯到的最早的时间点）</li>
+</ul>
+<p>这里有必要说以下dfs遍历的两种方式：</p>
+<ul>
+<li>方式一：先访问当前节点，然后再递归访问相邻节点（这类似于树的先序遍历）</li>
+<li>方式二：先递归相邻节点，到达叶子节点后回溯时再依次访问路径中的节点（这类似于树的后序遍历）</li>
+</ul>
+<p>如下图所示，这两种方式输出的结果是不同的：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210730143215.png" alt="image-20210730143214955"></p>
+<p>在tarjan算法中，采用的是方式二</p>
+<p>举个栗子，在深度优先搜索中，每个点的时间戳和追溯点的求解过程如下：</p>
+<p>我们用栈stk来存储访问的节点</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210730145108.png" alt="image-20210730145108651"></p>
+<p>初始时，$dfn[u]=low[u]$，从节点$1$开始深搜，如果该节点的邻接点还没有被访问过，则一直递归进行深度优先遍历，$1\to2\to3\to5\to6\to4$，此时栈中内容为{1，2，3，5，6，4}，此时节点$4$的邻接点$1$已经被访问过了，并且节点$1$并不是节点$4$的父节点，节点$4$的父节点是节点$6$（深度优先搜索树上的父节点），那么这条边$4\to1$就是一条非父子边，那么节点$4$顺着这条非父子边能回到最早的节点是节点$1$，那么此时就需要修改节点$4$它的追溯点为$dfn[1]$。我们知道$dfn[1]$必然是小于$low[4]$的，因为节点$1$先于节点$4$被访问，它的时间戳小。所以我们可以直接用$low[4]=dfn[1]$，但是为了严谨，一般都是用$low[4]=min(low[4],dfn[1])$</p>
+<blockquote>
+<p>但是有个问题，设当前访问节点$u=4$，遍历到它的邻接点$v=1$，要执行$low[u]=min(low[u],dfn[v])$的前提是节点$v$它此刻还是在栈中，为什么呢？</p>
+<p>如上图所示，当节点$4$要访问节点$1$时，此时栈内的元素为{1，2，3，5，6，4}，可以发现节点$v=1$还在栈中，也就是说节点$u=4$可以通过这条非父子边到达节点$v=1$。如果节点$v=1$不在栈中，那么可以认为此时节点$u=4$与节点$v=1$这条非父子边是不存在的。既然非父子边不存在，那么就不能通过非父子边回溯到更早，于是也就不能更新节点$u$的时间戳。</p>
+</blockquote>
+<p>在上面分析中，我们知道了$low[4]=min(low[4],dfn[1])=1$，接下来就要开始回溯了。回溯时需要执行$low[u]=min(low[u],low[v])$，为什么呢？因为既然子孙能够回到更早过去，那么其祖先节点也可以回到更早的过去，于是回溯时此刻$u=6,v=4$，更新$low[6]=min(low[6],low[4])=1$，以此类推，更新节点$5,3,2$的时间戳。</p>
+<p>我们可以知道{1，2，3，5，6，4}是一个强连通分量了。同理分析，从节点$1$开始深搜，如果该节点的邻接点还没有被访问过，则一直递归进行深度优先遍历，$1\to2\to3\to5\to7$，此时栈中内容为{1，2，3，5，7}。当前节点$u=7$，可以知道它没有非父子边，所以它不能通过非父子边回溯到更早的过去。于是它自己就是一个强连通分量{7}。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210730151852.png" alt="image-20210730151852176"></p>
+<blockquote>
+<p>那么我们什么时候才能输出这个强连通分量呢？</p>
+<p>当回溯时，一直回溯到某个节点，它的时间戳<code>dfn[u]</code>与追溯点<code>low[u]</code>是相同时，就可以输出这个强连通分量了。因为此时说明这个节点$u$它不再能够通过非父子边回溯到更早的过去了。</p>
+</blockquote>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">1e5</span>+<span class="number">10</span>,M=<span class="number">1e6</span>+<span class="number">10</span>;</span><br><span class="line"><span class="keyword">int</span> n,m;</span><br><span class="line"><span class="keyword">int</span> h[N],e[M],ne[M],idx;</span><br><span class="line"><span class="comment">//用栈stk来存储强连通分量中的节点</span></span><br><span class="line"><span class="keyword">int</span> stk[N],top;</span><br><span class="line"><span class="comment">//num是时间戳</span></span><br><span class="line"><span class="keyword">int</span> dfn[N],low[N],num;</span><br><span class="line"><span class="comment">//scc_cnt是记录这是第几个强连通分量</span></span><br><span class="line"><span class="comment">//id数组用来存储某个节点是属于哪个强连通分量</span></span><br><span class="line"><span class="comment">//cnt用来记录某个强连通分量中的节点个数</span></span><br><span class="line"><span class="keyword">int</span> id[N],cnt[N],scc_cnt;</span><br><span class="line"><span class="comment">//判断某个节点是否在栈中</span></span><br><span class="line"><span class="keyword">bool</span> in_stk[N];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    e[idx]=b,ne[idx]=h[a],h[a]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">tarjan</span><span class="params">(<span class="keyword">int</span> u)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    dfn[u]=low[u]=++num;</span><br><span class="line">    stk[++top]=u;</span><br><span class="line">    in_stk[u]=<span class="literal">true</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;调用tarjan(%d) dfn[%d]=low[%d]=%d,栈顶stk[%d]=%d\n&quot;</span>,u,u,u,num,top,u);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=h[u];~i;i=ne[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> j=e[i];</span><br><span class="line">        <span class="keyword">if</span>(!dfn[j])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">tarjan</span>(j);</span><br><span class="line">            low[u]=<span class="built_in">min</span>(low[u],low[j]);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;回溯 %d-&gt;%d low[%d]=%d\n&quot;</span>,j,u,u,low[u]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(in_stk[j])</span><br><span class="line">        &#123;</span><br><span class="line">            low[u]=<span class="built_in">min</span>(low[u],dfn[j]);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;有环 %d-&gt;%d low[%d]=%d\n&quot;</span>,u,j,u,low[u]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;判断if(%d==%d)?\n&quot;</span>,dfn[u],low[u]);</span><br><span class="line">    <span class="keyword">if</span>(dfn[u]==low[u])</span><br><span class="line">    &#123;</span><br><span class="line">        scc_cnt++;</span><br><span class="line">        <span class="keyword">int</span> y;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;输出第%d个强连通分量:&#123;&quot;</span>,scc_cnt);</span><br><span class="line">        <span class="keyword">do</span>&#123;</span><br><span class="line">            y=stk[top--];</span><br><span class="line">            in_stk[y]=<span class="literal">false</span>;</span><br><span class="line">            id[y]=scc_cnt;</span><br><span class="line">            cnt[scc_cnt]++;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,y);</span><br><span class="line">        &#125;<span class="keyword">while</span>(y!=u);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;&#125;\n输出此时栈顶stk[%d]=%d\n\n&quot;</span>,top,stk[top]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(h,<span class="number">-1</span>,<span class="keyword">sizeof</span> h);</span><br><span class="line">    cin &gt;&gt;n&gt;&gt;m;</span><br><span class="line">    <span class="keyword">while</span>(m--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b;</span><br><span class="line">        cin &gt;&gt;a&gt;&gt;b;</span><br><span class="line">        <span class="built_in">add</span>(a,b);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(!dfn[i])</span><br><span class="line">            <span class="built_in">tarjan</span>(i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>例如上图中的栗子来说，输出结果如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210730152417.png" alt="image-20210730152417469"></p>
+<ul>
+<li>第一个连通分量为{7}</li>
+<li>第二个连通分量为{4,6,5,4,2,1}</li>
+</ul>
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
