@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>最大半连通子图 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,最大半连通子图
+题目描述
+
+核心思路根据题目给出的 导出子图、半连通子图、最大半连通子图的定义可知，强连通图一定是半连通子图。由于题目要求的是最大半连通图，又由于强连通分量中任意两个点之间都是可以相,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">最大半连通子图</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">最大半连通子图</h1>
+        <div class="stuff">
+            <span>七月 30, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/tarjan%E6%B1%82%E6%9C%89%E5%90%91%E5%9B%BE%E7%9A%84%E5%BC%BA%E8%BF%9E%E9%80%9A%E5%88%86%E9%87%8F/" rel="tag">tarjan求有向图的强连通分量</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="最大半连通子图"><a href="#最大半连通子图" class="headerlink" title="最大半连通子图"></a>最大半连通子图</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210730214958.png" alt="image-20210730214958237"></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>根据题目给出的 导出子图、半连通子图、最大半连通子图的定义可知，强连通图一定是半连通子图。由于题目要求的是最大半连通图，又由于强连通分量中任意两个点之间都是可以相互到达的，因此，我们最好选择强连通分量。然后我们可以对强连通分量进行缩点，但是这里要注意，我们要把缩点后的图给真的建立出来。我们在缩点后，会得到一张DAG图，在DAG上找到一个最长链（所谓最长是指链上的点最多），这条链上的点的数目就是最大半连通子图的点的数目。因为是拓扑图，所以可以采用递推的方式求解最大半连通子图中点的数目以及对应的方案数，本质上是一个DP。</p>
+<p>下面给出<code>f[]</code>和<code>g[]</code>的定义：</p>
+<ul>
+<li><code>f[i]</code>表示以第 i 个点为终点的最长链节点数量之和</li>
+<li><code>g[i]</code>表示让$f[i]$取到最大值时对应的方案数，也就是说有$g[i]$条最长链，可以使$f[i]$取得最大值</li>
+</ul>
+<p>由于这是DAG，没有后效性，因此可以用dp思想进行递推，如果存在一条从$i$到$j$的边，则状态转移如下：</p>
+<ul>
+<li>如果$f[j]+cnt[i]&gt;f[i]$，那么更新$f[i]=f[j]+cnt[i]$，由于只是增加了点数，并没有产生新方案，因此$g[i]=g[j]$</li>
+<li>如果$f[j]+cnt[i]=f[i]$，虽然相等，但是这是两种不同的方案，因此$g[i]=g[i]+g[j]$</li>
+</ul>
+<p>这里求方案数的思想与 背包问题求方案数 是一样的，<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45832461/article/details/115560882">背包问题求方案数</a></p>
+<p>这里还需要注意，这条最长链不能有分叉，如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210730222120.png" alt="image-20210730222120447"></p>
+<p>使用两个表头分别存储原图<code>h[]</code>和缩点后的新图<code>hs[]</code>，如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210730222216.png" alt="image-20210730222216652"></p>
+<p>这里还需要注意重边，根据最大半连通子图的含义可知，区别不同的最大半连通子图关键在于 <strong>点的不同</strong> 而不是边的不同，也就是说如果对于两个节点$i,j$，它俩之间有很多边，在求解DAG最长链时就会把这些边都当作不同的路径了，所以很产生很多方案。但是由于都是节点$i,j$，因此点是相同的，于是这就不能算作是不同的最大半连通子图。如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210730222908.png" alt="image-20210730222908554"></p>
+<p>为了消除重边的影响，我们需要对边进行判重，这里使用哈希表进行判重。我们把边都哈希成不同的整数，这里的哈希函数是$a* 1000000ll + b$。为什么呢？</p>
+<p>因为题目中给出了点数最多是1e6，也就是说点的编号最大是1e6。那么边的编号只能从1e6+1开始了。由于节点$a,b$的编号必然不同，因此设置$a* 1000000ll + b$就可以让边的编号从1e6+1开始取并且还不相同了。这样就可以消除重边的影响了。</p>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unordered_set&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">1e5</span>+<span class="number">10</span>,M=<span class="number">2e6</span>+<span class="number">10</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> LL;</span><br><span class="line"><span class="comment">//h[]原图的表头  hs[]缩点后得到的这张DAG图的表头</span></span><br><span class="line"><span class="keyword">int</span> h[N],hs[N],e[M],ne[M],idx;</span><br><span class="line"><span class="comment">//表示节点u深度优先遍历的序号（也就是节点u被访问的时间点）</span></span><br><span class="line"><span class="comment">//表示节点u或节点u的子孙能够通过非父子边追溯到的dfn最小的节点序号</span></span><br><span class="line"><span class="comment">//即回到最早的过去（也就是节点u通过有向边可回溯到的最早的时间点）</span></span><br><span class="line"><span class="comment">//num表示时间戳</span></span><br><span class="line"><span class="keyword">int</span> dfn[N],low[N],num;</span><br><span class="line"><span class="comment">//a=id[x]表示x这个节点属于a这个强连通分量</span></span><br><span class="line"><span class="comment">//cnt[i]=100表示i这个强连通分量有100个节点</span></span><br><span class="line"><span class="comment">//scc表示强连通分量的编号 scc=3表示第3个强连通分量 最终也只有scc个强连通分量</span></span><br><span class="line"><span class="keyword">int</span> id[N],cnt[N],scc;</span><br><span class="line"><span class="comment">//栈用来存储访问的节点  top是栈顶指针</span></span><br><span class="line"><span class="keyword">int</span> stk[N],top; </span><br><span class="line"><span class="comment">//din存储每个节点的入度 dout存储每个节点的出度 </span></span><br><span class="line"><span class="keyword">int</span> din[N],dout[N];</span><br><span class="line"><span class="comment">//in_stk[i]=true表示节点i还在栈中</span></span><br><span class="line"><span class="keyword">bool</span> in_stk[N];</span><br><span class="line"><span class="comment">//f[i]表示以第 i 个点为终点的最长链节点数量之和</span></span><br><span class="line"><span class="comment">//g[i]表示让f[i]取到最大值时对应的方案数</span></span><br><span class="line">LL f[N],g[N];</span><br><span class="line"><span class="keyword">int</span> n,m,mod;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> h[],<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    e[idx]=b,ne[idx]=h[a],h[a]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">tarjan</span><span class="params">(<span class="keyword">int</span> u)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    dfn[u]=low[u]=++num;    <span class="comment">//给节点u分配一个时间戳</span></span><br><span class="line">    stk[++top]=u;           <span class="comment">//将节点u入栈</span></span><br><span class="line">    in_stk[u]=<span class="literal">true</span>;         <span class="comment">//标记节点u在栈中</span></span><br><span class="line">    <span class="comment">//遍历节点u的所有邻接点</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=h[u];~i;i=ne[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> j=e[i]; <span class="comment">//u的邻接点j</span></span><br><span class="line">        <span class="comment">//根据分析得出：先会执行else if中的更新语句,才会执行if中的回溯过程中的更新语句</span></span><br><span class="line">        <span class="comment">//如果节点j还没有被访问过</span></span><br><span class="line">        <span class="keyword">if</span>(!dfn[j])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">tarjan</span>(j);<span class="comment">//递归访问j</span></span><br><span class="line">            <span class="comment">//回溯是更新从节点j往回到节点u这条路径上的所有节点的low值</span></span><br><span class="line">            low[u]=<span class="built_in">min</span>(low[u],low[j]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//否则说明节点j已经被访问过了 看j是否还在栈中</span></span><br><span class="line">        <span class="comment">//如果还在栈中 那么就说明形成了环 即存在强连通分量</span></span><br><span class="line">        <span class="comment">//当走到这里时说明j先于u被访问,因此u可以追溯到更早的过去</span></span><br><span class="line">        <span class="comment">//于是用更早的dfn[j]来更新low[u]</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(in_stk[j])</span><br><span class="line">            low[u]=<span class="built_in">min</span>(low[u],dfn[j]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//退无可退 即此时u不能追溯到更早的过去了 那么它就是这个强连通分量的入口</span></span><br><span class="line">    <span class="keyword">if</span>(dfn[u]==low[u])</span><br><span class="line">    &#123;</span><br><span class="line">        scc++;  <span class="comment">//强连通分量的个数+1</span></span><br><span class="line">        <span class="keyword">int</span> y;</span><br><span class="line">        <span class="comment">//输出这个强连通分量中所包含的节点</span></span><br><span class="line">        <span class="keyword">do</span>&#123;</span><br><span class="line">            y=stk[top--];       <span class="comment">//强连通分量的节点y</span></span><br><span class="line">            in_stk[y]=<span class="literal">false</span>;    <span class="comment">//标记节点y不在栈中</span></span><br><span class="line">            id[y]=scc;      <span class="comment">//节点y属于scc这个强连通分量</span></span><br><span class="line">            cnt[scc]++;     <span class="comment">//scc这个强连通分量中的节点个数增加了y这个节点</span></span><br><span class="line">        &#125;<span class="keyword">while</span>(y!=u);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(h,<span class="number">-1</span>,<span class="keyword">sizeof</span> h);</span><br><span class="line">    <span class="built_in">memset</span>(hs,<span class="number">-1</span>,<span class="keyword">sizeof</span> hs);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>,&amp;n,&amp;m,&amp;mod);</span><br><span class="line">    <span class="comment">//建立原图</span></span><br><span class="line">    <span class="keyword">while</span>(m--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;a,&amp;b);</span><br><span class="line">        <span class="built_in">add</span>(h,a,b);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">        <span class="keyword">if</span>(!dfn[i])</span><br><span class="line">            <span class="built_in">tarjan</span>(i);</span><br><span class="line"></span><br><span class="line">    unordered_set&lt;LL&gt;S; <span class="comment">//哈希表  对边判重 消除重边</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//遍历节点i的所有邻接点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j=h[i];~j;j=ne[j])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> k=e[j]; <span class="comment">//i的邻接点k</span></span><br><span class="line">            <span class="keyword">int</span> a=id[i];    <span class="comment">//节点i所在的强连通分量 也就是缩点后得到的某个节点a</span></span><br><span class="line">            <span class="keyword">int</span> b=id[k];    <span class="comment">//节点k所在的强连通分量 也就是缩点后得到的某个节点b</span></span><br><span class="line">            <span class="comment">//节点a,b之间这条边的编号哈希成&gt;1000000的一个整数值</span></span><br><span class="line">            LL hash=a*<span class="number">1000000ll</span>+b;</span><br><span class="line">            <span class="comment">//如果a和b都不在同一个强连通分量中并且这条边还没有出现过</span></span><br><span class="line">            <span class="keyword">if</span>(a!=b&amp;&amp;!S.<span class="built_in">count</span>(hash))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//将缩点后的这张DAG图真的建立出来</span></span><br><span class="line">                <span class="built_in">add</span>(hs,a,b);</span><br><span class="line">                S.<span class="built_in">insert</span>(hash);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//tarjan求完后，scc的编号递减顺序就是拓扑序列</span></span><br><span class="line">    <span class="comment">//预处理出f[]和g[]</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=scc;i&gt;<span class="number">0</span>;i--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(!f[i])   <span class="comment">//如果当前点没有更新，就进行初始化</span></span><br><span class="line">        &#123;</span><br><span class="line">            f[i]=cnt[i];</span><br><span class="line">            g[i]=<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//遍历节点i的所有邻接点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j=hs[i];~j;j=ne[j])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> k=e[j]; <span class="comment">//i的邻接点k</span></span><br><span class="line">            <span class="comment">//通过i能够更新k  只是让f[k]变多了 并没有产生新的方案</span></span><br><span class="line">            <span class="keyword">if</span>(f[k]&lt;f[i]+cnt[k])</span><br><span class="line">            &#123;</span><br><span class="line">                f[k]=f[i]+cnt[k];</span><br><span class="line">                g[k]=g[i];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//比如f[k]=8  f[i]=5 cnt[k]=3 那么&#123;8&#125;和&#123;5,3&#125;就是两种不同的方案</span></span><br><span class="line">            <span class="comment">//使得节点k的f值都是8  于是如果相同的话就会产生新方案</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(f[k]==f[i]+cnt[k])</span><br><span class="line">                g[k]=(g[k]+g[i])%mod;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//maxf是记录最大的f[]  sum是记录最大的g[]</span></span><br><span class="line">    <span class="keyword">int</span> maxf=<span class="number">0</span>,sum=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=scc;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(f[i]&gt;maxf)</span><br><span class="line">        &#123;</span><br><span class="line">            maxf=f[i];</span><br><span class="line">            sum=g[i];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(f[i]==maxf)</span><br><span class="line">            sum=(sum+g[i])%mod;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,maxf);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,sum);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
