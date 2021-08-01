@@ -1,0 +1,285 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>无向图的双连通分量 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,无向图的双连通分量
+割点和割边
+割点：在无向连通图中，删除一个顶点以及和它相邻的所有边，图中的连通分量个数增加，则该顶点称为割点
+
+割边（桥）：在无向连通图中，删除一条边，图中的连通分量个数增加，则,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">无向图的双连通分量</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">无向图的双连通分量</h1>
+        <div class="stuff">
+            <span>八月 01, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/tarjan%E6%B1%82%E6%97%A0%E5%90%91%E5%9B%BE%E7%9A%84%E5%8F%8C%E8%BF%9E%E9%80%9A%E5%88%86%E9%87%8F/" rel="tag">tarjan求无向图的双连通分量</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="无向图的双连通分量"><a href="#无向图的双连通分量" class="headerlink" title="无向图的双连通分量"></a>无向图的双连通分量</h1><hr>
+<h3 id="割点和割边"><a href="#割点和割边" class="headerlink" title="割点和割边"></a>割点和割边</h3><ul>
+<li><p>割点：在无向连通图中，删除一个顶点以及和它相邻的所有边，图中的连通分量个数增加，则该顶点称为割点</p>
+</li>
+<li><p>割边（桥）：在无向连通图中，删除一条边，图中的连通分量个数增加，则该条边称为割边或者桥</p>
+</li>
+</ul>
+<p>举个栗子：</p>
+<p>割点：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801104523.png" alt="image-20210801104523612"></p>
+<p>割边：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801104542.png" alt="image-20210801104542324"></p>
+<hr>
+<h3 id="边连通分量和点连通分量"><a href="#边连通分量和点连通分量" class="headerlink" title="边连通分量和点连通分量"></a>边连通分量和点连通分量</h3><ul>
+<li>边双连通图：如果在无向图中不存在割边，则称它为边双连通图。在边双连通图中，<strong>任意两个节点之间都存在两条及以上的路径，并且这些路径上的边互不重复</strong>。</li>
+<li>点双连通图：如果在无向图中不存在割点，则称它为点双连通图。在点双连通图中，<strong>如果节点数大于2，则在任意两个节点之间都存在两条及以上路径，并且这些路径上的点互不重复</strong>。</li>
+<li>边双连通分量：无向图的极大边双连通子图被称为边双连通分量，记作e-DCC。边双连通分量就是删掉桥之后所留下的连通块，连接两个边双连通分量的边就是桥</li>
+<li>点双连通分量：无向图的极大点双连通子图被称为点双连通分量，记作v-DCC</li>
+</ul>
+<p>点双连通分量的性质：</p>
+<ul>
+<li>点双连通分量之间以割点连接，且两个点双连通分量之间有且只有一个割点</li>
+<li>每一个割点可以任意属于多个点双连通分量，因此求点双连通分量时，可能包含重复的点</li>
+<li>只有一条边连通的两个点也是点双连通分量</li>
+</ul>
+<p>总结：</p>
+<p>对于一个连通图，如果任意两点之间至少存在两条<strong>没有重复节点</strong>的路径，则称这个图为<strong>点双连通</strong>的（简称双连通）；如果任意两点之间至少存在两条<strong>没有重复边</strong>的路径，则称该图为<strong>边双连通</strong>的。点双连通图的定义等价于<strong>任意两条边都同在一个简单环</strong>中，而边双连通图的定义等价于<strong>任意一条边至少在一个简单环中</strong>。对一个无向图，点双连通的<strong>极大子图</strong>称为<strong>点双连通分量</strong>（简称双连通分量），边双连通的极大子图称为<strong>边双连通分量</strong>。在每一个点双连通图中，内部无割点；在每一个边双连通图中，内部无桥。</p>
+<p>举个栗子：</p>
+<p>边双连通图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801115441.png" alt="image-20210801115441663"></p>
+<p>边双连通分量：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801115857.png" alt="image-20210801115857259"></p>
+<p>点双连通图：</p>
+<p>点双连通分量：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801124354.png" alt="image-20210801124353958"></p>
+<hr>
+<h3 id="求解割点和割边"><a href="#求解割点和割边" class="headerlink" title="求解割点和割边"></a>求解割点和割边</h3><p><strong>割点判定法则：</strong></p>
+<ul>
+<li>如果$x$不是根节点，那么$x$是割点，当且仅当在搜索树上存在$x$的一个子节点$y$，满足$low[y]\geq dfn[x]$</li>
+<li>如果$x$是根节点，那么$x$是割点，当且仅当在搜索树上至少存在两个子节点$y_i$，满足$low[y_i]\geq dfn[x]$</li>
+</ul>
+<p>先来看第一种，分为以下三个式子讨论：</p>
+<p>如果$low[y]&gt;dfn[x]$，如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801130607.png" alt="image-20210801130606931"></p>
+<p>如果$low[y]=dfn[x]$，如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801131239.png" alt="image-20210801131239787"></p>
+<p>如果$low[y]&lt;dfn[x]$，如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801131910.png" alt="image-20210801131910894"></p>
+<p>综上可知，当$low[y]\geq dfn[x]$时，才能说明节点$x$的一个割点</p>
+<p>接着再来看第二种，分两种情况讨论：</p>
+<p>如果$x$是根节点，但是它只有一个子节点：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801132827.png" alt="image-20210801132827812"></p>
+<p>如果$x$是根节点，但是它至少有两个子节点：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801133324.png" alt="image-20210801133324071"></p>
+<p><strong>割边判定法则：</strong></p>
+<p>无向边$(x,y)$是桥，当且仅当在搜索树上存在$x$的一个子节点$y$，满足$low[y]&gt;dfn[x]$</p>
+<p>分为以下三个式子讨论：</p>
+<p>当$low[y]&gt;dfn[x]$时：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801134658.png" alt="image-20210801134658781"></p>
+<p>当$low[y]=dfn[x]$时：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801135221.png" alt="image-20210801135221403"></p>
+<p>当$low[y]&lt;dfn[x]$时：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801135750.png" alt="image-20210801135750867"></p>
+<p>综上，当$low[y]&gt;dfn[x]$时，才能说明边$(x,y)$是一条割边</p>
+<p>注意，在无向图中，求割边时，孩子节点到父节点的边是不用处理的：</p>
+<p>原因如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801141800.png" alt="image-20210801141800313"></p>
+<hr>
+<h3 id="成对变换"><a href="#成对变换" class="headerlink" title="成对变换"></a>成对变换</h3><p>对于非负整数$n$：</p>
+<ul>
+<li>当$n$是偶数时，$n$ XOR $1$ 等于 $n+1$</li>
+<li>当$n$是奇数时，$n$ XOR $1$ 等于$n-1$</li>
+</ul>
+<p>因此“0与1” “2与3” “4与5”$\cdots$关于XOR $1$ 运算构成了“成对变换”</p>
+<p>这一性质经常用于图论邻接表中边集的存储。在具有无向边的图中把一条正反方向的边分别存储在邻接表数组的第$n$与$n+1$位置（其中$n$是偶数），那么就可以通过XOR $1$运算获得与当前边$(x,y)$所反向的边$(y,x)$的存储位置了（存储位置也就是这条边的编号）</p>
+<p>如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801161148.png" alt="image-20210801161148885"></p>
+<p>从中我们发现成对变换可以帮助我们在求割边时避免从子节点走回到父节点。</p>
+<blockquote>
+<p>问题：如何理解割边的代码模板中的i!=(from^1)呢？</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210801161952.png" alt="image-20210801161952786"></p>
+</blockquote>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p>割点的代码模板：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">1010</span>,M=N*N;</span><br><span class="line"><span class="keyword">int</span> n,m,root;</span><br><span class="line"><span class="keyword">int</span> h[N],e[M],ne[M],idx;</span><br><span class="line"><span class="keyword">int</span> low[N],dfn[N],num;</span><br><span class="line"><span class="keyword">bool</span> cut[N];    <span class="comment">//cut[i]=true表示节点i是割点</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    e[idx]=b;</span><br><span class="line">    ne[idx]=h[a];</span><br><span class="line">    h[a]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">tarjan</span><span class="params">(<span class="keyword">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    low[x]=dfn[x]=++num;</span><br><span class="line">    <span class="keyword">int</span> count=<span class="number">0</span>;    <span class="comment">//统计节点x有多少个子节点</span></span><br><span class="line">    <span class="comment">//遍历节点x的所有邻接点</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=h[x];~i;i=ne[i])  <span class="comment">//i是边</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> y=e[i]; <span class="comment">//y是i的邻接点</span></span><br><span class="line">        <span class="comment">//如果节点y还没有被访问过</span></span><br><span class="line">        <span class="keyword">if</span>(!dfn[y])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">tarjan</span>(y);  <span class="comment">//递归访问y</span></span><br><span class="line">            low[x]=<span class="built_in">min</span>(low[x],low[y]);  <span class="comment">//回溯时更新</span></span><br><span class="line">            <span class="comment">//满足割点判定准则</span></span><br><span class="line">            <span class="keyword">if</span>(low[y]&gt;=dfn[x])</span><br><span class="line">            &#123;</span><br><span class="line">                count++;    <span class="comment">//节点x的子节点个数+1</span></span><br><span class="line">                <span class="comment">//如果x不是根节点 那么如果x满足了割点判定准则,则x必是割点</span></span><br><span class="line">                <span class="comment">//或者x是根节点,但是它至少有2个子节点,并且x满足了割点判定准则,则x必是割点</span></span><br><span class="line">                <span class="keyword">if</span>(x!=root||count&gt;<span class="number">1</span>)</span><br><span class="line">                    cut[x]=<span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//否则说明节点y已经被访问过了,但是有可能节点y可以通过非树边(非父子边)追溯到更早的节点</span></span><br><span class="line">        <span class="comment">//那么也可以更新</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            low[x]=<span class="built_in">min</span>(low[x],dfn[y]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(h,<span class="number">-1</span>,<span class="keyword">sizeof</span> h);  <span class="comment">//初始化表头</span></span><br><span class="line">    cin &gt;&gt;n&gt;&gt;m;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=m;i++)	<span class="comment">//读入m条边</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b;</span><br><span class="line">        cin &gt;&gt;a&gt;&gt;b;</span><br><span class="line">        <span class="keyword">if</span>(a==b)</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line">        <span class="comment">//建立无向图</span></span><br><span class="line">        <span class="built_in">add</span>(a,b);</span><br><span class="line">        <span class="built_in">add</span>(b,a);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(!dfn[i])</span><br><span class="line">        &#123;</span><br><span class="line">            root=i;</span><br><span class="line">            <span class="built_in">tarjan</span>(i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)   <span class="comment">//输出割点</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(cut[i])</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,i);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;是割点.&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>割边的代码模板：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">1010</span>,M=N*N;</span><br><span class="line"><span class="keyword">int</span> h[N],e[M],ne[M],idx;</span><br><span class="line"><span class="keyword">int</span> dfn[N],low[N],num;</span><br><span class="line"><span class="comment">//bridge[i]=bridge[i^1]=true表示节点e[i]与节点e[i^1]之间的这条边是桥</span></span><br><span class="line"><span class="keyword">bool</span> bridge[M]; </span><br><span class="line"><span class="keyword">int</span> n,m;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    e[idx]=b;</span><br><span class="line">    ne[idx]=h[a];</span><br><span class="line">    h[a]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//由于无向图中,从子节点到父节点的这条边是不需要处理的  因此需要记录子节点是父节点从边from走过来的</span></span><br><span class="line"><span class="comment">//目的是为了防止子节点又通过from这条边走回到父节点  这样就不能判定割边了</span></span><br><span class="line"><span class="comment">//from表示 当前节点y是上一个节点x通过边from到达的</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">tarjan</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> from)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    dfn[x]=low[x]=++num;</span><br><span class="line">    <span class="comment">//遍历节点x的所有邻接点</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=h[x];~i;i=ne[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> y=e[i]; <span class="comment">//y是i的邻接点</span></span><br><span class="line">        <span class="comment">//如果节点y还没有被访问过</span></span><br><span class="line">        <span class="keyword">if</span>(!dfn[y])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">tarjan</span>(y,i);    <span class="comment">//递归访问y</span></span><br><span class="line">            low[x]=<span class="built_in">min</span>(low[x],low[y]);  <span class="comment">//回溯时更新</span></span><br><span class="line">            <span class="comment">//满足割边判定法则</span></span><br><span class="line">            <span class="keyword">if</span>(low[y]&gt;dfn[x])</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//表示节点e[i]与节点e[i^1]之间的这条边是桥</span></span><br><span class="line">                bridge[i]=bridge[i^<span class="number">1</span>]=<span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//否则说明节点y已经被访问过了 但是有可能节点y可以通过非树边(非父子边)追溯到更早的节点</span></span><br><span class="line">        <span class="comment">//那么也是可以更新的  一条无向边可以看作是两条反向的有向边  </span></span><br><span class="line">        <span class="comment">//x通过from这条边到达y,即x-&gt;y是通过from边,那么y就可以通过from^1这条边到达x,即y-&gt;x是通过from^1边</span></span><br><span class="line">        <span class="comment">//为了防止从子节点y走回到了父节点x 那么此时y就不能走from^1这条边</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(i!=(from^<span class="number">1</span>))</span><br><span class="line">            low[x]=<span class="built_in">min</span>(low[x],low[y]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(h,<span class="number">-1</span>,<span class="keyword">sizeof</span> h);  <span class="comment">//初始化表头</span></span><br><span class="line">    cin&gt;&gt;n&gt;&gt;m;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=m;i++)   <span class="comment">//读入m条边</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b;</span><br><span class="line">        cin&gt;&gt;a&gt;&gt;b;</span><br><span class="line">        <span class="comment">//建立无向图</span></span><br><span class="line">        <span class="built_in">add</span>(a,b);</span><br><span class="line">        <span class="built_in">add</span>(b,a);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(!dfn[i])    </span><br><span class="line">            <span class="built_in">tarjan</span>(i,<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//总共有idx条边  边的编号是从0开始的</span></span><br><span class="line">    <span class="comment">//由于是成对变换,因此编号为0和编号为1就表示一条无向边 编号为2和编号为3就表示另一条无向边</span></span><br><span class="line">    <span class="comment">//所以这里是i+=2 即遍历下一条无向边  如果写成i++则仍然会遍历这条无向边</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;idx;i+=<span class="number">2</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(bridge[i])<span class="comment">//说明编号为i的这条边是桥  那么输出这条割边的两个端点e[i^1],e[i]</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;(%d,%d)是一条割边.\n&quot;</span>,e[i^<span class="number">1</span>],e[i]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
