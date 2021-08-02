@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>矿场搭建 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,矿场搭建
+题目描述
+
+核心思路题意：给一个不一定连通的无向图，问最少在几个点设置出口，使得任意一个出口坏掉后,其他所有点都可以和某个出口连通。
+假设有$n$个点，只有一个出口，那么当这个点坏了之后，,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">矿场搭建</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">矿场搭建</h1>
+        <div class="stuff">
+            <span>八月 02, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/tarjan%E6%B1%82%E6%97%A0%E5%90%91%E5%9B%BE%E7%9A%84%E5%8F%8C%E8%BF%9E%E9%80%9A%E5%88%86%E9%87%8F/" rel="tag">tarjan求无向图的双连通分量</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="矿场搭建"><a href="#矿场搭建" class="headerlink" title="矿场搭建"></a>矿场搭建</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210802143012.png" alt="image-20210802143012333"></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>题意：给一个不一定连通的无向图，问最少在几个点设置出口，使得任意一个出口坏掉后,其他所有点都可以和某个出口连通。</p>
+<p>假设有$n$个点，只有一个出口，那么当这个点坏了之后，其余的$n-1$个点就没有办法出去了。但是如果至少有两个出口，那么当其中一个出口坏了，仍然可以从另一个出口出去。因此，出口数量必须$\geq2$</p>
+<p>设<code>res</code>表示需要设立的最少的出口，初始化为0，<code>path</code>表示不同最少救援出口的设置方案总数，初始化为1</p>
+<p>对于一个连通块来说，设这个连通块中点的数量为$n$，如果<strong>它没有割点</strong>，由于一个割点至少连接两个点双连通分量，所以当我们把点双连通分量进行缩点后，缩点后得到的是一棵树，那么这个割点就会连接两个点，那么这两个点就是叶子节点，度为1。但是现在没有割点，则说明这些都是独立的点，因此说明度为0。</p>
+<ul>
+<li>如果点的数量大于1，即$n&gt;1$，那么只需要设置2个出口就好了，从这$n$个点中随便选择两个点作为出口的方案数就是$C_n^{2}$，即$res+=2$，$path*=C_n^2$</li>
+</ul>
+<p>如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210802143643.png" alt="image-20210802143643312"></p>
+<ul>
+<li>如果点的数量等于1，即$n=1$，说明是一个孤立节点，那么一个孤立节点不可能设立两个出口。因此最终只能在这个孤立节点上设立一个出口，那么$res+=1，path*=1$</li>
+</ul>
+<p>如果存在割点：</p>
+<p>我们先求出所有的点双连通分量，把所有割点都先拿出来，但是要注意一个割点可能属于多个点双连通分量，而且我们计算的这个点双连通分量中是包含割点的。然后我们让拿出来的这个割点和点双连通分量连边，把点双连通分量缩点，如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210802144654.png" alt="image-20210802144654261"></p>
+<p>如果只有一个割点，由于一个割点至少连接两个点双连通分量，所以当我们把点双连通分量进行缩点后，缩点后得到的是一棵树，那么这个割点就会连接两个点，那么这两个点就是叶子节点，度为1。那么如果我们把出口放在这个割点上，则当割点坏（出口坏了）时，则割点所连接的这两个叶子节点就没有出路了，即这两个点双连通分量中的每个点都没有出口了。因此不能把出口放在割点上。那么我们可以把出口放在这两个叶子节点上，即放在度为1的节点上，也就是说我们可以把一个出口放在这个点双连通分量中的任意一个节点上（但是不能是割点）。设这个点双连通分量中有$x$个点（包括了一个割点），由于出口不能放在割点上，因此出口可以放置在$x-1$个节点上，于是有$x-1$种方案。为什么只放一个出口就行了呢？（下面会解释）。则答案为$res+=1,path*=(x-1)$</p>
+<p>如果有两个割点，由于一个割点至少连接两个点双连通分量，所以此时必然是一个割点连接两个点，即这两个点度为2，</p>
+<p>现在来解释一下算法的正确性：</p>
+<ul>
+<li><p>如果割点坏掉时：</p>
+<p>由于缩完点之后是一棵树，所有度为1的点都是叶子节点，我们<strong>在所有的度为1的节点都放了一个出口</strong>，因此每一个叶子节点都必然会有一个出口。我们把割点弄成这颗树的根节点，因为一个割点可以连接多个点双连通分量，因此这个根节点就会有很多子树，每个子树都至少有一个叶子节点，因此每个子树中的节点起码会被那个叶子节点救援（叶子节点有出口）</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210802162401.png" alt="image-20210802162401790"></p>
+</li>
+<li><p>如果是度为1的点双连通分量中的某个点坏时（这个点不是割点，因为这种情况我们上面讨论过了）:</p>
+<p>由于它是V-DCC，所以我们把这个坍塌的点删除后，仍然是连通的图，由于它的度为1，因此它会被一个割点连接，同时这个割点还连接其他的V-DCC，所以我们可以把这个割点当作是根，由于在所有的度为1的节点都放了一个出口，因此每一棵子树中的节点都可以被叶子节点救，如果坍塌的这个点刚好就是出口，那么可以顺着割点到达右边，那么也是可以被右边的叶子节点救的：因此对于这个度为1的点来说，只需要在这个点双连通分量内部设立一个出口就好了，因此是$res+=1,path*=(x-1)$</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210802163230.png" alt="image-20210802163230139"></p>
+</li>
+<li><p>如果是度为2的点双连通分量中的某个点坏时（这个点不是割点，因为这种情况我们上面讨论过了）:</p>
+<p>由于度为2，则该点必然连接了两个割点，根据上面的分析，我们知道，每个割点它的子树中一定有了叶子节点存在出口，因此，对于当前的这个点双连通分量来说，就不再需要另外开辟一个出口了，直接使用原来已经设立的出口就好了。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210802165859.png" alt="image-20210802165859530"></p>
+</li>
+</ul>
+<p>总结：</p>
+<ul>
+<li>无割点，若这个点双连通分量不是孤立点，则放2个出口，$res+=2,path<em>=C_n^2$，如果这个点双连通分量是孤立点，则$res+=1,path</em>=1$。这里无割点相当于这个点双连通分量度为0</li>
+<li>有割点，如果该点双连通分量的度为1，则放1个出口，$res+=1,path*=(x-1)$（不包括割点）</li>
+<li>有割点，如果该点双连通分量的度为2，则点双连通分量不再需要新开出口，所以$res+=0,path*=1$</li>
+</ul>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">1010</span>,M=<span class="number">2010</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> ULL;</span><br><span class="line"><span class="keyword">int</span> n,m;</span><br><span class="line"><span class="keyword">int</span> h[N],e[M],ne[M],idx;</span><br><span class="line"><span class="keyword">int</span> dfn[N],low[N],num;</span><br><span class="line"><span class="keyword">int</span> stk[N],top;</span><br><span class="line"><span class="keyword">bool</span> cut[N];    <span class="comment">//cut[i]=true表示节点i是割点</span></span><br><span class="line"><span class="comment">//dcc[i]表示存储第i个点双连通分量中的所有节点</span></span><br><span class="line">vector&lt;<span class="keyword">int</span>&gt;dcc[N];</span><br><span class="line"><span class="comment">//vdcc点双连通分量的个数   root是某个连通块的根</span></span><br><span class="line"><span class="keyword">int</span> vdcc,root;</span><br><span class="line"><span class="comment">//多组测试数据 初始化清空操作</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=vdcc;i++)</span><br><span class="line">        dcc[i].<span class="built_in">clear</span>();</span><br><span class="line">    idx=num=top=n=vdcc=<span class="number">0</span>;</span><br><span class="line">    <span class="built_in">memset</span>(h,<span class="number">-1</span>,<span class="keyword">sizeof</span> h);</span><br><span class="line">    <span class="built_in">memset</span>(dfn,<span class="number">0</span>,<span class="keyword">sizeof</span> dfn);</span><br><span class="line">    <span class="built_in">memset</span>(cut,<span class="number">0</span>,<span class="keyword">sizeof</span> cut);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    e[idx]=b,ne[idx]=h[a],h[a]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">tarjan</span><span class="params">(<span class="keyword">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    dfn[x]=low[x]=++num;</span><br><span class="line">    stk[++top]=x;</span><br><span class="line">    <span class="comment">//特判如果某个节点为孤立节点,则它自己单独构成一个点双连通分量</span></span><br><span class="line">    <span class="comment">//此时这个点双连通分量只有一个节点</span></span><br><span class="line">    <span class="comment">//判定孤立节点:如果它是根节点并且它没有邻边</span></span><br><span class="line">    <span class="keyword">if</span>(x==root&amp;&amp;h[x]==<span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        dcc[++vdcc].<span class="built_in">push_back</span>(x);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> count=<span class="number">0</span>;    <span class="comment">//统计节点x有多少个子节点</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=h[x];~i;i=ne[i])   <span class="comment">//i是边</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> y=e[i]; <span class="comment">//y是i的邻接点</span></span><br><span class="line">        <span class="comment">//如果节点y还没有被访问过</span></span><br><span class="line">        <span class="keyword">if</span>(!dfn[y])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">tarjan</span>(y);   <span class="comment">//递归访问y</span></span><br><span class="line">            low[x]=<span class="built_in">min</span>(low[x],low[y]);  <span class="comment">//回溯时更新</span></span><br><span class="line">            <span class="comment">//满足割点判定准则</span></span><br><span class="line">            <span class="keyword">if</span>(low[y]&gt;=dfn[x])</span><br><span class="line">            &#123;</span><br><span class="line">                count++;    <span class="comment">//节点x的子节点个数+1</span></span><br><span class="line">                <span class="comment">//如果x不是根节点 那么如果x满足了割点判定准则,则x必是割点</span></span><br><span class="line">                <span class="comment">//或者x是根节点,但是它至少有2个子节点,并且x满足了割点判定准则,则x必是割点</span></span><br><span class="line">                <span class="keyword">if</span>(x!=root||count&gt;<span class="number">1</span>)</span><br><span class="line">                    cut[x]=<span class="literal">true</span>;</span><br><span class="line">                vdcc++; <span class="comment">//点双连通分量个数+1</span></span><br><span class="line">                <span class="keyword">int</span> z;</span><br><span class="line">                <span class="comment">//依次弹出这个点双连通分量中的节点  然后放到dcc中</span></span><br><span class="line">                <span class="comment">//注意是弹到y截止  而不是弹到x</span></span><br><span class="line">                <span class="comment">//为什么是弹到y截止而不是弹到x呢？</span></span><br><span class="line">                <span class="comment">//因为一个割点可能属于多个点双连通分量,如果在某一个点双连通分量把x这个</span></span><br><span class="line">                <span class="comment">//割点弹出了然后放进了这个点双连通分量的dcc中</span></span><br><span class="line">                <span class="comment">//那么其他点双连通分量本来是含有割点x 但是由于x已经弹出栈并且放进了dcc</span></span><br><span class="line">                <span class="comment">//那么其他点双连通分量就不能放入割点x了 因此会出错</span></span><br><span class="line">                <span class="keyword">do</span>&#123;</span><br><span class="line">                    z=stk[top--];</span><br><span class="line">                    dcc[vdcc].<span class="built_in">push_back</span>(z);</span><br><span class="line">                &#125;<span class="keyword">while</span>(z!=y);</span><br><span class="line">                <span class="comment">//注意这里此时x仍然在栈中,只不过我们把它加入了dcc而已 x并没有弹出栈</span></span><br><span class="line">                <span class="comment">//这样当其他点双连通分量也包含割点x时 由于x仍然在栈中 因此能够找到割点x</span></span><br><span class="line">                dcc[vdcc].<span class="built_in">push_back</span>(x);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//否则说明节点y已经被访问过了,但是有可能节点y可以通过非树边(非父子边)追溯到更早的节点</span></span><br><span class="line">        <span class="comment">//那么也可以更新</span></span><br><span class="line">        <span class="keyword">else</span> </span><br><span class="line">            low[x]=<span class="built_in">min</span>(low[x],dfn[y]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> T=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span>(<span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;m),m)</span><br><span class="line">    &#123;</span><br><span class="line">        T++;</span><br><span class="line">        <span class="built_in">init</span>();</span><br><span class="line">        <span class="keyword">while</span>(m--)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> a,b;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;a,&amp;b);</span><br><span class="line">            <span class="comment">//由于题目没有说明点的最大编号  因此需要记录</span></span><br><span class="line">            n=<span class="built_in">max</span>(n,a),n=<span class="built_in">max</span>(n,b);</span><br><span class="line">            <span class="built_in">add</span>(a,b),<span class="built_in">add</span>(b,a);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(root=<span class="number">1</span>;root&lt;=n;root++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(!dfn[root])</span><br><span class="line">                <span class="built_in">tarjan</span>(root);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> res=<span class="number">0</span>;  <span class="comment">//至少需要设置几个救援出口</span></span><br><span class="line">        ULL path=<span class="number">1</span>; <span class="comment">//不同最少救援出口的设置方案总数</span></span><br><span class="line">        <span class="comment">//遍历着vdcc个点双连通分量</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=vdcc;i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> cnt=<span class="number">0</span>;  <span class="comment">//统计这个点双连通分量中割点的个数</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;dcc[i].<span class="built_in">size</span>();j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">int</span> x=dcc[i][j];</span><br><span class="line">                <span class="keyword">if</span>(cut[x])<span class="comment">//是割点</span></span><br><span class="line">                    cnt++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//无割点</span></span><br><span class="line">            <span class="keyword">if</span>(cnt==<span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(dcc[i].<span class="built_in">size</span>()&gt;<span class="number">1</span>)<span class="comment">//这个点双连通分量中点的个数&gt;1</span></span><br><span class="line">                &#123;</span><br><span class="line">                    res+=<span class="number">2</span>; <span class="comment">//需要在当前的这个点双连通分量设立两个出口</span></span><br><span class="line">                    <span class="comment">//从这dcc[i].size()个点中随意选择两个作为出口的方案数</span></span><br><span class="line">                    path*=dcc[i].<span class="built_in">size</span>()*(dcc[i].<span class="built_in">size</span>()<span class="number">-1</span>)/<span class="number">2</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//说明这个点双连通分量只存在1个孤立的节点</span></span><br><span class="line">                <span class="keyword">else</span>    </span><br><span class="line">                    res++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//有一个割点</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(cnt==<span class="number">1</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                res++;  <span class="comment">//从该点双连通分量中除了割点之外的那dcc[i].size()-1个点中随意选择一个点作为出口</span></span><br><span class="line">                <span class="comment">//从该点双连通分量中除了割点之外的那dcc[i].size()-1个点中随意选择一个点作为出口的方案数</span></span><br><span class="line">                path*=dcc[i].<span class="built_in">size</span>()<span class="number">-1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">         <span class="built_in">printf</span>(<span class="string">&quot;Case %d: %d %llu\n&quot;</span>, T, res, path);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
