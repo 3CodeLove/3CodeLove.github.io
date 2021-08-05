@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ek求最大流 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,EK求最大流
+题目描述
+
+核心思路残留网络：残留网络$G^*$与原网络$G$的节点相同，$G$中的每条边都对应$G^*$中的一条或两条边。在残留网络中，与原网络对应的同向边是可增量（还可以增加多少流,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">Ek求最大流</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">Ek求最大流</h1>
+        <div class="stuff">
+            <span>八月 05, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/EK%E7%AE%97%E6%B3%95/" rel="tag">EK算法</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="EK求最大流"><a href="#EK求最大流" class="headerlink" title="EK求最大流"></a>EK求最大流</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210805144728.png" alt="image-20210805144728255"></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>残留网络：残留网络$G^*$与原网络$G$的节点相同，$G$中的每条边都对应$G^*$中的一条或两条边。在残留网络中，与原网络对应的同向边是可增量（还可以增加多少流量），反向边是实际流量。</p>
+<p>在残留网络中不显示0流量边，网络$G$及可行流对应的残留网络$G^*$如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210805151526.png" alt="image-20210805151526564"></p>
+<p>如下图所示，第一次从$v_1$到$v_3$流出了flow为6的流量，那么由于最大容量cap=10，那么下次还可以从$v_1$到$v_3$流出flow为$10-6=4$的流量。反向边是实际流量可以理解为：$v_1$后悔把6这个流量送给$v_3$了，然后$v_3$就又把6这个流量归还给了$v_1$。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210805151610.png" alt="image-20210805151610067"></p>
+<p>增广路是指残留网络上从源点$S$到汇点$T$的一条简单路径。增广量是指增广路径上每条边都可以增流的最小值。</p>
+<p>如下图所示，$s\to v_1\to v_3\to t$就是一条增广路，增广量是这条增广路径上各边的最小值$min(9,5,12)=5$。为什么是取5而不是取9或者12呢？因为比如假设从源点$S$流出了流量9，但是由于$v_1\to v_3$这条水管最多承受流量5，因此当我们把流量9送到这条水管时，这条水管就爆了，不能运输水了，因此是取这条增广路径上各边的最小值。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210805151639.png" alt="image-20210805151639509"></p>
+<p>增广路定理：设$flow$是网络$G$的一个可行流，如果不存在从源点到汇点的增广路，则$flow$是$G$的一个最大流。</p>
+<p>增广路算法的基本思想：在残留网络中寻找增广路，然后在实流网络中沿增广路增流，在残留网络中沿增广路减流，重复以上步骤，直到不存在增广路时为止。此时，实流网络中的可行流就是所求的最大流。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210805151801.png" alt="image-20210805151801874"></p>
+<p>如上图所示。图一是原网络中每条边的初始容量。EK算法找到了流量为5的增广路$S\to C\to D\to B\to T$。于是在图二中，剩余容量对应发生了变化。接着，图三中，EK算法又找到了流量为2的增广路$S\to A\to B\to D\to E\to T$。最终在图四中，网络就不存在增广路了，最大流的大小就是$5+2=7$。图中省略了剩余容量为0的边。</p>
+<blockquote>
+<p>问题：如何理解i=e[pre[i]^1]</p>
+<p>如下图</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210805152509.png" alt="image-20210805152509340"></p>
+</blockquote>
+<p>啊</p>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">1010</span>,M=<span class="number">20010</span>,INF=<span class="number">1e8</span>;</span><br><span class="line"><span class="keyword">int</span> n,m,S,T;</span><br><span class="line"><span class="comment">//f是边上的容量</span></span><br><span class="line"><span class="keyword">int</span> h[N],e[M],ne[M],f[M],idx;</span><br><span class="line"><span class="comment">//q是宽搜存放点的队列</span></span><br><span class="line"><span class="comment">//d[i]=x表示从起点S到点i这条增广路上各边的最小剩余容量</span></span><br><span class="line"><span class="comment">//pre数组记录的前驱边而不是前驱点 比如pre[ver]=i表示节点ver是从边i走过来的</span></span><br><span class="line"><span class="comment">//即节点ver的前驱边是 边i</span></span><br><span class="line"><span class="keyword">int</span> q[N],d[N],pre[N];</span><br><span class="line"><span class="comment">//宽搜中判断某个点是否已经被访问过了</span></span><br><span class="line"><span class="keyword">bool</span> st[N];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b,<span class="keyword">int</span> c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//正向边 初始化还没有流出流量 所以正向边课流出的容量保持不变 仍为c</span></span><br><span class="line">    e[idx]=b,f[idx]=c,ne[idx]=h[a],h[a]=idx++;</span><br><span class="line">    <span class="comment">//反向边 初始化还没有流出流量 所以反向边没有流量  仍为0</span></span><br><span class="line">    e[idx]=a,f[idx]=<span class="number">0</span>,ne[idx]=h[b],h[b]=idx++;  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">bfs</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(st,<span class="number">0</span>,<span class="keyword">sizeof</span> st);</span><br><span class="line">    <span class="keyword">int</span> hh=<span class="number">0</span>,tt=<span class="number">0</span>;</span><br><span class="line">    <span class="comment">//由于d是想要求最小  所以一般初始化为无穷大</span></span><br><span class="line">    q[<span class="number">0</span>]=S,st[S]=<span class="literal">true</span>,d[S]=INF;</span><br><span class="line">    <span class="comment">//进行宽搜</span></span><br><span class="line">    <span class="keyword">while</span>(hh&lt;=tt)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> t=q[hh++];  <span class="comment">//取出队头元素</span></span><br><span class="line">        <span class="comment">//遍历节点t的所有邻接点</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=h[t];~i;i=ne[i])  <span class="comment">//i是边</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> ver=e[i];<span class="comment">//ver是节点t的邻接点</span></span><br><span class="line">            <span class="comment">//如果节点ver还没有被访问过 并且i这条边的容量仍然是大于0</span></span><br><span class="line">            <span class="keyword">if</span>(!st[ver]&amp;&amp;f[i])</span><br><span class="line">            &#123;</span><br><span class="line">                st[ver]=<span class="literal">true</span>;</span><br><span class="line">                <span class="comment">//d[t]表示从起点到节点t这条增广路径上的各边中的最小剩余容量</span></span><br><span class="line">                <span class="comment">//f[i]表示i这条边的容量</span></span><br><span class="line">                <span class="comment">//d[ver]表示从起点S到点ver这条增广路上各边的最小剩余容量</span></span><br><span class="line">                d[ver]=<span class="built_in">min</span>(d[t],f[i]);</span><br><span class="line">                <span class="comment">//pre[ver]=i表示节点ver是从边i走过来的 即节点ver的前驱边是 边i</span></span><br><span class="line">                pre[ver]=i;</span><br><span class="line">                <span class="comment">//如果走到了终点  则找到了一条从起点S到终点S且容量&gt;0的增广路径</span></span><br><span class="line">                <span class="keyword">if</span>(ver==T)</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">                q[++tt]=ver;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//没有找到增广路径</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">EK</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> maxflow=<span class="number">0</span>;  <span class="comment">//最大流</span></span><br><span class="line">    <span class="comment">//如果一直能找到增广路径  则一直寻找 同时累加每一条增广路径上的d[T]</span></span><br><span class="line">    <span class="comment">//最终就是这张图的最大流</span></span><br><span class="line">    <span class="keyword">while</span>(<span class="built_in">bfs</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//累加不同的增广路径上的d[T]</span></span><br><span class="line">        maxflow+=d[T];</span><br><span class="line">        <span class="comment">//从终点T逆向到起点S  更新正向边和反向边的容量</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=T;i!=S;i=e[pre[i]^<span class="number">1</span>])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//由于已经流出了d[T],那么pre[i]这条边还可以流出f[pre[i]]-d[T]的流量</span></span><br><span class="line">            f[pre[i]]-=d[T];    <span class="comment">//更新正向边的容量</span></span><br><span class="line">            f[pre[i]^<span class="number">1</span>]+=d[T];  <span class="comment">//更新反向边的容量</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//到这里说明不能再找到一条增广路径了  那么此时就求出了最大流</span></span><br><span class="line">    <span class="keyword">return</span> maxflow;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(h,<span class="number">-1</span>,<span class="keyword">sizeof</span> h);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d%d&quot;</span>,&amp;n,&amp;m,&amp;S,&amp;T);</span><br><span class="line">    <span class="keyword">while</span>(m--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b,c;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>,&amp;a,&amp;b,&amp;c);</span><br><span class="line">        <span class="built_in">add</span>(a,b,c);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,<span class="built_in">EK</span>());</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
