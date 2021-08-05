@@ -1,0 +1,230 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dinic求最大流 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,Dinic求最大流
+题目描述
+
+核心思路Dinic算法思想：首先通过广度优先搜索将图中的顶点分层，然后通过深度优先搜索，沿着层次增1并且$flow&amp;lt;limit$的方向寻找增广路，回溯时增流。一,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">Dinic求最大流</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">Dinic求最大流</h1>
+        <div class="stuff">
+            <span>八月 05, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/Dinic%E7%AE%97%E6%B3%95/" rel="tag">Dinic算法</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="Dinic求最大流"><a href="#Dinic求最大流" class="headerlink" title="Dinic求最大流"></a>Dinic求最大流</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210805171900.png" alt="image-20210805171900504"></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>Dinic算法思想：首先通过广度优先搜索将图中的顶点分层，然后通过深度优先搜索，沿着层次增1并且$flow&lt;limit$的方向寻找增广路，回溯时增流。一次深度优先搜索可以找到多条增广路径，实现多次增流，这正是Dinic算法的巧妙之处。</p>
+<p>算法步骤：</p>
+<ul>
+<li>在残留网络上BFS求出各个顶点的层次，构造分层图</li>
+<li>在分层图上进行DFS，沿着层次增1并且$flow&lt;limit$的方向寻找增广路径，在回溯时实现更新剩余容量。另外每个点可以流向多条边，因此还可以同时加入剪枝优化</li>
+<li>重复以上步骤，直到不存在增广路径为止</li>
+</ul>
+<p>如何理解一次深度优先搜索可以找到多条增广路径呢？</p>
+<p>如下图所示：</p>
+<p>我们可以利用一次bfs得到的分层图，然后对这个分层图进行一次dfs，就可以直接得出四条增广路径！！！</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210805180416.png" alt="image-20210805180415972"></p>
+<p>Dinic算法在执行过程中每次都要重新分层，从源点到汇点的层次是严格递增的，包含$V$个点的层次图最多有$V$层，所以最多重新分层$V$次。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210805181540.png" alt="image-20210805181540533"></p>
+<p>如何理解<code>limit</code>和<code>flow</code>变量呢？</p>
+<p><code>limit</code>表示从起点走到当前点$u$的路径的容量上限，我们要在满足这个限制的基础上，求出从当前点到汇点的最大流量。<code>flow</code>表示从当前点$u$出发，往后面流出的流量。</p>
+<p>如何理解$flow&lt;limit$呢？</p>
+<ul>
+<li>假设$flow&gt;limit$，根据流量守恒可知，这个是绝对不可能的，从起点$S$流到当前点的最大容量是$limit$，那么从当前点$u$流出去的容量不可能超过$limit$</li>
+<li>假设$flow=limit$，在一些数据中，如果在一次增广中$flow$刚好等于$limit$，就会继续跑下去，在下一层，开始是我们初始化了$flow=0$，假设经过上一层之后，传到下一层的$limit=0$，那么如果写成$flow\leq limit$，此时就会进入for循环中，又会继续跑下去，就一直调用find函数了，最后就跑不完了。</li>
+<li>综上，我们需要写成$flow&lt;limit$</li>
+</ul>
+<p>如何理解当前弧优化呢？</p>
+<p>如图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210805175617.png" alt="image-20210805175617764"></p>
+<p>我们定义一个数组cur记录当前边（弧）（功能类比邻接表中的h数组，只是会随着dfs的进行而修改），每次我们找过某条边（弧）时，修改cur数组，改成该边（弧）的编号，那么下次到达该点时，会直接从cur对应的边开始（也就是说从h到cur中间的那一些边（弧）我们就不走了）。首先，我们在按顺序dfs时，先被遍历到的边肯定是已经增广过了（或者已经确定无法继续增广了），那么这条边就可以视为“废边”。那么下次我们再到达该节点时，就可以直接无视掉所有废边，只走还有用的边，也就是说，每次dfs结束后，下次dfs可以更省时间。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> u, <span class="keyword">int</span> limit)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (u == T) <span class="keyword">return</span> limit;</span><br><span class="line">    <span class="keyword">int</span> flow = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = cur[u]; ~i &amp;&amp; flow &lt; limit; i = ne[i])</span><br><span class="line">    &#123;</span><br><span class="line">        cur[u] = i;  <span class="comment">// 当前弧优化</span></span><br><span class="line">        <span class="keyword">int</span> ver = e[i];</span><br><span class="line">        <span class="keyword">if</span> (d[ver] == d[u] + <span class="number">1</span> &amp;&amp; f[i])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> t = <span class="built_in">find</span>(ver, <span class="built_in">min</span>(f[i], limit - flow));</span><br><span class="line">            <span class="keyword">if</span> (!t) d[ver] = <span class="number">-1</span>;</span><br><span class="line">            f[i] -= t, f[i ^ <span class="number">1</span>] += t, flow += t;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> flow;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">10010</span>,M=<span class="number">2e5</span>+<span class="number">10</span>,INF=<span class="number">1e8</span>;</span><br><span class="line"><span class="keyword">int</span> n,m,S,T;</span><br><span class="line"><span class="comment">//f[i]是i这条边上的容量</span></span><br><span class="line"><span class="keyword">int</span> h[N],e[M],ne[M],f[M],idx;</span><br><span class="line"><span class="comment">//q是宽搜存放节点的队列</span></span><br><span class="line"><span class="comment">//d[i]=1表示i这个节点是在第一层  记录每个节点处于哪一个层次</span></span><br><span class="line"><span class="comment">//cur数组 是用来 当前边优化</span></span><br><span class="line"><span class="keyword">int</span> q[N],d[N],cur[N];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b,<span class="keyword">int</span> c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    e[idx]=b,f[idx]=c,ne[idx]=h[a],h[a]=idx++;</span><br><span class="line">    e[idx]=a,f[idx]=<span class="number">0</span>,ne[idx]=h[b],h[b]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">bfs</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(d,<span class="number">-1</span>,<span class="keyword">sizeof</span> d);  <span class="comment">//初始化层次为-1</span></span><br><span class="line">    <span class="keyword">int</span> hh=<span class="number">0</span>,tt=<span class="number">0</span>;</span><br><span class="line">    <span class="comment">//起点的层次属于第0层</span></span><br><span class="line">    q[<span class="number">0</span>]=S,d[S]=<span class="number">0</span>,cur[S]=h[S];</span><br><span class="line">    <span class="keyword">while</span>(hh&lt;=tt)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> t=q[hh++];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=h[t];~i;i=ne[i])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> ver=e[i];</span><br><span class="line">            <span class="comment">//d[ver]==-1表示ver这个点还没有访问过 没有被分层</span></span><br><span class="line">            <span class="keyword">if</span>(d[ver]==<span class="number">-1</span>&amp;&amp;f[i])</span><br><span class="line">            &#123;</span><br><span class="line">                d[ver]=d[t]+<span class="number">1</span>;</span><br><span class="line">                cur[ver]=h[ver];</span><br><span class="line">                <span class="keyword">if</span>(ver==T)</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">                q[++tt]=ver;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//u是当前节点</span></span><br><span class="line"><span class="comment">//limit表示从起点走到当前点的路径的容量上限</span></span><br><span class="line"><span class="comment">// 我们要在满足这个限制的基础上,求出从当前点到汇点的最大流量</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> u,<span class="keyword">int</span> limit)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//如果u等于T了,那么则找到了从源点S到汇点T的最大流 此时答案就是limit</span></span><br><span class="line">    <span class="keyword">if</span>(u==T)</span><br><span class="line">        <span class="keyword">return</span> limit;</span><br><span class="line">    <span class="comment">//flow表示u节点之后可以流出的流量</span></span><br><span class="line">    <span class="keyword">int</span> flow=<span class="number">0</span>;</span><br><span class="line">    <span class="comment">//遍历节点u的所有邻接点</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=cur[u];~i&amp;&amp;flow&lt;limit;i=ne[i])<span class="comment">//i是边</span></span><br><span class="line">    &#123;</span><br><span class="line">        cur[u]=i;<span class="comment">//当前弧优化</span></span><br><span class="line">        <span class="keyword">int</span> ver=e[i];</span><br><span class="line">        <span class="keyword">if</span>(d[ver]==d[u]+<span class="number">1</span>&amp;&amp;f[i])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//由于从点u往后已经输送了flow的流量 那么此时还可以从源点S输出的流量为limit-flow</span></span><br><span class="line">            <span class="comment">//f[i]表示i这条水管的容量 我们应该取f[i]和limit-flow的最小值</span></span><br><span class="line">            <span class="comment">//如果limit-flow&gt;f[i],则这条水管不够容纳 会爆掉</span></span><br><span class="line">            <span class="keyword">int</span> t=<span class="built_in">find</span>(ver,<span class="built_in">min</span>(f[i],limit-flow));</span><br><span class="line">            <span class="comment">//如果t为0 则说明从节点ver往后已经没有可以流出的流量了</span></span><br><span class="line">            <span class="comment">//那么从ver往后就不能找到一条增广路径了 直接d[ver]=-1;进行剪枝</span></span><br><span class="line">            <span class="keyword">if</span>(!t)</span><br><span class="line">                d[ver]=<span class="number">-1</span>;</span><br><span class="line">            f[i]-=t;        <span class="comment">//更新正向边的容量</span></span><br><span class="line">            f[i^<span class="number">1</span>]+=t;      <span class="comment">//更新反向边的容量</span></span><br><span class="line">            flow+=t;        <span class="comment">//往后输出的流量又增加了t</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> flow;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">dinic</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> maxflow=<span class="number">0</span>;      <span class="comment">//最大流</span></span><br><span class="line">    <span class="keyword">int</span> flow;</span><br><span class="line">    <span class="keyword">while</span>(<span class="built_in">bfs</span>())<span class="comment">//执行bfs构建分层图</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//对这张分层图进行dfs 寻找增广路径计算出可行流</span></span><br><span class="line">        <span class="keyword">while</span>(flow=<span class="built_in">find</span>(S,INF))</span><br><span class="line">            maxflow+=flow;      <span class="comment">//累加多条可行流 最终得到最大流</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> maxflow;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(h,<span class="number">-1</span>,<span class="keyword">sizeof</span> h);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d%d&quot;</span>,&amp;n,&amp;m,&amp;S,&amp;T);</span><br><span class="line">    <span class="keyword">while</span>(m--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b,c;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>,&amp;a,&amp;b,&amp;c);</span><br><span class="line">        <span class="built_in">add</span>(a,b,c);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,<span class="built_in">dinic</span>());</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
