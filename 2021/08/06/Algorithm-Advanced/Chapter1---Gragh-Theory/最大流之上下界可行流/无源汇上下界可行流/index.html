@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>无源汇上下界可行流 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,无源汇上下界可行流
+题目描述
+
+核心思路这个题目，给出了容量的下界和上界，这使得与普通的网络流不同。设容量下界为$C_l(u,v)$，容量上界为$C_u(u,v)$，边$(u,v)$上的流量为$f(,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">无源汇上下界可行流</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">无源汇上下界可行流</h1>
+        <div class="stuff">
+            <span>八月 06, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E6%97%A0%E6%BA%90%E6%B1%87%E4%B8%8A%E4%B8%8B%E7%95%8C%E5%8F%AF%E8%A1%8C%E6%B5%81/" rel="tag">无源汇上下界可行流</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="无源汇上下界可行流"><a href="#无源汇上下界可行流" class="headerlink" title="无源汇上下界可行流"></a>无源汇上下界可行流</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210806180157.png" alt="image-20210806180157259"></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>这个题目，给出了容量的下界和上界，这使得与普通的网络流不同。设容量下界为$C_l(u,v)$，容量上界为$C_u(u,v)$，边$(u,v)$上的流量为$f(u,v)$，要求$C_l(u,v)\leq f(u,v)\leq C_u(u,v)$</p>
+<p>我们令该式子都减去$C_l(u,v)$，则得到$0\leq f(u,v)-C_l(u,v)\leq C_u(u,v)-C_l(u,v)$。那么就转换为普通网络流的容量限制了。但是此时构建的这张新图中，并不一定满足流量守恒。</p>
+<blockquote>
+<p>可行流算法的核心是将一个不满足流量守恒的初始流调整成满足流量守恒的流</p>
+</blockquote>
+<p>初始流即一开始将每条边流量设为$low(i)$的流。显然这个流不一定满足流量守恒。我们要通过调整（再加上一个附加流）将其变为可行流。</p>
+<p>设$\sum <em>{i=u} \limits f</em>{in}(i)$表示到达点$u$的流入量，$\sum <em>{i=u} \limits f</em>{out}(i)$表示从点$u$出去的流出量，我们在原图中，令$A[u]=$$\sum <em>{i=u} \limits f</em>{in}(i)-$$\sum <em>{i=u} \limits f</em>{out}(i)$，即初始流中，点$u$的流入量-流出量</p>
+<p>在附加流中，让点$u$的流入量-流出量=$-A[u]$，就能保证流量守恒了。</p>
+<ul>
+<li>在附加流中，当$-A[u]&lt;0$时，即$A[u]&gt;0$，说明在新图中，点$u$的流入量小于点$u$的流出量，那么在新图中我们就需要增加点$u$的流入量，要增加的流入量为$A[u]$。那么我们就需要增加附加边，使得点$u$的流入量等于点$u$的流出量。因此，我们可以新建一个超级源点$S$，从$S$直接连一条容量为$A[u]$的有向边到点$u$，即$S\to u$。</li>
+<li>在附加流中，当$-A[u]&gt;0$，即$A[u]&lt;0$，说明在新图中，点$u$的流入量大于点$u$的流出量，那么在新图中我们就需要增加点$u$的流出量，要增加的流出量为$-A[u]$（因为$A[u]$是负数，我们增加的流量不能是负值）。那么我们就需要增加附加边，使得点$u$的流入量等于点$u$的流出量。因此，我们可以新建一个超级汇点$T$，从点$u$直接连一条容量为$-A[u]$的有向边到汇点$T$，即$u\to T$</li>
+</ul>
+<p>如下图理解：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210806205908.png" alt="image-20210806205908032"></p>
+<p>接着：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210806205951.png" alt="image-20210806205951129"></p>
+<p><strong>算法设计：</strong></p>
+<p>step1：</p>
+<p>建立新图G’。新边容量为d-c（上界-下界）</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">S = <span class="number">0</span>, T = n+<span class="number">1</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; m; i ++ )</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> a, b, c, d;</span><br><span class="line">    cin &gt;&gt; a &gt;&gt; b &gt;&gt; c &gt;&gt; d;</span><br><span class="line">    <span class="built_in">add</span>(a, b, c, d);</span><br><span class="line">    A[b] += c, A[a] -= c;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>step2：</p>
+<p>建立超级源点S和超级汇点T。流入大于流出点，连S到i，容量为A[i]；流出小于流入点，连i到T，容量为-A[i]    </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> tot = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i ++ )</span><br><span class="line">    <span class="keyword">if</span> (A[i] &gt; <span class="number">0</span>) <span class="built_in">add</span>(s, i, <span class="number">0</span>, A[i]), tot += A[i];</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (A[i] &lt; <span class="number">0</span>) <span class="built_in">add</span>(i, t, <span class="number">0</span>, -A[i]);</span><br></pre></td></tr></table></figure>
+
+<p>step3：</p>
+<p>判断流量守恒条件dinic() == tot。<strong>所有附加边的最大流满流，说明原图存在可行流</strong>（证明不会qaq，可以参考上图理解…）</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (tot != <span class="built_in">dinic</span>()) <span class="built_in">puts</span>(<span class="string">&quot;NO&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>step4：</p>
+<p>由于我们在新图$G’$中每条边都减去了该边的最小下界，因此在输出原图可行流时，是f[i^1]再加上最小下界$l[i]$</p>
+<p>这里反向边的容量f[i^1]的值是正向边f[i]的流量值，$i$在附加流中的流量（即反边容量）。这里主要是运用残留网络中双向边的含义。</p>
+<p>残留网络中的反向边f[i^1]表示的是原图中的正向边，而原图中正向边的含义就是这条边的流量。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;YES&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; m*<span class="number">2</span>; i += <span class="number">2</span>)</span><br><span class="line">        cout &lt;&lt; f[i^<span class="number">1</span>] + l[i] &lt;&lt; endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意边数的计算：题目描述中给出了最终有$10200$条边，由于我们需要增加从超级源点S到这$200$个点的边已经从这$200$个点到超级汇点$T$的边，在构建残留网络时，需要双向边，因此总共的边数就是$M=(10200+N)\times2$</p>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">210</span>,M=(<span class="number">10200</span>+N)*<span class="number">2</span>,INF=<span class="number">1e8</span>;</span><br><span class="line"><span class="keyword">int</span> n,m,S,T;</span><br><span class="line"><span class="keyword">int</span> h[N],e[M],ne[M],f[M],l[M],idx;  <span class="comment">//l[]数组存储的是每条边的流量下界</span></span><br><span class="line"><span class="keyword">int</span> q[N],d[N],cur[N],A[N];  <span class="comment">//A[i]表示第i个点的流入量与流出量的差值</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b,<span class="keyword">int</span> c,<span class="keyword">int</span> d)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//第idx条边的容量f[idx]为d-c  流量下界l[idx]是c</span></span><br><span class="line">    e[idx]=b,f[idx]=d-c,l[idx]=c,ne[idx]=h[a],h[a]=idx++;</span><br><span class="line">    e[idx]=a,f[idx]=<span class="number">0</span>,ne[idx]=h[b],h[b]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> u,<span class="keyword">int</span> limit)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(u==T)</span><br><span class="line">        <span class="keyword">return</span> limit;</span><br><span class="line">    <span class="keyword">int</span> flow=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=cur[u];~i&amp;&amp;flow&lt;limit;i=ne[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> ver=e[i];</span><br><span class="line">        <span class="keyword">if</span>(d[ver]==d[u]+<span class="number">1</span>&amp;&amp;f[i])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> t=<span class="built_in">find</span>(ver,<span class="built_in">min</span>(f[i],limit-flow));</span><br><span class="line">            <span class="keyword">if</span>(!t)</span><br><span class="line">                d[ver]=<span class="number">-1</span>;</span><br><span class="line">            f[i]-=t,f[i^<span class="number">1</span>]+=t,flow+=t;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> flow;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">bfs</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(d,<span class="number">-1</span>,<span class="keyword">sizeof</span> d);</span><br><span class="line">    <span class="keyword">int</span> hh=<span class="number">0</span>,tt=<span class="number">0</span>;</span><br><span class="line">    q[<span class="number">0</span>]=S,d[S]=<span class="number">0</span>,cur[S]=h[S];</span><br><span class="line">    <span class="keyword">while</span>(hh&lt;=tt)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> t=q[hh++];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=h[t];~i;i=ne[i])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> ver=e[i];</span><br><span class="line">            <span class="keyword">if</span>(d[ver]==<span class="number">-1</span>&amp;&amp;f[i])</span><br><span class="line">            &#123;</span><br><span class="line">                d[ver]=d[t]+<span class="number">1</span>;</span><br><span class="line">                cur[ver]=h[ver];</span><br><span class="line">                <span class="keyword">if</span>(ver==T)</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">                q[++tt]=ver;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">dinic</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> maxflow=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> flow;</span><br><span class="line">    <span class="keyword">while</span>(<span class="built_in">bfs</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(flow=<span class="built_in">find</span>(S,INF))</span><br><span class="line">            maxflow+=flow;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> maxflow;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;n,&amp;m);</span><br><span class="line">    <span class="built_in">memset</span>(h,<span class="number">-1</span>,<span class="keyword">sizeof</span> h);</span><br><span class="line">    S=<span class="number">0</span>,T=n+<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;m;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a,b,c,d;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d%d&quot;</span>,&amp;a,&amp;b,&amp;c,&amp;d);</span><br><span class="line">        <span class="built_in">add</span>(a,b,c,d);</span><br><span class="line">        <span class="comment">//从a流向b  每条边都减去它的流量下界</span></span><br><span class="line">        <span class="comment">//因此节点a减少了c</span></span><br><span class="line">        <span class="comment">//节点b增加了c</span></span><br><span class="line">        A[a]-=c,A[b]+=c;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> tot=<span class="number">0</span>;  <span class="comment">//记录从超级源点S到当前点i的流量</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(A[i]&gt;<span class="number">0</span>)<span class="comment">//如果节点i的流入量与流出量的差值大于0</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//从超级源点S到节点i添加一条 流量下界为0 流量上界为A[i] 的附加边</span></span><br><span class="line">            <span class="built_in">add</span>(S,i,<span class="number">0</span>,A[i]);</span><br><span class="line">            tot+=A[i];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(A[i]&lt;<span class="number">0</span>) <span class="comment">//如果节点i的流入量与流出量的差值小于0</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//从节点i到超级汇点T添加一条 流量下界为0 流量上界为-A[i] 的附加边</span></span><br><span class="line">            <span class="built_in">add</span>(i,T,<span class="number">0</span>,-A[i]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//用dinic算法在新图中求出最大流后,如果这个最大流不等于tot</span></span><br><span class="line">    <span class="comment">//则说明不满足&quot;所有附加边的最大流满流，说明原图存在可行流&quot;</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">dinic</span>()!=tot)</span><br><span class="line">        <span class="built_in">puts</span>(<span class="string">&quot;NO&quot;</span>);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">puts</span>(<span class="string">&quot;YES&quot;</span>);</span><br><span class="line">        <span class="comment">//i+=2是因为一条边分成了两条方向相反的有向边 i+=2就可以直接枚举到下一条边</span></span><br><span class="line">        <span class="comment">//即(0,1)是一条边,其中0表示一条有向边,1表示与编号为0的方向相反的边 (2,3)是一条边</span></span><br><span class="line">        <span class="comment">//i+=2那么下次就可以枚举(2,3)这条边了</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;m*<span class="number">2</span>;i+=<span class="number">2</span>)</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,f[i^<span class="number">1</span>]+l[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
