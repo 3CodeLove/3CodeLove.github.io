@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>后缀自动机 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,后缀自动机
+题目描述洛谷P3804
+
+核心思路考虑如何求出 “子串的出现数量”
+结论：子串substr出现的数量=|endpos(substr)|
+也就是说，子串substr出现的数量，其实就是en,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">后缀自动机</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">后缀自动机</h1>
+        <div class="stuff">
+            <span>八月 15, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%90%8E%E7%BC%80%E8%87%AA%E5%8A%A8%E6%9C%BA/" rel="tag">后缀自动机</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="后缀自动机"><a href="#后缀自动机" class="headerlink" title="后缀自动机"></a>后缀自动机</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P3804">洛谷P3804</a></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>考虑如何求出 “子串的出现数量”</p>
+<p>结论：子串substr出现的数量=|endpos(substr)|</p>
+<p>也就是说，子串substr出现的数量，其实就是endpos(substr)这个集合中的元素的个数</p>
+<p>如下图感性理解一下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210815164451.png" alt="image-20210815164444420"></p>
+<p>如上图所示，设原串为$abca$，我们想要求出子串a的出现数量，由原串一眼就看出子串a出现了两次。但是我们观察endpos发现，$endpos(“a”)=[1,4]$，这个集合中的元素个数为2，这刚好就说明了子串a出现了两次。</p>
+<p>接下来就要考虑怎么才能求出某个endpos集合的大小呢？</p>
+<p>这里要注意，其实endpos集合只与后缀自动机中的后缀链接link有关，因此我们建图时，就只需要把含有link的边建立出来就好了。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210815165154.png" alt="image-20210815165154096"></p>
+<p>如上图所示，我们发现一个性质：叶子节点endpos的并集就构成了它们父节点的endpos中的元素。但是要注意有可能父节点是有属于自己特有的元素的。因此我们要计算<code>endpos[u]</code>的大小时，就先计算自己特有的元素的大小<code>endpos[u]</code>，然后再计算它的子节点的元素大小<code>endpos[v]</code>，那么相加，就会得到状态节点$u$的endpos集合的大小$|endpos(u)|$</p>
+<p>虽然再后缀自动机中，我们是从子节点向父节点引了后缀链接边，但是在这题中，我们建图时，我们是从父节点向子节点建立一条有向边。为什么呢？因为这样当我们进行dfs时，从根节点开始，一直递归到叶子节点，然后统计出了叶子节点$v$的endpos集合大小$endpos(v)$，那么在回溯时就会累加到其父节点$u$，那么就可以算出父节点$u$的endpos集合大小$endpos(u)$了</p>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> LL;</span><br><span class="line"><span class="comment">//N是后缀自动机中的状态节点个数 要开2倍  M是建立出只含link后缀链接时图中边的总数</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N = <span class="number">2e6</span>+<span class="number">10</span>,M = N;</span><br><span class="line"><span class="comment">//tot记录的是后缀自动机中的状态节点 初始化为根节点1</span></span><br><span class="line"><span class="comment">//last记录的是上一个状态节点</span></span><br><span class="line"><span class="keyword">int</span> tot = <span class="number">1</span>, last = <span class="number">1</span>;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Node</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> len;    <span class="comment">//记录这个状态节点所形成的串中最大的那个串的长度</span></span><br><span class="line">    <span class="keyword">int</span> link;   <span class="comment">//后缀链接</span></span><br><span class="line">    <span class="keyword">int</span> ch[<span class="number">26</span>]; <span class="comment">//类似于trie树中的孩子</span></span><br><span class="line">&#125;node[N];</span><br><span class="line"><span class="keyword">char</span> str[N];</span><br><span class="line"><span class="comment">//endpos集合   ans是答案</span></span><br><span class="line">LL endpos[N], ans;  </span><br><span class="line"><span class="keyword">int</span> h[N], e[M], ne[M], idx;</span><br><span class="line"></span><br><span class="line"><span class="comment">//后缀自动机模板</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">extend</span><span class="params">(<span class="keyword">int</span> c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//先用p来记录上一个状态节点</span></span><br><span class="line">    <span class="comment">//然后由于来了一个字符c,需要进行状态转移了</span></span><br><span class="line">    <span class="comment">// 因此给转移后得到的节点np分配一个编号tot</span></span><br><span class="line">    <span class="keyword">int</span> p = last, np = last = ++ tot;</span><br><span class="line">    <span class="comment">//以tot这个位置结尾形成串它自己就是一个前缀</span></span><br><span class="line">    endpos[tot] = <span class="number">1</span>;</span><br><span class="line">    <span class="comment">//由于np是从p通过新添一个字符c转移过去的  因此长度+1</span></span><br><span class="line">    node[np].len = node[p].len + <span class="number">1</span>;</span><br><span class="line">    <span class="comment">//沿着p的后缀链接遍历节点  如果遍历到的节点p它没有孩子c</span></span><br><span class="line">    <span class="comment">//则要创建出来  让np连一条后缀链接边到node[p].ch[c]就相当于</span></span><br><span class="line">    <span class="comment">//该节点p通过字符c转移到了np</span></span><br><span class="line">    <span class="keyword">for</span> (; p &amp;&amp; !node[p].ch[c];p = node[p].link)</span><br><span class="line">        node[p].ch[c] = np;</span><br><span class="line">    <span class="comment">//沿着后缀链接一直来到了根节点  仍然没有发现</span></span><br><span class="line">    <span class="comment">//那么np的后缀链接就是根节点</span></span><br><span class="line">    <span class="keyword">if</span> (!p)</span><br><span class="line">        node[np].link = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> q = node[p].ch[c];  <span class="comment">//找到状态节点p的c孩子节点 q</span></span><br><span class="line">        <span class="comment">//np沿着后缀链接找到了q 发现q中有np想要的串 能够进行后缀邻接</span></span><br><span class="line">        <span class="comment">//那么此时nq就可以引出一条后缀链接边到q</span></span><br><span class="line">        <span class="keyword">if</span> (node[q].len == node[p].len + <span class="number">1</span>)</span><br><span class="line">            node[np].link = q;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//将q一分为二 变成q 和 nq</span></span><br><span class="line">            <span class="keyword">int</span> nq = ++ tot;</span><br><span class="line">            <span class="comment">//nq是q克隆出来了  但是nq包含了从q中抽离出来的能够让np进行后缀链接的串</span></span><br><span class="line">            node[nq] = node[q], node[nq].len = node[p].len + <span class="number">1</span>;</span><br><span class="line">            <span class="comment">//分裂前的q引一条后缀链接边到nq</span></span><br><span class="line">            <span class="comment">//从新开的状态节点np引一条后缀链接边到nq</span></span><br><span class="line">            node[q].link = node[np].link = nq;</span><br><span class="line">            <span class="comment">//沿着p的后缀链接一直往回走 将所遍历到的节点 都 引一条后缀链接边到nq</span></span><br><span class="line">            <span class="keyword">for</span> (; p &amp;&amp; node[p].ch[c] == q; p = node[p].link)</span><br><span class="line">                node[p].ch[c] = nq;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    e[idx] = b, ne[idx] = h[a], h[a] = idx ++ ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> u)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = h[u]; ~i; i = ne[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> v=e[i];</span><br><span class="line">        <span class="built_in">dfs</span>(v);</span><br><span class="line">        <span class="comment">//当前状态节点u的endpos就等于它自身特有的endpos[u]加上它的孩子节点的endpos[v]</span></span><br><span class="line">        <span class="comment">//比如u=&#123;1,2,3,4,5&#125;  v1=&#123;1,2&#125;,v2=&#123;3,4&#125; 那么它特有的就是&#123;5&#125;</span></span><br><span class="line">        <span class="comment">//所以u的endpos集合中元素的个数 就是  它自己特有的&#123;5&#125; 加上 |v1|+|v2|</span></span><br><span class="line">        <span class="comment">//一共就是5个 即endpos[u]的元素个数为5</span></span><br><span class="line">        endpos[u] += endpos[v];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//出现次数不为 1</span></span><br><span class="line">    <span class="keyword">if</span> (endpos[u] &gt; <span class="number">1</span>) </span><br><span class="line">        ans = <span class="built_in">max</span>(ans, endpos[u] * node[u].len);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>, str+<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; str[i]; i ++ )</span><br><span class="line">        <span class="built_in">extend</span>(str[i] - <span class="string">&#x27;a&#x27;</span>);</span><br><span class="line">    <span class="built_in">memset</span>(h, <span class="number">-1</span>, <span class="keyword">sizeof</span> h);</span><br><span class="line">    <span class="comment">//虽然后缀自动机中后缀链接是从子节点引向父节点</span></span><br><span class="line">    <span class="comment">//但是我们这里是建边时是从父节点引向子节点  因为这样的话</span></span><br><span class="line">    <span class="comment">//我们在dfs时是从父节点递归到子节点  然后统计子节点的endpos值</span></span><br><span class="line">    <span class="comment">//回溯时累加到其父节点的endpos上     这样就刚好满足 &quot;父节点是它子节点的并集&quot; 的性质</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= tot; i ++ )</span><br><span class="line">        <span class="built_in">add</span>(node[i].link, i);</span><br><span class="line">    <span class="built_in">dfs</span>(<span class="number">1</span>); <span class="comment">//从后缀状态机的根节点开始深搜</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%lld\n&quot;</span>, ans);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
