@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>回文串 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,回文串
+题目描述洛谷P3649
+
+回文树回文树 (EER Tree，Palindromic Tree，也被称为回文自动机）是一种可以存储一个串中所有回文子串的高效数据结构，使用回文树可以简单高效地解,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">回文串</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">回文串</h1>
+        <div class="stuff">
+            <span>八月 22, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%9B%9E%E6%96%87%E6%A0%91/" rel="tag">回文树</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="回文串"><a href="#回文串" class="headerlink" title="回文串"></a>回文串</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P3649">洛谷P3649</a></p>
+<hr>
+<h3 id="回文树"><a href="#回文树" class="headerlink" title="回文树"></a>回文树</h3><p>回文树 (EER Tree，Palindromic Tree，也被称为回文自动机）是一种可以存储一个串中所有回文子串的高效数据结构，使用回文树可以简单高效地解决一系列涉及回文串的问题。</p>
+<p>回文树大概长这样：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210822180354.png" alt="image-20210822180354470"></p>
+<p>回文树是由<strong>转移边</strong>和<strong>后缀链接 (fail 指针）</strong>组成，每个<strong>节点</strong>都可以代表一个<strong>回文子串</strong>。</p>
+<p>因为回文串长度分为奇数和偶数，因此我们需要建立两棵树，一棵树中的节点对应的回文子串长度均为奇数，另一棵树中的节点对应的回文子串长度均为偶数。也就是说，这棵回文树其实包含了两棵树。树中一个节点的 fail 指针指向的是这个节点所代表的回文串的最长回文后缀所对应的节点，但是转移边并非代表在原节点代表的回文串后加一个字符，而是表示在原节点代表的回文串前后各加一个相同的字符（不难理解，因为要保证存的是回文串）。</p>
+<p>我们还需要在每个节点上维护此节点对应回文子串的长度 len，这个信息保证了我们可以轻松地构造出回文树。</p>
+<p>回文树有两个初始状态，分别代表长度为-1，0的回文串。我们可以称它们为奇根，偶根，其中偶根节点是0，奇根节点是1。它们不表示任何实际的字符串，仅作为初始状态存在，这与其他自动机的根节点是异曲同工的。</p>
+<p>特殊规定：偶根的 fail 指针指向奇根，也就是<code>fail[0]=1</code>。而我们并不关心奇根的 fail 指针，因为奇根不可能失配，因为奇根不代表任何实际的字符串，那么从奇根转移出去得到的是一个单字符，对于一个单字符来说，它自身本来就是回文串，因此不可能失配。</p>
+<p>回文串的性质：比如”bcdcb”是一个回文串，那么我们在前后两端各加上一个字符a，得到的新字符串”abcdcba”仍然是一个回文串。</p>
+<p>先给出以下变量的定义：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">len[i]:表示编号为i的这个节点所表示的回文串的长度</span><br><span class="line">ch[i][c]:表示在编号为i的节点所表示的回文串前后两端加上字符c后所形成的新的回文串,这个新的回文串可以用一个节点来表示 也就是ch[i][c] ch[i][c]也就是新的回文串所对应的状态节点</span><br><span class="line">fail[i]:表示节点i失配后应该跳转到不等于自身的最长回文后缀所对应的节点</span><br><span class="line">cnt[i]:表示节点i所表示的回文串的出现次数</span><br><span class="line">last:表示上一个插入字符所在的节点</span><br><span class="line">tot:表示这个回文树中添加的节点个数(不包括奇根和偶根) 我们用tot=<span class="number">0</span>来表示了$字符,因此tot是从<span class="number">1</span>开始来表示题目中输入的字符的</span><br><span class="line">sz:表示这个回文数中的节点总数(包括奇根和偶根) 初始化时sz=<span class="number">-1</span>,然后规定sz=<span class="number">0</span>表示偶根 sz=<span class="number">1</span>表示奇根,最终sz=tot+<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>下面我们来看一下字符串”eertree”这个回文树是怎么被建造出来的：</p>
+<p>图中的蓝边表示转移边，红边就是表示后缀链接fail指针。</p>
+<p>图中的0表示偶根的回文长度，规定偶根的节点为0；-1表示奇根的回文长度，规定奇根的节点为1。那为什么从奇根转移出去得到的一个字符呢？首先，我们是在前后两端加上同 一个字符，那么转移后的节点长度就增加了2。由于是从奇根转移出去，因此-1+2=1，也就是1个字符。比如图中的字符e，t，r。本来是增长了两个字符ee，tt，rr，但是由于是奇根，长度为-1，因此+2后得到1，于是我们认为从奇根转移出去的得到的字符是e，t，r而不是ee，tt，rr。这也就是为什么从奇根转移出去得到的是一个单字符。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210822181256.png" alt="image-20210822181256347"></p>
+<p>规定偶根0的fail指针指向奇根 ，奇根的fail指针指向其自身：</p>
+<p>但是要注意明确定义了$fail[0]=1$，但是没有明确定义$fail[1]$，不过它使用的全局变量，因此默认$fail[1]=0$ 注意不是$fail[1]=1$哦</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210822182415.png" alt="image-20210822182415752"></p>
+<p>插入第一个字符E：</p>
+<p>规定：单个字符的fail指针指向的是偶根0</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210822182819.png" alt="image-20210822182819548"></p>
+<p>接下来插入第二个字符E：</p>
+<p>为什么ee不是从前面已经得到e连出来的呢？而是从偶根0连出来的呢？因为如果从e连出来，那么在其前后两端添加字符e，则会得到eee，而不是我们想要的ee；如果我们从偶根0连出来，由于偶根0不代表任何实际字符串，那么在其前后两端添加字符e，则会得到ee，符合我们的预期。因此是从偶根0转移出来的。</p>
+<p>那么我们来思考一下为什么ee的fail指针会指向e呢？根据fail指针的含义可知，我们要找当前串中最长的回文后缀，对于ee来说，其后缀只有一个e，对于单个字符肯定是回文的，于是ee的最长回文后缀就是e，因此ee的fail指针指向了e，即图中ee指向e的红色边。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210822182937.png" alt="image-20210822182937052"></p>
+<p>接下来插入第三个字符R</p>
+<p>由于此时EER并不是回文串，因此插入的这单个字符R它是从奇根转移过来的（图中奇根到r的蓝边），而且我们规定了单个字符的fail指向的是偶根0（图中r到偶根0的红边）</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210822204248.png" alt="image-20210822204248118"></p>
+<p>接下来插入第四个字符T</p>
+<p>由于此时EERT并不是回文串，因此插入的这单个字符T它是从奇根转移过来的（图中奇根到t的蓝边），而且我们规定了单个字符的fail指向的是偶根0（图中t到偶根0的红边）</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210822204537.png" alt="image-20210822204537921"></p>
+<p>接下来插入第五个字符R：</p>
+<p>此时字符串为EERTR，我们发现RTR是回文串，而且它是在字符T前后两端添加字符R后转移得到的，因此从t到rtr有一条蓝边。然后我们来看RTR的fail指针该怎么求呢？RTR它的后缀有R，TR，明显TR不是回文的，而单个字符R一定是回文的，因此RTR的最长回文后缀就是R，于是从RTR到R有一条红边，即fail指针。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210822204925.png" alt="image-20210822204925826"></p>
+<p>接下来插入第六个字符E：</p>
+<p>此时字符串为EERTRE，我们发现ERTRE是回文串，而且它是在RTR前后两端添加字符E后转移得到的，因此从rtr到eertre有一条蓝边。然后我们来看ERTRE的fail指针该怎么求呢？ERTRE的后缀有E，RE，TRE，RERE，显然RE，TRE，RERE都不是回文的，而单个字符E一定是回文的，因此ERTRE的最长回文后缀就是E，于是从ERTRE到E有一条红边，即fail指针。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210822205409.png" alt="image-20210822205409415"></p>
+<p>最后插入第七个字符E：</p>
+<p>此时字符串为EEREREE，它就是一个回文串，而且它是在ERTRE的前后两端添加字符E后转移得到的，因此从ERTRE到EEREREE有一条蓝边。然后我们来看EEREREE的fail指针该怎么求呢？EEREREE的后缀有E，EE，REE，EREE，REREE，EREREE，从中发现EE的最长的回文后缀，于是从EEREREE到EE有一条红边，即fail指针。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210822205753.png" alt="image-20210822205753864"></p>
+<p><strong>引理1：向S末尾添加一个字符，最多只会新生成一个回文子串。</strong></p>
+<p>这里得到的新的回文子串其实是S的最长回文后缀末端增加c，且原来的前端也恰好是c，所产生的。如下图直观感受一下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210822211029.png" alt="image-20210822211029800"></p>
+<p><strong>引理2：设节点$u$的回文长度为$len[u]$，任何一个满足$len[u]&gt;1$的节点$u$的入度为1（注意这里的入度是对于蓝色的转移边来说的，而不考虑红色的fail指针的后缀链接边）</strong></p>
+<p>从上面的构造图中，我们可以发现：</p>
+<ul>
+<li>如果$len[u]=1$，则其唯一的入边必然是奇根$\to u$，例如上图中的节点e，节点t，节点r，回文长度都为1，而且都是从奇根引出的蓝边</li>
+<li>如果$len[u]=2$，则其唯一的入边必然是偶根$\to u$，例如上图中的节点ee，是从偶根引出的蓝边</li>
+<li>如果$len[u]\geq 3$，则其唯一的入边必然为$v\to u$，满足：节点$v$所表示的回文串T的前后两端添加某个字符c后，使得节点$u$表示的回文串S满足S=cTc。例如上图中的节点rtr，其回文长度为3，它是从节点t前面两端添加字符r后转移得到的。</li>
+</ul>
+<p>下面主要讲解这段代码是啥意思：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(<span class="keyword">char</span> c)</span> <span class="comment">//建树</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    s[++tot] = c;</span><br><span class="line">    <span class="comment">//设此时得到的回文后缀所对应的节点是now  设其回文后缀是Q</span></span><br><span class="line">    <span class="keyword">int</span> now = <span class="built_in">getfail</span>(last);</span><br><span class="line">    <span class="keyword">if</span> (!ch[now][c - <span class="string">&#x27;a&#x27;</span>])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//在回文后缀前后两端添加字符c后 得到回文串cQc 对应的状态节点是x 同时其回文长度是len[now] + 2</span></span><br><span class="line">        <span class="keyword">int</span> x = <span class="built_in">node</span>(len[now] + <span class="number">2</span>);</span><br><span class="line">        <span class="comment">//注意下面的这两个顺序不能相反</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//找到x的fail指针应该连向的节点是哪个  那么我们就顺着now的fail指针走 直到不能走为止</span></span><br><span class="line">        fail[x] = ch[<span class="built_in">getfail</span>(fail[now])][c - <span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">        ch[now][c - <span class="string">&#x27;a&#x27;</span>] = x;</span><br><span class="line">    &#125;</span><br><span class="line">    last = ch[now][c - <span class="string">&#x27;a&#x27;</span>];    <span class="comment">//将当前节点ch[now][c - &#x27;a&#x27;]给last  更新last</span></span><br><span class="line">    cnt[last]++;    <span class="comment">//last状态节点所表示的回文串的出现次数+1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>比如上述栗子中，现在插入第一个字符E，那么s[1]=E，last=0，执行getfail(0)，由图可知0是偶根节点，它的fail指向的是奇根1，因此经过getfail(0)后返回的结果是1，所以此时now=1，指向的是奇根节点。然后由图可知，此时奇根now还没有存在E这个节点，那么我们就创建出这个节点E，len[now]+2=len[1]+2=-1+2=1，因此经过node(1)后，返回的结果是2，即x=2，也就是说新建出来的这个节点E的编号是2。然后我们就要处理E节点它的fail指针应该指向哪个节点呢？此时fail[now]=fail[1]，而我们知道fail[1]使用的是全局变量的0，因此fail[1]=0，所以经过getfail(0)后返回的结果是1，所以$ch[1][‘e’-‘a’]=ch[1][4]$，由于我们初始化$ch[][]$都为0了，所以此时$ch[1][4]=0$，即$fail[2]=ch[1][4]=0$，也就是说当前新建的这个节点E它的fail指针指向偶根0，这与我们之前所说的单个字符的fail指针指向的是偶根0 是等同的。然后将创建出来的这个节点编号$x=2$赋给now的儿子$ch[now][4]$，表示已经把now的孩子c已经建立出来了。接着让last移动到新创建的这个节点，最后统计一下last状态节点所表示的回文串的出现次数即可。</p>
+<p>插入完第一个字符E后，此时now=1，接着插入第二个字符E，s[2]=E，last=2，执行getfail(2)后返回结果为1，即2号点的fail指针是奇根1，所以now=1，发现now已经存在E这个节点了，于是不需要再建立出来了。</p>
+<p>通过这两步我们就能理解为什么需要变量$last$了，有了变量$last$，我们就能知道回文树中是否已经存在了我们当前即将插入的这个字符c的节点了。不然的话，我们会重复插入。</p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>有了上面的前置知识，那么我们来解决这题：</p>
+<p>题目想要求的是所有回文子串中的最大存在值，而每个回文串的最大存在值=该回文串出现的次数$\times$ 该回文串的长度</p>
+<p>由回文树可知，利用回文树可以统计直接统计出每个回文串出现的次数和回文串的长度，因此这题可以直接使用回文树来解决。</p>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N = <span class="number">3e5</span>+<span class="number">10</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> LL;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">//len[i]:表示编号为i的这个节点所表示的回文串的长度</span></span><br><span class="line"><span class="comment">//ch[i][c]:表示在编号为i的节点所表示的回文串前后两端加上字符c后所形成的新的回文串</span></span><br><span class="line"><span class="comment">//这个新的回文串可以用一个节点来表示 也就是ch[i][c] ch[i][c]也就是新的回文串所对应的状态节点</span></span><br><span class="line"><span class="comment">//fail[i]:表示节点i失配后应该跳转到不等于自身的最长回文后缀所对应的节点</span></span><br><span class="line"><span class="comment">//cnt[i]:表示节点i所表示的回文串的出现次数</span></span><br><span class="line"><span class="comment">//last:表示上一个插入字符所在的节点</span></span><br><span class="line"><span class="comment">//tot:表示这个回文树中添加的节点个数(不包括奇根和偶根) 我们用tot=0来表示了$字符</span></span><br><span class="line"><span class="comment">//因此tot是从1开始来表示题目中输入的字符的</span></span><br><span class="line"><span class="comment">//sz:表示这个回文数中的节点总数(包括奇根和偶根) 初始化时sz=-1,然后规定sz=0表示偶根 sz=1表示奇根</span></span><br><span class="line"><span class="comment">// 最终sz=tot+1</span></span><br><span class="line"><span class="comment">//n添加的字符个数</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">int</span> sz, tot, last;</span><br><span class="line"><span class="keyword">int</span> cnt[N], ch[N][<span class="number">26</span>], len[N], fail[N];</span><br><span class="line"><span class="keyword">char</span> s[N];  <span class="comment">//字符串  下标从1开始</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">node</span><span class="params">(<span class="keyword">int</span> x)</span> <span class="comment">//建立一个新节点，长度为x</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    sz++;   <span class="comment">//新建了一个节点  因此节点总数+1</span></span><br><span class="line">    <span class="built_in">memset</span>(ch[sz], <span class="number">0</span>, <span class="built_in"><span class="keyword">sizeof</span></span>(ch[sz]));  <span class="comment">//该节点目前还没有孩子节点</span></span><br><span class="line">    len[sz] = x;    <span class="comment">//sz这个节点的所表示的回文长度为x 就是它自身的长度</span></span><br><span class="line">    <span class="comment">//对于新插入的一个字符  我们都规定它的fail指向的是偶根0</span></span><br><span class="line">    fail[sz] = cnt[sz] = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> sz;  <span class="comment">//得到新建出来的这个节点的编号</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> <span class="comment">//初始化</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    sz = <span class="number">-1</span>;</span><br><span class="line">    last = <span class="number">0</span>;</span><br><span class="line">    s[tot] = <span class="string">&#x27;$&#x27;</span>;</span><br><span class="line">    <span class="built_in">node</span>(<span class="number">0</span>);    <span class="comment">//建立偶根节点</span></span><br><span class="line">    <span class="built_in">node</span>(<span class="number">-1</span>);   <span class="comment">//建立奇根节点</span></span><br><span class="line">    <span class="comment">//特殊地规定 0号点的fail指针指向1 也就是偶根的fail指向的是奇根</span></span><br><span class="line">    <span class="comment">//非0、1号点并且后缀中不存在回文串的节点(其实也就是单个字符)不指向它本身，而是指向0</span></span><br><span class="line">    fail[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getfail</span><span class="params">(<span class="keyword">int</span> x)</span> <span class="comment">//找后缀回文</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//查看区间[tot - len[x],tot-1]内的字符串S已经是回文串了</span></span><br><span class="line">    <span class="comment">//s[tot - len[x] - 1]是S左端点前面的一个字符  s[tot]是S右端点的下一个新增的字符c  如果它俩不匹配</span></span><br><span class="line">    <span class="comment">//那么就顺着fail指针去到这个字符串S的内部寻找最大的回文后缀</span></span><br><span class="line">    <span class="keyword">while</span> (s[tot - len[x] - <span class="number">1</span>] != s[tot])</span><br><span class="line">        x = fail[x];</span><br><span class="line">    <span class="keyword">return</span> x;   <span class="comment">//找到了最大的回文后缀</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(<span class="keyword">char</span> c)</span> <span class="comment">//建树</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    s[++tot] = c;</span><br><span class="line">    <span class="comment">//设此时得到的回文后缀所对应的节点是now  设其回文后缀是Q</span></span><br><span class="line">    <span class="keyword">int</span> now = <span class="built_in">getfail</span>(last);</span><br><span class="line">    <span class="keyword">if</span> (!ch[now][c - <span class="string">&#x27;a&#x27;</span>])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//在回文后缀前后两端添加字符c后 得到回文串cQc 对应的状态节点是x 同时其回文长度是len[now] + 2</span></span><br><span class="line">        <span class="keyword">int</span> x = <span class="built_in">node</span>(len[now] + <span class="number">2</span>);</span><br><span class="line">        <span class="comment">//注意下面的这两个顺序不能相反</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//找到x的fail指针应该连向的节点是哪个  那么我们就顺着now的fail指针走 直到不能走为止</span></span><br><span class="line">        fail[x] = ch[<span class="built_in">getfail</span>(fail[now])][c - <span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">        ch[now][c - <span class="string">&#x27;a&#x27;</span>] = x;</span><br><span class="line">    &#125;</span><br><span class="line">    last = ch[now][c - <span class="string">&#x27;a&#x27;</span>];    <span class="comment">//将当前节点ch[now][c - &#x27;a&#x27;]给last  更新last</span></span><br><span class="line">    cnt[last]++;    <span class="comment">//last状态节点所表示的回文串的出现次数+1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">LL <span class="title">query</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    LL ans = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">//这里需要从sz遍历到0  因为fail[0]=1是存在的</span></span><br><span class="line">    <span class="comment">//cnt[p]表示回文串p出现的次数 我们知道p表示的是最长回文串 不妨设p=&quot;cQcQc&quot;,那么每次p出现的时候</span></span><br><span class="line">    <span class="comment">//其回文后缀cQc,c是不是也跟着出现一次呢  因此我们当p出现的时候</span></span><br><span class="line">    <span class="comment">//我们一定要记得把p中的回文后缀的出现次数也更新  即也要更新cQc和c的出现次数</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = sz; i &gt;= <span class="number">0</span>; i--)</span><br><span class="line">        cnt[fail[i]] += cnt[i];</span><br><span class="line">    <span class="comment">//这里其实从0到sz也是可以的   只不过由于node(0)时初始化len[0]=0了</span></span><br><span class="line">    <span class="comment">//因此len[0]*cnt[0]=0*cnt[0]=0  不影响答案</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= sz; i++)   <span class="comment">//更新答案</span></span><br><span class="line">        ans = <span class="built_in">max</span>(ans, <span class="number">1LL</span> * len[i] * cnt[i]);</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">init</span>(); <span class="comment">//初始化</span></span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>, s + <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; s[i]; i++)</span><br><span class="line">        <span class="built_in">insert</span>(s[i]);   <span class="comment">//将字符插入到回文树中</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%lld\n&quot;</span>,<span class="built_in">query</span>());</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
