@@ -61,11 +61,6 @@
         <div class="content markdown">
             <h1 id="后缀数组"><a href="#后缀数组" class="headerlink" title="后缀数组"></a>后缀数组</h1><hr>
 <h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">n:代表字符串长度 m:代表字符集大小 </span></span><br><span class="line"><span class="comment">s数组：字符串数组,内容从下标1开始</span></span><br><span class="line"><span class="comment">rk数组:排名数组</span></span><br><span class="line"><span class="comment">c数组：基数排序的数组，下标为待排序的数字，值为该数字出现的次数。排序过程中，我们会对其求前缀和以便计算排名</span></span><br><span class="line"><span class="comment">x数组：是一个中间量数组，意义为得到第一关键字的大小，对于一次排序，下标为代表后缀编号，值为象征对应后缀编号第一关键字大小的值（事实上可以视作排名）</span></span><br><span class="line"><span class="comment">y数组：是一个中间量数组，意义为第二关键字的排名，对于一次排序，下标为排名，值为第二关键字对应的后缀的编号</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">get_sa</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//统计该次第一关键字（首字母）的出现次数</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i ++ ) c[x[i] = s[i]] ++ ;</span><br><span class="line">    <span class="comment">//计算前缀和</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= m; i ++ ) c[i] += c[i - <span class="number">1</span>];	</span><br><span class="line">    <span class="comment">//计算第一次排序的sa,此次基数排序,仅区分首字母和后缀编号，首字母小的在前，首字母相同，后缀编号小（后缀长度大）的在前</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = n; i; i -- ) sa[c[x[i]] -- ] = i;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt;= n; k &lt;&lt;= <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//从21~31都是倍增计算y数组 先进行第二关键字排序</span></span><br><span class="line">        <span class="keyword">int</span> num = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//有一些后缀拆分后的第二关键字为空，这个循环将这些后缀的排名提到最前，以表示空字符的最高优先级</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = n - k + <span class="number">1</span>; i &lt;= n; i ++ ) y[ ++ num] = i;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        对于满的第二关键字排序，利用某一后缀的后缀也是原串的后缀这一特点,由上一次的sa计算而来.</span></span><br><span class="line"><span class="comment">        考虑那些排名靠前的后缀，如果往前补倍增长度位，那么这个后缀对应的长度前缀就变成了第二关键字</span></span><br><span class="line"><span class="comment">        比如我们有后缀aa和abaa,长度为2,计算abaa的第二关键字的时候，实际上查到的是aa的排名，并且往前补了2位。</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i ++ )</span><br><span class="line">            <span class="keyword">if</span> (sa[i] &gt; k)</span><br><span class="line">                y[ ++ num] = sa[i] - k;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        从36~44是基数排序倍增计算x[] 这是对第一关键字排序 此时求得的x[]含义是旧的排名,是长度为2^k的排名</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= m; i ++ ) c[i] = <span class="number">0</span>;	<span class="comment">//清空</span></span><br><span class="line">        <span class="comment">//y[i]表示的是第二关键字排名为i的后缀编号  </span></span><br><span class="line">        <span class="comment">//而x[i]拿到的则是第一关键字排序时，后缀编号为i的后缀对应的象征第一关键字大小的值</span></span><br><span class="line">        <span class="comment">//（在初始化过程中，我们将该值设置为首字母的值了，因此，对初始化还有一种理解，即y[i] = i，并没对第二关键字排序）</span></span><br><span class="line">        <span class="comment">//因此x[y[i]]的值反映的是代表第一关键字大小的值</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i ++ ) c[x[y[i]]] ++ ;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= m; i ++ ) c[i] += c[i - <span class="number">1</span>];</span><br><span class="line">        <span class="comment">//对i逆序统计，其用意是：当第一关键字相同的时候，第二关键字排名大的，计算后sa的值也会更大</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = n; i; i -- ) sa[c[x[y[i]]] -- ] = y[i], y[i] = <span class="number">0</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//从48~54都是在求新的x[],即求长度为2^(k+1)的排名</span></span><br><span class="line">        <span class="comment">//y已经清空了,把旧的x数组值换到y数组上</span></span><br><span class="line">        <span class="built_in">swap</span>(x, y);</span><br><span class="line">        <span class="comment">//规定当前排名第一的后缀x值为1,以后的后缀x值不会小于1</span></span><br><span class="line">        x[sa[<span class="number">1</span>]] = <span class="number">1</span>, num = <span class="number">1</span>;</span><br><span class="line">        <span class="comment">//考虑什么时候一个后缀和前面的后缀下一次的第一关键字=这一次的第一+第二关键字，因为是倍增）相同</span></span><br><span class="line">        <span class="comment">//只有这一次的第一第二关键字都相等才可以判定下一次的第一关键字相等，否则应该比上一次的大。</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= n; i ++ )</span><br><span class="line">            x[sa[i]] = (y[sa[i]] == y[sa[i - <span class="number">1</span>]] &amp;&amp; y[sa[i] + k] == y[sa[i - <span class="number">1</span>] + k]) ? num : ++ num;</span><br><span class="line">        <span class="comment">//当本次排序中已经产生了不小于n种不同的第一关键字的值，排序便没有必要继续下去了，因为已经区分开了这些后缀。</span></span><br><span class="line">        <span class="keyword">if</span> (num == n) <span class="keyword">break</span>;</span><br><span class="line">        <span class="comment">//本次排序更新了关键字的种类数，因此要更新m值  更新基数排序的值域</span></span><br><span class="line">        m = num;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-
 <hr>
 <h3 id="后缀数组的相关概念"><a href="#后缀数组的相关概念" class="headerlink" title="后缀数组的相关概念"></a>后缀数组的相关概念</h3><h5 id="后缀"><a href="#后缀" class="headerlink" title="后缀"></a>后缀</h5><p>后缀：指从某个位置开始到字符串末尾的一个特殊子串。字符串$s$从第$i$个字符开始的后缀被表示为$Suffix(i)$，也可以称之为下标为$i$的后缀。</p>
 <p>例如字符串$s=$”$aabaaaab$”，其所有的后缀如下：</p>
@@ -93,6 +88,7 @@
 </ul>
 <p>后缀数组<code>SA[]=&#123;3,4,5,0,6,1,7,2&#125;</code></p>
 <h5 id="排名数组"><a href="#排名数组" class="headerlink" title="排名数组"></a>排名数组</h5><p>排名数组是指下标为$i$的后缀排序后的名次，即第$i$个后缀排名是啥，$rank[i]=num$表示第$i$个后缀其排名为$num$</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -101,7 +97,8 @@
 <th>后缀</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>num</td>
 <td>i</td>
 <td>Suffix(i)</td>
@@ -146,16 +143,14 @@
 <td>2</td>
 <td>baaaab</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>下标为3的后缀，排名为1，即$rank[3]=1$；排名第1的后缀，下标为$3$，即$SA[1]=3$。排名数组和后缀数组是互逆的，可以相互转换，并且$rank[SA[l]]=l$，$SA[rank[i]]=i$</p>
 <p>用$rk[]$推导$sa[]$：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)</span><br><span class="line">    sa[rk[i]]=i;</span><br></pre></td></tr></table></figure>
-
 <p>用$sa[]$推导$rk[]$：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)</span><br><span class="line">    rk[sa[i]]=i;</span><br></pre></td></tr></table></figure>
-
-
-
 <hr>
 <h3 id="后缀数组的构建思路"><a href="#后缀数组的构建思路" class="headerlink" title="后缀数组的构建思路"></a>后缀数组的构建思路</h3><p>构建后缀数组有两种方法：$DC3$算法和倍增算法。前者时间复杂度为$O(n)$，后者时间复杂度为$O(nlogn)$。一般来说都是使用倍增算法</p>
 <p>采用倍增算法，对字符串从每个下标开始的长度为$2^k$的子串进行排序，得到排名。$k$从0开始，每次都增加1，相当于长度增加了1倍。当$2^k\geq n$时，从每个下标开始的长度为$2^k$的子串都相当于所有后缀。每次子串排序都需要用到上一次子串的排名得到。</p>
@@ -179,12 +174,9 @@
 <p>记<code>sa[l][k]</code>表示在长度为$2^k$的所有子串中排名第$l$的子串的开始位置</p>
 <p>倍增过程：</p>
 <ul>
-<li><p>step 1：求出长度为$2^0$的子串的字典排序，即求出$sub[1][0]$，$sub[2][0]$，$\cdots$，$sub[n][0]$的字典排序</p>
-</li>
-<li><p>step 2：求出长度为$2^1$的子串的字典排序，即求出$sub[1][1]$，$sub[2][1]$，$\cdots$，$sub[n][1]$的字典排序</p>
-</li>
-<li><p>$\cdots$</p>
-</li>
+<li>step 1：求出长度为$2^0$的子串的字典排序，即求出$sub[1][0]$，$sub[2][0]$，$\cdots$，$sub[n][0]$的字典排序</li>
+<li>step 2：求出长度为$2^1$的子串的字典排序，即求出$sub[1][1]$，$sub[2][1]$，$\cdots$，$sub[n][1]$的字典排序</li>
+<li>$\cdots$</li>
 <li><p>step k：求出长度为$2^k$的子串的字典排序，即求出$sub[1][k]$，$sub[2][k]$，$\cdots$，$sub[n][k]$的字典排序</p>
 </li>
 <li><p>当子串长度$2^k\geq n$时，子串排序就是后缀排序</p>
@@ -200,16 +192,14 @@
 <p>从上可以观察到一个性质：想要求出长度为$k+1$的排名，需要用到长度为$k$的排名</p>
 <p>如下图所示：</p>
 <p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210811221227.png" alt="image-20210811221227880"></p>
-<p>注意到$rank[i][j]$值域是不会超过$n$的正整数（可能会有相同），因此可以使用基数排序。对于一个三位的十进制数，如果使用基数排序，则先排个位，再排十位，最后排百位，即从低位到高位进行排序。联想C++中的pair是$&lt;first,second&gt;$，那么我们可以类比于十进制的基数排序，从右到左分别是从低位到高位，因此对于二元组排序来说，是先排second，再排first，即先排第二关键字，然后再排第一关键字。</p>
+<p>注意到$rank[i][j]$值域是不会超过$n$的正整数（可能会有相同），因此可以使用基数排序。对于一个三位的十进制数，如果使用基数排序，则先排个位，再排十位，最后排百位，即从低位到高位进行排序。联想C++中的pair是$<first,second>$，那么我们可以类比于十进制的基数排序，从右到左分别是从低位到高位，因此对于二元组排序来说，是先排second，再排first，即先排第二关键字，然后再排第一关键字。</p>
 <hr>
 <h3 id="后缀数组的实现"><a href="#后缀数组的实现" class="headerlink" title="后缀数组的实现"></a>后缀数组的实现</h3><p>如何理解下面这段代码呢？</p>
 <p>这一段代码其实是处理长度为$2^k=2^0=1$的单个字符的后缀</p>
 <p>这里$n$是该字符串$s$的长度，$m=122$</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i ++ ) c[x[i] = s[i]] ++ ;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= m; i ++ ) c[i] += c[i - <span class="number">1</span>];</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = n; i; i -- ) sa[c[x[i]] -- ] = i;</span><br></pre></td></tr></table></figure>
-
 <p>首先来理解第一行代码：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i ++ ) c[x[i] = s[i]] ++ ;</span><br></pre></td></tr></table></figure>
-
 <p><code>x[i]=s[i]</code>表示将$s[i]$这个字符的ASCII值作为这个字符的排名，假设字符串$s$为$adcab$，那么有：</p>
 <ul>
 <li>$x[1]=s[1]=$’$a$’=97，$c[97]$++，所以$c[97]=1$</li>
@@ -220,7 +210,6 @@
 </ul>
 <p>再来理解第二行代码：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= m; i ++ ) c[i] += c[i - <span class="number">1</span>];</span><br></pre></td></tr></table></figure>
-
 <p>这里其实就是类似于求前缀和</p>
 <ul>
 <li>当$i=97$时，$c[97]=c[i]+c[i-1]=c[97]+c[96]=2+0=2$</li>
@@ -230,13 +219,12 @@
 </ul>
 <p>最后来理解第三行代码：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = n; i; i -- ) sa[c[x[i]] -- ] = i;</span><br></pre></td></tr></table></figure>
-
 <ul>
-<li>当$i=5$时，$x[5]=9$8，$c[98]=3$，则$sa[3]=5$，然后$c[98]$–，于是$c[98]=2$</li>
-<li>当$i=4$时，$x[4]=97$，$c[97]=2$，则$sa[2]=4$，然后$c[97]$–，于是$c[97]=1$</li>
-<li>当$i=3$时，$x[3]=99$，$c[99]=4$，则$sa[4]=3$，然后$c[99]$–，于是$c[99]=3$</li>
-<li>当$i=2$时，$x[2]=100$，$c[100]=5$，则$sa[5]=2$，然后$c[100]$–，于是$c[100]=4$</li>
-<li>当$i=1$时，$x[1]=97$，$c[97]=1$，则$sa[1]=1$，然后$c[97]$–，于是$c[97]=0$</li>
+<li>当$i=5$时，$x[5]=9$8，$c[98]=3$，则$sa[3]=5$，然后$c[98]$—，于是$c[98]=2$</li>
+<li>当$i=4$时，$x[4]=97$，$c[97]=2$，则$sa[2]=4$，然后$c[97]$—，于是$c[97]=1$</li>
+<li>当$i=3$时，$x[3]=99$，$c[99]=4$，则$sa[4]=3$，然后$c[99]$—，于是$c[99]=3$</li>
+<li>当$i=2$时，$x[2]=100$，$c[100]=5$，则$sa[5]=2$，然后$c[100]$—，于是$c[100]=4$</li>
+<li>当$i=1$时，$x[1]=97$，$c[97]=1$，则$sa[1]=1$，然后$c[97]$—，于是$c[97]=0$</li>
 <li>因此得到长度为$2^k=2^0=1$的子串的后缀数组<code>SA[]=&#123;1,4,5,3,2&#125;</code></li>
 </ul>
 <p>图示理解如下：</p>
@@ -251,7 +239,6 @@
 </ul>
 <p>如何理解下面这段代码：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = n - k + <span class="number">1</span>; i &lt;= n; i ++ ) y[ ++ num] = i;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i ++ )</span><br><span class="line">    <span class="keyword">if</span> (sa[i] &gt; k)</span><br><span class="line">        y[ ++ num] = sa[i] - k;</span><br></pre></td></tr></table></figure>
-
 <p>理解如下：</p>
 <p>比如字符串$s$为$aabaaaab$，我们将每个字符都转换成数字，转换规则是$s[i]-‘a’+1$，求出长度为$k=0,2^k=2^0=1$的子串的排名数组$x[]$（相当于<code>rank[]</code>），进行基数排序，为了放置比较时越界，在末尾用0封装：</p>
 <p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210812125305.png" alt="image-20210812125304993"></p>
@@ -262,7 +249,6 @@
 <p>从上面我们发现，将上一次的排名<code>x[]</code>前移错位（-k），就可以得到第2关键字的排序结果（下标）<code>y[]</code></p>
 <p>如何理解下面这段代码：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= m; i ++ ) c[i] = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i ++ ) c[x[y[i]]] ++ ;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= m; i ++ ) c[i] += c[i - <span class="number">1</span>];</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = n; i; i -- ) sa[c[x[y[i]]] -- ] = y[i], y[i] = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-
 <p>理解如下：</p>
 <p>这段代码其实是在对第1关键字进行基数排序，特别是需要注意理解<code>c[x[y[i]]] ++</code>和<code>sa[c[x[y[i]]] -- ] = y[i]</code>是什么意思：</p>
 <p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210812133551.png" alt="image-20210812133551552"></p>
@@ -293,7 +279,6 @@
 <p>因此这就是解释了<code>sa[c[x[y[i]]] -- ] = y[i]</code></p>
 <p>如何理解这段代码呢？</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">swap</span>(x, y);</span><br><span class="line">x[sa[<span class="number">1</span>]] = <span class="number">1</span>, num = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= n; i ++ )</span><br><span class="line">    x[sa[i]] = (y[sa[i]] == y[sa[i - <span class="number">1</span>]] &amp;&amp; y[sa[i] + k] == y[sa[i - <span class="number">1</span>] + k]) ? num : ++ num;</span><br><span class="line"><span class="keyword">if</span> (num == n) <span class="keyword">break</span>;</span><br><span class="line">m = num;</span><br></pre></td></tr></table></figure>
-
 <p>理解如下：</p>
 <p>根据$sa[]$和$x[]$数组计算新的排名数组（长度为2的子串排名）。因为要使用旧的<code>x[]</code>数组计算新的<code>x[]</code>数组，由于我们之前已经把$y[i]$都清0了，因此此时的<code>y[]</code>是空的没有用了，因此将$x[]$和$y[]$交换，swap(x,y)，此时的$y[]$数组就是旧的$x[]$数组了，然后现在需要计算新的$x[]$数组</p>
 <p>我们初始化<code>x[sa[1]] = 1</code>，因为$sa[1]$表示排名为1的子串所对应的下标位置，既然这个子串它是排名第1，那么它在新的排名中也仍然是第一，因此我们把它初始化为1</p>
@@ -364,9 +349,6 @@
 <p>（3）继续求解$i=2,3,\cdots,n$，即可得到所有的<code>height[]</code></p>
 <p><strong>代码：</strong></p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">get_Height</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//先初始化rk</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">        rk[sa[i]]=i;</span><br><span class="line">    <span class="comment">//i从1到n,枚举以下标i开始的后缀</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>,k=<span class="number">0</span>;i&lt;=n;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//这里的k相当于h[i-1] 如果k&gt;0,那么k-1就相当于h[i-1]-1</span></span><br><span class="line">        <span class="keyword">if</span>(k)</span><br><span class="line">            k--;</span><br><span class="line">        <span class="comment">//根据h[i]的定义可知,现在是在枚举下标i开始的后缀</span></span><br><span class="line">        <span class="comment">//rk[i]-1表示排名在 以下标i开始的后缀 的前面那个后缀的排名</span></span><br><span class="line">        <span class="comment">//那么sa[rk[i]-1]就可以得到 前面那个后缀 的 下标j</span></span><br><span class="line">        <span class="keyword">int</span> j=sa[rk[i]<span class="number">-1</span>];</span><br><span class="line">        <span class="comment">//依次扫描对比这两个后缀,如果i+k下标不超过n,并且j+k下标不超过n</span></span><br><span class="line">        <span class="comment">//并且扫描到的字符都相等s[i+k]==s[j+k],则让k继续走</span></span><br><span class="line">        <span class="keyword">while</span>(i+k&lt;=n&amp;&amp;j+k&lt;=n&amp;&amp;s[i+k]==s[j+k])</span><br><span class="line">            k++;</span><br><span class="line">        <span class="comment">//我们知道h[i]=height[rk[i]],而这里的k是更新过后的h[i-1]-1,因此height[rk[i]]=k就相当于</span></span><br><span class="line">        <span class="comment">//h[i]=h[i-1]-1</span></span><br><span class="line">        height[rk[i]]=k;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
 <hr>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
