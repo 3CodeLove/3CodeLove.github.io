@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>二叉查找树 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,二叉查找树
+简介二叉查找树(Binary Search Tree，BST)，又叫做二叉排序树、二叉搜索树，是一种对查找和排序都有用的特殊二叉树。
+二叉查找树或是空树，或是满足如下三个性质的二叉树：
+,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">二叉查找树</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">二叉查找树</h1>
+        <div class="stuff">
+            <span>八月 27, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E4%BA%8C%E5%8F%89%E6%9F%A5%E6%89%BE%E6%A0%91/" rel="tag">二叉查找树</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="二叉查找树"><a href="#二叉查找树" class="headerlink" title="二叉查找树"></a>二叉查找树</h1><hr>
+<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>二叉查找树(Binary Search Tree，BST)，又叫做二叉排序树、二叉搜索树，是一种对查找和排序都有用的特殊二叉树。</p>
+<p>二叉查找树或是空树，或是满足如下三个性质的二叉树：</p>
+<ul>
+<li>若其左子树非空，则左子树上所有节点的值都小于根节点的值</li>
+<li>若其右子树非空，则右子树上所有节点的值都大于根节点的值</li>
+<li>其左右子树都是一棵二叉查找树</li>
+</ul>
+<p>二叉查找树的特性：左子树&lt;根&lt;右子树，即二叉查找树的中序遍历是一个递增序列。</p>
+<p>如下图所示，其中序遍历为{5,18,29,25,32,25,69}</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827132158.png" alt="image-20210827132158313"></p>
+<p>我们来定义一下二叉查找树的数据结构：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">BSTNode</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> data;   <span class="comment">//节点数据域</span></span><br><span class="line">    BSTNode *lchild,*rchild;    <span class="comment">//左孩子指针  右孩子指针</span></span><br><span class="line">&#125;BSTNode,*BSTree;</span><br></pre></td></tr></table></figure>
+
+<p>也就是说我们用类型<code>BSTNode</code>代替了类型<code>struct BSTNode</code>，用类型<code>BSTree</code>代替了类型<code>struct BSTNode*</code>，此时就要注意了<code>BSTree</code>就是一个指针类型哦</p>
+<hr>
+<h3 id="二叉查找树的查询"><a href="#二叉查找树的查询" class="headerlink" title="二叉查找树的查询"></a>二叉查找树的查询</h3><p>因为二叉查找树的中序遍历有序性，即得到的递增的序列，由于有序，因此其查找与二分查找类似，每次都可以缩小查找范围，查询效率较高。</p>
+<p><strong>算法步骤：</strong></p>
+<ul>
+<li>若二叉查找树为空，则查找失败，返回空指针</li>
+<li>若二叉查找树非空，则将待查找关键字key与根节点的关键字$T-&gt;data$进行比较：<ul>
+<li>如果$x=T-&gt;data$，则查找成功，返回查询到的当前节点T</li>
+<li>如果$x<T->data$，则递归查找左子树</li>
+<li>如果$x&gt;T-&gt;data$，则递归查找右子树</li>
+</ul>
+</li>
+</ul>
+<p>如下图所示，查找关键字32：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827133612.png" alt="image-20210827133612101"></p>
+<p>（1）将32与二叉查找树的树根25比较，发现$32&gt;25$，于是到右子树中查询，如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827133631.png" alt="image-20210827133631125"></p>
+<p>（２）将32与右子树的树根69比较，发现$32&lt;69$，于是到左子树中查询，如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827133644.png" alt="image-20210827133644671"></p>
+<p>（3）将32与左子树的树根32比较，发现$32=32$，相等，查询成功，返回该节点的指针，如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827133710.png" alt="image-20210827133710524"></p>
+<p><strong>代码：</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//二叉排序树的递归查找</span></span><br><span class="line"><span class="function">BSTree <span class="title">find</span><span class="params">(BSTree T,<span class="keyword">int</span> key)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//如果二叉排序树为空则返回T为NULL 或者查找成功则返回指向该数据元素结点的指针</span></span><br><span class="line">    <span class="keyword">if</span>(!T||T-&gt;data==key)</span><br><span class="line">        <span class="keyword">return</span> T;</span><br><span class="line">    <span class="comment">//递归查找左子树</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(key&lt;T-&gt;data)</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">find</span>(T-&gt;lchild,key);</span><br><span class="line">    <span class="comment">//递归查找右子树</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">find</span>(T-&gt;rchild,key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>算法分析：</p>
+<ul>
+<li>时间复杂度：最好情况是$O(logn)$，最坏情况是$O(n)$</li>
+<li>空间复杂度：$O(1)$</li>
+</ul>
+<hr>
+<h3 id="二叉查找树的插入"><a href="#二叉查找树的插入" class="headerlink" title="二叉查找树的插入"></a>二叉查找树的插入</h3><p>因为二叉查找树的中序遍历存在有序性，所以首先要查找待插入元素的插入位置，当查找不成功时再将待插入元素作为新的叶子节点成为最后一个查找节点的左孩子或者右孩子。</p>
+<p><strong>算法步骤：</strong></p>
+<ul>
+<li>若二叉查找树为空，则创建一个新的节点$S$，将待插入关键字放入新节点的数据域，然后将$S$节点作为根节点，$S$节点的左右子树都设置为空。</li>
+<li>若二叉查找树非空，则将带插入元素e和根节点的关键字$T-&gt;data$比较：<ul>
+<li>如果$e<T->data$，则将$e$插入到左子树中</li>
+<li>如果$e&gt;T-&gt;data$，则将$e$插入到右子树中</li>
+</ul>
+</li>
+</ul>
+<p>如图，向其中插入元素30：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827133612.png" alt="image-20210827133612101"></p>
+<p>（1）将30与根节点25比较，发现$25&lt;30$，因此到右子树中查询，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827134816.png" alt="image-20210827134816782"></p>
+<p>（2）将30与右子树的树根69比较，发现$30&lt;69$，则到69的左子树中查询，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827134827.png" alt="image-20210827134827165"></p>
+<p>（3）将30与左子树的树根32比较，发现$30&lt;32$，在32的左子树中查找，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827134840.png" alt="image-20210827134840693"></p>
+<p>（4）将30作为新的叶子节点插入到32的左子树中，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827134850.png" alt="image-20210827134850443"></p>
+<p><strong>代码：</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//二叉排序树的插入</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(BSTree &amp;T,<span class="keyword">int</span> e)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//如果二叉查找树为空</span></span><br><span class="line">    <span class="keyword">if</span>(!T)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//则创建一个新的节点S</span></span><br><span class="line">        BSTree S=<span class="keyword">new</span> BSTNode;</span><br><span class="line">        <span class="comment">//将待插入关键字e放入新节点S的数据域中</span></span><br><span class="line">        S-&gt;data=e;</span><br><span class="line">        <span class="comment">//新节点S的左右子树都为空</span></span><br><span class="line">        S-&gt;lchild=S-&gt;rchild=<span class="literal">NULL</span>;</span><br><span class="line">        <span class="comment">//将新节点S作为根节点</span></span><br><span class="line">        T=S;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//如果二叉排序树非空 则将待插入关键字e与根节点的关键字T-&gt;data比较</span></span><br><span class="line">    <span class="comment">//如果e&lt;T-&gt;data,则说明应该将x插入到左子树中</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(e&lt;T-&gt;data)</span><br><span class="line">        <span class="built_in">insert</span>(T-&gt;lchild,e);</span><br><span class="line">    <span class="comment">//如果e&gt;T-&gt;data,则说明应该将x插入到右子树中</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(e&gt;T-&gt;data)</span><br><span class="line">        <span class="built_in">insert</span>(T-&gt;rchild,e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>算法分析：</strong></p>
+<p>在二叉查找树中进行插入操作时需要先查找插入位置，插入本身只需要常数时间，但是查找插入位置的时间复杂度为$O(logn)$</p>
+<hr>
+<h3 id="二叉查找树的创建"><a href="#二叉查找树的创建" class="headerlink" title="二叉查找树的创建"></a>二叉查找树的创建</h3><p>二叉查找树的创建可以从空树开始，按照输入关键字的顺序依次进行插入操作，最终得到一棵二叉查找树。</p>
+<p><strong>算法步骤：</strong></p>
+<ul>
+<li>初始化二叉查找树为空树，$T=NULL$</li>
+<li>输入一个关键字$e$，将$e$插入到二叉查找树T中</li>
+<li>重复步骤2，直到关键字输入完毕。</li>
+</ul>
+<p><strong>代码：</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//二叉排序树的创建</span></span><br><span class="line"><span class="comment">//二叉查找树的创建可以从空树开始 按照输入关键字的顺序依次进行插入操作 最终得到一棵二叉排序树</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">build</span><span class="params">(BSTree &amp;T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    T=<span class="literal">NULL</span>; <span class="comment">//从空树开始 初始化二叉排序树为空树</span></span><br><span class="line">    <span class="keyword">int</span> e;</span><br><span class="line">    <span class="comment">//每输入一个节点</span></span><br><span class="line">    <span class="keyword">while</span>(cin&gt;&gt;e,e!=<span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">insert</span>(T,e);    <span class="comment">//则把该节点插入到二叉排序树中</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>算法分析：</strong></p>
+<p>有$n$个即将插入的元素，因此二叉查找树的创建需要$n$次插入，每次插入在最好情况和平均情况下都需要$O(logn)$时间，在最坏情况需要$O(n)$时间，因此在最好情况和平均情况下的时间复杂度为$O(nlogn)$，最坏情况下的时间复杂度为$O(n^2)$</p>
+<p>创建二叉查找树时，输入序列的次序不同， 创建的二叉查找树也是不同的。</p>
+<hr>
+<h3 id="二叉查找树的删除"><a href="#二叉查找树的删除" class="headerlink" title="二叉查找树的删除"></a>二叉查找树的删除</h3><p>首先在二叉查找树中找到待删除节点，然后执行删除操作。假设指针p指向待删除节点，指针f指向p的父节点。根据待删除节点所在位置的不同，删除操作的处理方法也不同，可以分为以下三种情况：</p>
+<p>（1）被删除节点的左子树为空：那么令其右子树子承父业代替被删除节点的位置即可。</p>
+<p>如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827140626.png" alt="image-20210827140625948"></p>
+<p>（2）被删除节点的右子树为空：那么令其左子树子承父业代替被删除节点的位置即可。</p>
+<p>如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827140637.png" alt="image-20210827140637470"></p>
+<p>（3）被删除节点的左右子树都不为空：如果被删除节点的左右子树都不为空，那么就不能采用子承父业的方法了。根据二叉查找树的中序遍历有序性，删除该节点，可以利用其直接前驱或者直接后继来代替被删除节点的位置，然后删除其直接前驱或者其直接后继即可。</p>
+<p>那么在中序遍历中，一个节点的直接前驱或者直接后继是哪个节点呢？</p>
+<p>其实$x$的直接前驱就是那些$&lt;x$中的最大的那个节点，$x$的直接后继就是那些$&gt;x$中的最小的那个节点</p>
+<ul>
+<li>直接前驱：在中序遍历中，节点p的直接前驱就是其<strong>左子树中的最右节点</strong>。即沿着p的左子树一直访问其右子树，直到没有右子树，这样就找到了最右节点，也就是直接前驱。如图a</li>
+<li>直接后继：在中序遍历中，节点p的直接后继就是其<strong>右子树中的最左节点</strong>。即沿着p的右子树一直访问其左子树，直到没有左子树，这样就找到了最左节点，也就是直接后继。如图b</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827140705.png" alt="image-20210827140705115"></p>
+<p>以找直接前驱为栗子：在二叉查找树中删除24。首先找到24的位置p，然后找到p的直接前驱s(22)，把22赋值给p的数据域，删除s，删除过程如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827140927.png" alt="image-20210827140927472"></p>
+<p>删除节点之后是不是仍然满足二叉查找树的中序遍历有序性呢？</p>
+<p>需要注意的是，有一种特殊情况，即p的左孩子没有右子树，s就是其左子树的最右节点(直接前驱)，即s代替p，然后删除s即可。因为s为最右节点且没有右子树，删除后，左子树子承父业。</p>
+<p>举个栗子：在二叉查找树中删除20，删除过程如下图所示，由图可知，20的左孩子是8，8没有右子树了，那么8就是20的左子树的最右节点了，即8是20的直接前驱。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827141515.png" alt="image-20210827141515371"></p>
+<p><strong>算法步骤：</strong></p>
+<ul>
+<li>在二叉查找树中查找待删除关键字的位置，p指向待删除节点，f指向p的父节点。如果查找失败，则返回</li>
+<li>如果查找成功，则分为三种情况进行删除操作：<ul>
+<li>如果被删除节点的左子树为空，则令其右子树子承父业代替其位置即可</li>
+<li>如果被删除节点的右子树为空，则令其左子树子承父业代替其位置即可</li>
+<li>如果被删除节点的左右子树都不为空，则令其直接前驱或者直接后继代替它，再删除其直接前驱或者直接后继即可</li>
+</ul>
+</li>
+</ul>
+<p>（1）左子树为空。在二叉查找树中删除32，首先查找到32所在的位置，判断其左子树为空，则令其右子树子承父业代替其位置，删除过程如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827142353.png" alt="image-20210827142353368"></p>
+<p>（2）右子树为空。在二叉查找树中删除69，首先查找到69所在的位置，判断其右子树为空，则令其左子树子承父业代替其位置，删除过程如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827142422.png" alt="image-20210827142422008"></p>
+<p>（3）左右子树都不为空。在二叉查找树中删除25，首先查找到25所在的位置，判断其左右子树都不为空，则令其直接前驱(左子树最右节点是20)代替它，在删除其直接前驱20，删除20时i，其左子树代替其位置。删除过程如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827142444.png" alt="image-20210827142444487"></p>
+<p>二叉查找树的删除操作较为复杂，代码要结合上面的图示理解</p>
+<p><strong>代码：</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//二叉排序树的删除</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">del</span><span class="params">(BSTree &amp;T,<span class="keyword">int</span> key)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//从二叉排序树T中删除关键字等于key的结点</span></span><br><span class="line">    BSTree p=T;</span><br><span class="line">    BSTree f=<span class="literal">NULL</span>;</span><br><span class="line">    BSTree q,s;</span><br><span class="line">    <span class="keyword">if</span>(!T) <span class="keyword">return</span>; <span class="comment">//树为空则返回</span></span><br><span class="line">    <span class="keyword">while</span>(p)<span class="comment">//查找</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(p-&gt;data==key)</span><br><span class="line">            <span class="keyword">break</span>;  <span class="comment">//找到关键字等于key的结点p，结束循环</span></span><br><span class="line">        f=p;                <span class="comment">//f为p的双亲</span></span><br><span class="line">        <span class="keyword">if</span> (p-&gt;data&gt;key)</span><br><span class="line">            p=p-&gt;lchild; <span class="comment">//在p的左子树中继续查找</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            p=p-&gt;rchild; <span class="comment">//在p的右子树中继续查找</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(!p)</span><br><span class="line">        <span class="keyword">return</span>; <span class="comment">//找不到被删结点则返回</span></span><br><span class="line">    <span class="comment">//三种情况：p左右子树均不空、无右子树、无左子树</span></span><br><span class="line">    <span class="keyword">if</span>((p-&gt;lchild)&amp;&amp;(p-&gt;rchild))<span class="comment">//被删结点p左右子树均不空</span></span><br><span class="line">    &#123;</span><br><span class="line">        q=p;</span><br><span class="line">        s=p-&gt;lchild;</span><br><span class="line">        <span class="keyword">while</span>(s-&gt;rchild)<span class="comment">//在p的左子树中继续查找其前驱结点，即最右下结点</span></span><br><span class="line">        &#123;</span><br><span class="line">            q=s;</span><br><span class="line">            s=s-&gt;rchild;</span><br><span class="line">        &#125;</span><br><span class="line">        p-&gt;data=s-&gt;data;  <span class="comment">//s的值赋值给被删结点p,然后删除s结点</span></span><br><span class="line">        <span class="keyword">if</span>(q!=p)</span><br><span class="line">            q-&gt;rchild=s-&gt;lchild; <span class="comment">//重接q的右子树</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            q-&gt;lchild=s-&gt;lchild; <span class="comment">//重接q的左子树</span></span><br><span class="line">        <span class="keyword">delete</span> s;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(!p-&gt;rchild)<span class="comment">//被删结点p无右子树，只需重接其左子树</span></span><br><span class="line">        &#123;</span><br><span class="line">            q=p;</span><br><span class="line">            p=p-&gt;lchild;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(!p-&gt;lchild)<span class="comment">//被删结点p无左子树，只需重接其右子树</span></span><br><span class="line">        &#123;</span><br><span class="line">            q=p;</span><br><span class="line">            p=p-&gt;rchild;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/*――――――――――将p所指的子树挂接到其双亲结点f相应的位置――――――――*/</span></span><br><span class="line">        <span class="keyword">if</span>(!f)</span><br><span class="line">            T=p;  <span class="comment">//被删结点为根结点</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(q==f-&gt;lchild)</span><br><span class="line">            f-&gt;lchild=p; <span class="comment">//挂接到f的左子树位置</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            f-&gt;rchild=p;<span class="comment">//挂接到f的右子树位置</span></span><br><span class="line">        <span class="keyword">delete</span> q;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>算法分析：</p>
+<p>二叉查找树的删除主要是查找的过程，需要$O(logn)$时间。在删除过程中，如果需要查找被删除节点前驱，则也需要$O(logn)$时间。所以，在二叉查找树中进行删除操作的时间复杂度为$O(logn)$</p>
+<hr>
+<h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><p>以下面这幅图为例子在DevC++上测试：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210827144402.png" alt="image-20210827144402278"></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">BSTNode</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> data;   <span class="comment">//节点数据域</span></span><br><span class="line">    BSTNode *lchild,*rchild;    <span class="comment">//左孩子指针  右孩子指针</span></span><br><span class="line">&#125;BSTNode,*BSTree;</span><br><span class="line"></span><br><span class="line"><span class="comment">//二叉排序树的插入</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(BSTree &amp;T,<span class="keyword">int</span> e)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//如果二叉查找树为空</span></span><br><span class="line">    <span class="keyword">if</span>(!T)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//则创建一个新的节点S</span></span><br><span class="line">        BSTree S=<span class="keyword">new</span> BSTNode;</span><br><span class="line">        <span class="comment">//将待插入关键字e放入新节点S的数据域中</span></span><br><span class="line">        S-&gt;data=e;</span><br><span class="line">        <span class="comment">//新节点S的左右子树都为空</span></span><br><span class="line">        S-&gt;lchild=S-&gt;rchild=<span class="literal">NULL</span>;</span><br><span class="line">        <span class="comment">//将新节点S作为根节点</span></span><br><span class="line">        T=S;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//如果二叉排序树非空 则将待插入关键字e与根节点的关键字T-&gt;data比较</span></span><br><span class="line">    <span class="comment">//如果e&lt;T-&gt;data,则说明应该将x插入到左子树中</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(e&lt;T-&gt;data)</span><br><span class="line">        <span class="built_in">insert</span>(T-&gt;lchild,e);</span><br><span class="line">    <span class="comment">//如果e&gt;T-&gt;data,则说明应该将x插入到右子树中</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(e&gt;T-&gt;data)</span><br><span class="line">        <span class="built_in">insert</span>(T-&gt;rchild,e);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//二叉排序树的创建</span></span><br><span class="line"><span class="comment">//二叉查找树的创建可以从空树开始 按照输入关键字的顺序依次进行插入操作 最终得到一棵二叉排序树</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">build</span><span class="params">(BSTree &amp;T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    T=<span class="literal">NULL</span>; <span class="comment">//从空树开始 初始化二叉排序树为空树</span></span><br><span class="line">    <span class="keyword">int</span> e;</span><br><span class="line">    <span class="comment">//每输入一个节点</span></span><br><span class="line">    <span class="keyword">while</span>(cin&gt;&gt;e,e!=<span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">insert</span>(T,e);    <span class="comment">//则把该节点插入到二叉排序树中</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//中序遍历 原则：左根右</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">InOrderTraverse</span><span class="params">(BSTree &amp;T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(T)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">InOrderTraverse</span>(T-&gt;lchild);     <span class="comment">//左</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,T-&gt;data);      <span class="comment">//根</span></span><br><span class="line">        <span class="built_in">InOrderTraverse</span>(T-&gt;rchild);     <span class="comment">//右</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//二叉排序树的递归查找</span></span><br><span class="line"><span class="function">BSTree <span class="title">find</span><span class="params">(BSTree T,<span class="keyword">int</span> key)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//如果二叉排序树为空则返回T为NULL 或者查找成功则返回指向该数据元素结点的指针</span></span><br><span class="line">    <span class="keyword">if</span>(!T||T-&gt;data==key)</span><br><span class="line">        <span class="keyword">return</span> T;</span><br><span class="line">    <span class="comment">//递归查找左子树</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(key&lt;T-&gt;data)</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">find</span>(T-&gt;lchild,key);</span><br><span class="line">    <span class="comment">//递归查找右子树</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">find</span>(T-&gt;rchild,key);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//二叉排序树的删除</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">del</span><span class="params">(BSTree &amp;T,<span class="keyword">int</span> key)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//从二叉排序树T中删除关键字等于key的结点</span></span><br><span class="line">    BSTree p=T;</span><br><span class="line">    BSTree f=<span class="literal">NULL</span>;</span><br><span class="line">    BSTree q,s;</span><br><span class="line">    <span class="keyword">if</span>(!T) <span class="keyword">return</span>; <span class="comment">//树为空则返回</span></span><br><span class="line">    <span class="keyword">while</span>(p)<span class="comment">//查找</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(p-&gt;data==key)</span><br><span class="line">            <span class="keyword">break</span>;  <span class="comment">//找到关键字等于key的结点p，结束循环</span></span><br><span class="line">        f=p;                <span class="comment">//f为p的双亲</span></span><br><span class="line">        <span class="keyword">if</span> (p-&gt;data&gt;key)</span><br><span class="line">            p=p-&gt;lchild; <span class="comment">//在p的左子树中继续查找</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            p=p-&gt;rchild; <span class="comment">//在p的右子树中继续查找</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(!p)</span><br><span class="line">        <span class="keyword">return</span>; <span class="comment">//找不到被删结点则返回</span></span><br><span class="line">    <span class="comment">//三种情况：p左右子树均不空、无右子树、无左子树</span></span><br><span class="line">    <span class="keyword">if</span>((p-&gt;lchild)&amp;&amp;(p-&gt;rchild))<span class="comment">//被删结点p左右子树均不空</span></span><br><span class="line">    &#123;</span><br><span class="line">        q=p;</span><br><span class="line">        s=p-&gt;lchild;</span><br><span class="line">        <span class="keyword">while</span>(s-&gt;rchild)<span class="comment">//在p的左子树中继续查找其前驱结点，即最右下结点</span></span><br><span class="line">        &#123;</span><br><span class="line">            q=s;</span><br><span class="line">            s=s-&gt;rchild;</span><br><span class="line">        &#125;</span><br><span class="line">        p-&gt;data=s-&gt;data;  <span class="comment">//s的值赋值给被删结点p,然后删除s结点</span></span><br><span class="line">        <span class="keyword">if</span>(q!=p)</span><br><span class="line">            q-&gt;rchild=s-&gt;lchild; <span class="comment">//重接q的右子树</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            q-&gt;lchild=s-&gt;lchild; <span class="comment">//重接q的左子树</span></span><br><span class="line">        <span class="keyword">delete</span> s;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(!p-&gt;rchild)<span class="comment">//被删结点p无右子树，只需重接其左子树</span></span><br><span class="line">        &#123;</span><br><span class="line">            q=p;</span><br><span class="line">            p=p-&gt;lchild;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(!p-&gt;lchild)<span class="comment">//被删结点p无左子树，只需重接其右子树</span></span><br><span class="line">        &#123;</span><br><span class="line">            q=p;</span><br><span class="line">            p=p-&gt;rchild;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/*――――――――――将p所指的子树挂接到其双亲结点f相应的位置――――――――*/</span></span><br><span class="line">        <span class="keyword">if</span>(!f)</span><br><span class="line">            T=p;  <span class="comment">//被删结点为根结点</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(q==f-&gt;lchild)</span><br><span class="line">            f-&gt;lchild=p; <span class="comment">//挂接到f的左子树位置</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            f-&gt;rchild=p;<span class="comment">//挂接到f的右子树位置</span></span><br><span class="line">        <span class="keyword">delete</span> q;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    BSTree T;   <span class="comment">//整棵二叉排序树的根节点</span></span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;请输入一些整型数，以-1结束&quot;</span>);</span><br><span class="line">    <span class="comment">//建立一棵二叉排序树</span></span><br><span class="line">    <span class="built_in">build</span>(T);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;当前有序二叉树中序遍历结果为&quot;</span>);</span><br><span class="line">    <span class="comment">//对这棵二叉排序树进行中序遍历</span></span><br><span class="line">    <span class="built_in">InOrderTraverse</span>(T);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="keyword">int</span> key;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;请输入待查找关键字&quot;</span>);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;key);</span><br><span class="line">    <span class="comment">//在二叉排序树查找关键字key</span></span><br><span class="line">    BSTree ans=<span class="built_in">find</span>(T,key);</span><br><span class="line">    <span class="comment">//查找成功</span></span><br><span class="line">    <span class="keyword">if</span>(ans)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;找到%d了\n&quot;</span>,key);</span><br><span class="line">    <span class="keyword">else</span>    <span class="comment">//查找失败</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;没有找到%d\n&quot;</span>,key);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;请输入待删除关键字&quot;</span>);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;key);</span><br><span class="line">    <span class="comment">//在二叉排序树中删除关键字key</span></span><br><span class="line">    <span class="built_in">del</span>(T,key);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;当前有序二叉树中序遍历结果为&quot;</span>);</span><br><span class="line">    <span class="comment">//对删除节点后的这棵二叉排序树进行中序遍历</span></span><br><span class="line">    <span class="built_in">InOrderTraverse</span>(T);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
