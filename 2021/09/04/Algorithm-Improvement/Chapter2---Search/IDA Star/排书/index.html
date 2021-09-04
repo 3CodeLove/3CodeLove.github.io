@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>排书 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,排书
+题目描述
+
+前置知识IDA Star一种将估价函数和迭代加深DFS算法相结合的算法。我们设计一个估价函数，估算从每个状态到目标状态需要的步数。当然，与A Star算法一样，估价函数需要遵守”估,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">排书</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">排书</h1>
+        <div class="stuff">
+            <span>九月 04, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/IDA/" rel="tag">IDA*</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="排书"><a href="#排书" class="headerlink" title="排书"></a>排书</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210904105207.png" alt="image-20210904105207440"></p>
+<hr>
+<h3 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h3><p>IDA Star一种将估价函数和迭代加深DFS算法相结合的算法。我们设计一个估价函数，估算从每个状态到目标状态需要的步数。当然，与A Star算法一样，估价函数需要遵守”估计值不大于未来实际步数”的准则。然后，以迭代加深DFS的搜索框架为基础，把原来简单的深度限制加强为：<strong>若当前深度+未来估计步数&gt;深度限制，则立即从当前分支回溯</strong>。</p>
+<p>假设<code>f()</code>表示估价函数，如果<code>f()=0</code>，而我们知道估价函数的定义就是：从当前状态到目标状态需要的步数。由于$f()=0$，因此说明从当前状态到目标状态需要的步数为0，那么也就是说，当前状态就是目标状态了。那么此时就找到了解</p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>先考虑每一步的决策数量：</p>
+<p>当抽取长度为$i$的一段时，有$n-i+1$种抽法，对于每一种抽法，都有$n-i$种放法。比如3 5 1 4 2，总长度$n=5$，设抽取长度为$i=2$的一段，那么可以抽取{3,5}或者{5,1}或者{1,4}或者{4,2}，有4种抽法，而$n-i+1=5-2+1=4$，因此有$n-i+1$种抽法。假设我们抽取了{1,4}，此时还剩下 3 5 2 ，有四个空位，但是由于原来{1,4}已经是在5的后面了，因此5后面的这个空位就不算了，因此此时只有3个空位了。那么我们可以将{1,4}插入这三个空位中，也就是有3种放法，而$n-i=5-2=3$，因此对于每一种抽法，都有都有$n-i$种放法。</p>
+<p>另外，将某一段向前移动，等价于将跳过的那段向后移动，因此每种移动方式被算了两遍，所以每个状态总共的分支数量是：$\sum \limits _{i=1}^{n}(n-i)\times(n-i+1)/2=(15\times 14+14\times 13+\cdots+2\times 1)/2=560$</p>
+<p>考虑在四步以内解决，最多有$560^4$个状态，那么会超时。我们可以考虑使用IDA*来优化。</p>
+<p>我们的最终状态是$1,2,\cdots,i-1,i,i+1,\cdots,n$。在目标状态下，第$i$本书后面应该是第$i+1$本书，我们称$i+1$是$i$的正确后继。</p>
+<p>对于任意状态，考虑整个排列中书的错误后继的个数，记为$tot$，可以发现每一次操作最多只会更改3本书的后继。例如3 5 1 4 2，我们把{5,1}放到4的后面，得到<strong>3</strong> <strong>4</strong> 5 <strong>1</strong> 2。它影响了3，4，1的后继。原来3的后继是5，4的后继的2，1的后继是4，但是现在3的后继是4，4的后记是5，1的后继是2。因此每一次操作最多只会把3本书的错误后继修改为正确的后继。那么消除所有错误后继所需要的操作次数至少需要$\lceil \dfrac {tot}{3}\rceil$</p>
+<p>因此我们把一个状态s的估价函数设计为$f(s)=$$\lceil \dfrac {tot}{3}\rceil$，其中$tot$表示在状态s下书的错误后继总数。</p>
+<p>我们采用迭代加深的方法，从1~4依次限制搜索的深度，然后从起始状态出发进行DFS。在DFS时，在每个状态下直接枚举抽取哪一段、移动到更靠后的哪个位置，沿着该分支深入即可。注意在进入任何状态s后，我们先进行判断，如果当前操作次数加深$f(s)$已经大于深度限制，则直接从当前分支回溯。</p>
+<p>理论上最多搜索$560^4$个状态，使用IDA*后实际搜索的状态数量很少。</p>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">20</span>;</span><br><span class="line"><span class="keyword">int</span> q[N];   <span class="comment">//书的排列</span></span><br><span class="line"><span class="keyword">int</span> w[<span class="number">5</span>][N];    <span class="comment">//4步以内书的排列</span></span><br><span class="line"><span class="keyword">int</span> n;</span><br><span class="line"></span><br><span class="line"><span class="comment">//估价函数</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> cnt=<span class="number">0</span>;  <span class="comment">//错误后继的数量</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n<span class="number">-1</span>;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(q[i+<span class="number">1</span>]!=q[i]+<span class="number">1</span>)</span><br><span class="line">            cnt++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// cnt/3向上取整的 写法  是(cnt+2)/3</span></span><br><span class="line">    <span class="keyword">return</span> (cnt+<span class="number">2</span>)/<span class="number">3</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//迭代加深  depth是当前层   max_depth是深度限制</span></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> depth,<span class="keyword">int</span> max_depth)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//超过最大深度限制  则立即回溯</span></span><br><span class="line">    <span class="keyword">if</span>(depth+<span class="built_in">f</span>()&gt;max_depth)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="comment">//估价函数为0 则到达了目标状态</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">f</span>()==<span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="comment">//这里有点类似于区间DP</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> len=<span class="number">1</span>;len&lt;=n;len++) <span class="comment">//枚举抽取其中连续的一段的长度</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> l=<span class="number">0</span>;l+len<span class="number">-1</span>&lt;n;l++)<span class="comment">//枚举抽取的这段书的左端点</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> r=l+len<span class="number">-1</span>;      <span class="comment">//r是抽取的这段书的右端点</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j=r+<span class="number">1</span>;j&lt;n;j++)  <span class="comment">//枚举抽取的这段书应该插入到r后面的哪个位置</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">memcpy</span>(w[depth],q,<span class="keyword">sizeof</span> q);    <span class="comment">//先记录之前的状态</span></span><br><span class="line">                <span class="keyword">int</span> k=l;</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> x=r+<span class="number">1</span>;x&lt;=j;x++)</span><br><span class="line">                    q[k++]=w[depth][x];</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> x=l;x&lt;=r;x++)</span><br><span class="line">                    q[k++]=w[depth][x];</span><br><span class="line">                <span class="comment">//向下一层递归</span></span><br><span class="line">                <span class="keyword">if</span>(<span class="built_in">dfs</span>(depth+<span class="number">1</span>,max_depth))</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">                <span class="built_in">memcpy</span>(q,w[depth],<span class="keyword">sizeof</span> q);    <span class="comment">//恢复之前的状态  恢复现场</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//搜完全部都搜不到 无解</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> T;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;T);</span><br><span class="line">    <span class="keyword">while</span>(T--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;n);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;q[i]);</span><br><span class="line">        <span class="keyword">int</span> depth=<span class="number">0</span>;    <span class="comment">//最大深度限制</span></span><br><span class="line">        <span class="keyword">while</span>(depth&lt;<span class="number">5</span>&amp;&amp;!<span class="built_in">dfs</span>(<span class="number">0</span>,depth))</span><br><span class="line">            depth++;</span><br><span class="line">        <span class="keyword">if</span>(depth&gt;=<span class="number">5</span>)</span><br><span class="line">            <span class="built_in">puts</span>(<span class="string">&quot;5 or more&quot;</span>);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,depth);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
