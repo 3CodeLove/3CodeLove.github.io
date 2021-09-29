@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>普通平衡树 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,普通平衡树
+题目描述洛谷P3369 普通平衡树
+
+核心思路这题我们采用FHQ treap来求解。
+要学习fhq Treap，你得先简单了解一下普通Treap是啥东西。Treap其实就是Tree+he,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">普通平衡树</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">普通平衡树</h1>
+        <div class="stuff">
+            <span>九月 29, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/FHQ-Treap/" rel="tag">FHQ Treap</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="普通平衡树"><a href="#普通平衡树" class="headerlink" title="普通平衡树"></a>普通平衡树</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P3369">洛谷P3369 普通平衡树</a></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p>这题我们采用FHQ treap来求解。</p>
+<p>要学习fhq Treap，你得先简单了解一下普通Treap是啥东西。Treap其实就是Tree+heap，也就是二叉搜索树+二叉堆。它让平衡树上的每一个结点存放两个信息：值和一个随机的索引(也就是优先级)。其中值满足二叉搜索树的性质，索引满足堆的性质，结合二叉搜索树和二叉堆的性质来使树平衡。这也是Treap的性质。</p>
+<p>那么Treap为什么可以保持平衡呢？我们知道如果对一颗二叉搜索树进行插入的值按次序是有序的，那么二叉搜索树就会退化成一个链表。那么我们不要让数值按次序插入，一个很好的方法就是把插入次序随机化。比如本来的插入次序是12345，结果随机之后变成了31524，是不是就好多了！</p>
+<p>如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210929121520.png" alt="image-20210929121513386"></p>
+<p>Treap用二叉堆来维护随机索引，其实就是相当于把插入次序随机化。插入一值数后你必然要让索引满足二叉堆的特性，但又因为索引是随机的，那就会导致插入的数不知道搞到了哪里去，相当于插入次序随机了。</p>
+<p>这里给出二叉搜索树的性质：<strong>当前结点左子树的值都比当前结点值小，反之则一定在右子树上</strong></p>
+<p>这里给出二叉堆(大根堆)的性质：<strong>父结点的优先级总是大于或等于任何一个子节点的优先级</strong></p>
+<p>fhq Treap的核心操作只有两个：分裂（split）和合并（merge）</p>
+<h4 id="利用结构体来存储节点信息"><a href="#利用结构体来存储节点信息" class="headerlink" title="利用结构体来存储节点信息"></a>利用结构体来存储节点信息</h4><p>我们需要保存五个信息：</p>
+<ul>
+<li>左右节点的编号</li>
+<li>该节点的值</li>
+<li>该节点的索引(优先级)</li>
+<li>以该节点为根的树的大小</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Node</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> l,r;    <span class="comment">//左孩子节点的编号  右孩子节点的编号 编号其实就是下标</span></span><br><span class="line">    <span class="keyword">int</span> val;    <span class="comment">//该节点内的权值</span></span><br><span class="line">    <span class="keyword">int</span> key;    <span class="comment">//该节点的随机索引 即随机优先级</span></span><br><span class="line">    <span class="keyword">int</span> size;   <span class="comment">//以该节点为根的所形成的树的大小</span></span><br><span class="line">&#125;tr[N];</span><br><span class="line"><span class="comment">//idx给每个节点分配的编号(下标) 最后它记录的就是这棵树中节点的总个数</span></span><br><span class="line"><span class="comment">//root记录的就是这棵树的根节点</span></span><br><span class="line"><span class="keyword">int</span> idx,root;</span><br><span class="line"><span class="comment">//x树  y树  z树   后面的操作需要用到  先定义为全局变量 </span></span><br><span class="line"><span class="keyword">int</span> x,y,z;</span><br></pre></td></tr></table></figure>
+
+<p>rnd()为随机值产生函数,需要导入random库,在开头写下如下代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//高性能随机数生成器 随机范围大概在(-maxint,+maxint),233为种子,19937指该随机数循环节为2^19937</span></span><br><span class="line"><span class="function">std::mt19937 <span class="title">rnd</span><span class="params">(<span class="number">233</span>)</span></span>;  </span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="新建节点"><a href="#新建节点" class="headerlink" title="新建节点"></a>新建节点</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//建立新节点  给该节点分配编号 同记录信息</span></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">newnode</span><span class="params">(<span class="keyword">int</span> val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    tr[++idx].val=val;  <span class="comment">//记录该节点的值为val</span></span><br><span class="line">    tr[idx].key=<span class="built_in">rnd</span>();  <span class="comment">//随机生成该节点的优先级</span></span><br><span class="line">    tr[idx].size=<span class="number">1</span>;     <span class="comment">//以该节点为根的树的大小为1</span></span><br><span class="line">    <span class="keyword">return</span> idx;         <span class="comment">//返回分配给该节点的编号idx</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="更新节点信息"><a href="#更新节点信息" class="headerlink" title="更新节点信息"></a>更新节点信息</h4><p>更新节点信息 其实也就是计算出以当前节点$u$为根的树的大小</p>
+<p>其计算方法就是 左子树的大小+右子树的大小+u自身节点</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//更新节点的信息  记录以该节点u为根的树的大小</span></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">(<span class="keyword">int</span> u)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    tr[u].size=tr[tr[u].l].size+tr[tr[u].r].size+<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="分裂split"><a href="#分裂split" class="headerlink" title="分裂split"></a>分裂split</h4><p>分裂有两种：按值分裂和按大小分裂。对于这道题，我们采用按值分裂。</p>
+<p>这里按值分裂的方法：<strong>把树拆成两棵树x树和y树(x树就是左子树，y树就是右子树)，拆出来的一棵树的值全部小于等于给定的值，另外一部分的值全部大于给定的值</strong>。</p>
+<ul>
+<li>一般来说，我们在使用fhq Treap当一棵正常的平衡树用的时候，使用按值分裂</li>
+<li>在维护区间信息的时候，使用按大小分裂。很经典的例子就是文艺平衡树</li>
+</ul>
+<p>split的操作如下：</p>
+<ul>
+<li>递归遍历左右子树</li>
+<li>如果当前节点值$tr[u].val\leq val$，则前当前节点及其左子树都可以放到$x$上，右子树中可能有可以放到$x$上的，所以我们需要对右子树继续递归</li>
+<li>如果当前节点值$tr[u].val&gt;val$，则前当前节点及其右子树都可以放到$y$上，左子树中可能有可以放到$y$上的，所以我们需要对左子树继续递归</li>
+<li>若当前节点为0，说明为空，令$x=y=0$，返回</li>
+</ul>
+<p>注意这个操作中$x$和$y$都是引用，每一层的$x$和$y$都表示一层中的树的根节点。</p>
+<p>如下图，我们将这棵树按值17分裂：</p>
+<p>分裂后，得到左子树x树(绿色部分)，右子树y树(蓝色部分)，可以发现x树中所有节点的值都是$\leq 17$的，而y树种所有节点的值都是$&gt;17$的</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210929122347.png" alt="image-20210929122347366"></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//分裂操作:按val值将u树分裂成x树和y树 其中x树中所有节点的值都&lt;=val y树种所有节点的值都&gt;val</span></span><br><span class="line"><span class="comment">//这里用 引用 将分裂得到的x树和y树 返回回去</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">split</span><span class="params">(<span class="keyword">int</span> u,<span class="keyword">int</span> val,<span class="keyword">int</span> &amp;x,<span class="keyword">int</span> &amp;y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//如果要分裂的当前这棵u树是不存在的 那么不可能分裂出x树和y树</span></span><br><span class="line">    <span class="comment">//所以把x和y都设为0</span></span><br><span class="line">    <span class="keyword">if</span>(!u)</span><br><span class="line">        x=y=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//如果当前节点的值&lt;=val 根据二叉搜索树的性质 该节点的左子树肯定都&lt;=val</span></span><br><span class="line">        <span class="comment">//但是当前节点的右子树中存在大于val的节点  因此我们需要对右子树再进行递归分裂</span></span><br><span class="line">        <span class="keyword">if</span>(tr[u].val&lt;=val)</span><br><span class="line">        &#123;</span><br><span class="line">            x=u;</span><br><span class="line">            <span class="comment">//按val值将tr[u].r右子树分裂成 tr[u].r树 和y树</span></span><br><span class="line">            <span class="built_in">split</span>(tr[u].r,val,tr[u].r,y);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            y=u;</span><br><span class="line">            <span class="comment">//按val值将tr[u].l左子树分裂成x树和tr[u].l树</span></span><br><span class="line">            <span class="built_in">split</span>(tr[u].l,val,x,tr[u].l);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//分裂完了之后 要记得更新节点信息</span></span><br><span class="line">        <span class="built_in">update</span>(u);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如何理解这段代码呢？</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//如果当前节点的值&lt;=val 根据二叉搜索树的性质 该节点的左子树肯定都&lt;=val</span></span><br><span class="line"><span class="comment">//但是当前节点的右子树中存在大于val的节点  因此我们需要对右子树再进行递归分裂</span></span><br><span class="line"><span class="keyword">if</span>(tr[u].val&lt;=val)</span><br><span class="line">&#123;</span><br><span class="line">    x=u;</span><br><span class="line">    <span class="comment">//按val值将tr[u].r右子树分裂成 tr[u].r树 和y树</span></span><br><span class="line">    <span class="built_in">split</span>(tr[u].r,val,tr[u].r,y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果当前节点的值$\leq val$，根据二叉搜索树的性质该节点的左子树肯定都$\leq val$。但是当前节点的右子树中可能存在大于val的节点  因此我们需要对右子树再进行递归分裂。</p>
+<p>比如上图，我们按值17分裂，找到$tr[u].val=11&lt;val$，那么11的左子树的值肯定都是小于17的，但是我们发现11的右子树中有个节点其值是18，大于17。但是假设如果18它还有左子树，比如18的左孩子值为12，那么很明显，12&lt;17，那么18的左子树就都是满足$\leq val$的，因此我们还需要把这个子树分裂开，弄到绿色部分中。也就是我们还需要对18递归分裂，看看它的左子树和右子树是属于绿色部分管辖还是属于蓝色部分管辖。</p>
+<p>如下图理解：</p>
+<p>此时tr[u].r是值为18的节点，我们按值val=17将tr[u].r的树分裂两部分x树和y树，那么为什么我们传参是把tr[u].r传给x，y传给y呢？y传给y很好理解，就是18所在的右子树肯定都是&gt;17的，所以y不会变，也就是说18的右子树是归蓝色部分管辖。由于我们采用的是引用，所以当我们传参tr[u].r时，那么结束后我们把18分裂后得到的x树就成为当前节点u=11的右子树。如图，我们把12-10放到了u=11的右子树上。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210929125122.png" alt="image-20210929125122438"></p>
+<p>那么该如何下面这段代码呢？</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    y=u;</span><br><span class="line">    <span class="comment">//按val值将tr[u].l左子树分裂成x树和tr[u].l树</span></span><br><span class="line">    <span class="built_in">split</span>(tr[u].l,val,x,tr[u].l);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里说明$tr[u].val&gt;val$，根据二叉搜索树的性质 该节点的右子树肯定都$&gt;val$，但是当前节点的左子树中可能存在大于val的节点  因此我们需要对左子树再进行递归分裂</p>
+<p>如下图理解：</p>
+<p>$u$当前指向值为20的节点，由于当前节点的值大于val，那么其右子树中所有节点值必然也都是大于val的。但是左子树中我们发现有个18它是满足大于17的，所以我们需要对左子树递归分裂，我们按值17将$tr[u].l$也就是11所在的节点分裂成$x$树和$y$树，那么为什么我们传参是把$x$传给$x$，$tr[u].l$传给$y$呢？把$x$传给$x$很好理解，因为11-5肯定都不会大于17，所以直接把左子树$x$传进去就好了。由于我们采用引用，所以当我们传参tr[u].l时，那么结束后我们把11分裂后得到的y树就成为当前节点u=20的左子树。如图，我们把18放到了u=20的左子树上。</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210929130156.png" alt="image-20210929130156271"></p>
+<p>分裂完了之后，要更新节点的信息</p>
+<h4 id="合并merge"><a href="#合并merge" class="headerlink" title="合并merge"></a>合并merge</h4><p>合并就是把两颗树x，y合并成一棵树，但是合并前要保证<strong>x树上的所有值都小于等于y树上的所有值</strong>。并且新合并出来的树依旧满足Treap的性质</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//将x树和y树合并 返回的结果是这两棵树合并后的那个根节点</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">merge</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span>	<span class="comment">//参数x是左子树	参数y是右子树  要严格定义</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//如果x树不存在而y树存在 那么合并后就只有y树 因此返回y树</span></span><br><span class="line">    <span class="comment">//如果y树不存在而x树存在 那么合并后就只有x树 因此返回x树</span></span><br><span class="line">    <span class="keyword">if</span>(!x||!y)</span><br><span class="line">        <span class="keyword">return</span> x+y;</span><br><span class="line">    <span class="comment">//这里当作是大根堆来处理 写成&gt; 或者&gt;=都可以</span></span><br><span class="line">    <span class="comment">//也可以当作小根堆来处理 即写成&lt; &lt;= 那么就是小根堆</span></span><br><span class="line">    <span class="keyword">if</span>(tr[x].key&gt;tr[y].key)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//根据二叉堆的大根堆性质tr[x].key&gt;tr[y].key 那么x在y的上方</span></span><br><span class="line">        <span class="comment">//根据二叉搜索树的性质,我们必须保证x树中的值&lt;=y树中的值 所以y树在右子树</span></span><br><span class="line">        <span class="comment">//综上y在x的右下方 y树是x的右子树 因此我们把y树和x原来的右子树合并 形成 x树新的右子树</span></span><br><span class="line">        tr[x].r=<span class="built_in">merge</span>(tr[x].r,y);	<span class="comment">//注意不能写成merge(y,tr[x].r) 要严格对应左子树和右子树</span></span><br><span class="line">        <span class="comment">//更新以x为根的树的大小信息</span></span><br><span class="line">        <span class="built_in">update</span>(x);</span><br><span class="line">        <span class="comment">//将y树合并到x树 合并后根节点就是x</span></span><br><span class="line">        <span class="keyword">return</span> x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//根据二叉堆的大根堆性质tr[y].key&gt;tr[x].key 那么y在x的上方</span></span><br><span class="line">        <span class="comment">//根据二叉搜索树的性质,我们必须保证x树中的值&lt;=y树中的值 所以x树在左子树</span></span><br><span class="line">        <span class="comment">//综上x在y的左下方 x树是y的左子树 因此我们把x树和y原来的左子树合并 形成 y树新的左子树</span></span><br><span class="line">        tr[y].l=<span class="built_in">merge</span>(x,tr[y].l);	<span class="comment">//注意不能写成merge(tr[y].l,x) 要严格对应左子树和右子树</span></span><br><span class="line">        <span class="comment">//更新以y为根的树的大小信息</span></span><br><span class="line">        <span class="built_in">update</span>(y);</span><br><span class="line">        <span class="comment">//将x树合并到y树 合并后根节点就是y</span></span><br><span class="line">        <span class="keyword">return</span> y;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>为什么<code>tr[x].r=merge(tr[x].r,y)</code>不能写成<code>tr[x].r=merge(y,tr[x].r)</code>呢？</p>
+<p>因为根据二叉搜索树的性质，merge中的参数$x$是左子树，$y$是右子树，那么就必须保证$x$中的所有节点的值都$\leq y$中所有节点的值。因此，如果写成后面的那种，由于$y$中所有节点的值大于$tr[x].r$中所有节点值，把$y$传给$x$，把$tr[x].r$传给$y$，那么就会使得此时$x$中的所有节点的值都$\geq y$ 中所有节点的值，这与实际不符合。因此不能写成后者。</p>
+<p>上面我们解释了FHQ Treap的两个基本操作split和merge，那么这两个基操有什么用处呢？</p>
+<h4 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h4><p>设插入的值为$val$，步骤为：</p>
+<ul>
+<li>step1：按值$val$把root树分裂成$x$树和$y$树</li>
+<li>step2：将$x$树和这个新插入的节点合并，得到一棵新树</li>
+<li>step3：最后将这个新树和$y$树合并，得到插入$val$后的这棵树</li>
+</ul>
+<p>那么为什么这样就能实现插入了呢？</p>
+<p>我们要插入val这个值，那么我们按值val分裂，于是得到了两棵树x和y，按照按值分裂的定义，我们分裂出来的x树上的所有值一定都小于等于val，y树上的所有值一定都大于val，那么我们就直接把x树和val新建的节点合并得到一个新树，然后再将这个新树和y树合并即可。</p>
+<p>如下图所示理解：</p>
+<p>我们插入5</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210929154536.png" alt="image-20210929154536425"></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(<span class="keyword">int</span> val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//先按值val分裂成x树和y树</span></span><br><span class="line">    <span class="built_in">split</span>(root,val,x,y);</span><br><span class="line">    <span class="comment">//然后新生成节点newnode(val) 把这个节点和x树合并 得到一棵树</span></span><br><span class="line">    <span class="comment">//我们再将这棵树和y树合并  就得到了插入val后的完整的新树</span></span><br><span class="line">    root=<span class="built_in">merge</span>(<span class="built_in">merge</span>(x, <span class="built_in">newnode</span>(val)),y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>请记住：分裂完了之后一定要记得合并！！！</p>
+<h4 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h4><p>假设我们要删除val这个值，步骤：</p>
+<ul>
+<li>首先，按值val把root树分裂成x树和z树</li>
+<li>再按值val-1把x树分裂成x树和y树</li>
+<li>那么此时y树上的所有值都是等于val的，在y树上删除一个节点即可，可以选择将y树的根节点删除，而删根节点只需要让根节点等于左右子树合并即可(根就没了，相当于众叛亲离，抛弃了父亲y)，我们去掉它的根节点：让y等于合并y的左子树和右子树</li>
+<li>最后合并x树，y树，z树即可</li>
+</ul>
+<p>该怎么理解第三步的y树上全都是值val的呢？</p>
+<p>首先第一步，我们已经按值val将root树分裂成x树和y树，那么此时x树中所有值都$\leq val$。然后我们又按值val-1将得到的x树又分裂成x树(这里为了区分之前的x树，我下面用$x’$树来表示第二次分裂得到的左子树)和y树，那么此时$x’$树中所有值都$\leq val-1$，由于$x’$树和$y$树都是由$x$树分裂而来，而$x$树中所有值已经确定了，就都是$\leq val$。$x$树的根节点值为$val$，其左子树(也就是$x’$树)的值为$\leq val-1$，，那么根据二叉搜索树的性质，由于右子树必然是要$\geq$根节点，而现在最大值只能是$val$，因此右子树也就只能取和根节点相同的$val$了。这也就说明了将$x$树分裂后得到的右子树y树中所有节点的值都是$val$。</p>
+<p>如下图理解：</p>
+<p>我们删除节点9</p>
+<p><img src="https://cdn.jsdelivr.net/gh//3CodeLove/Images@main/20210929160313.png" alt="image-20210929160313426"></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//删除</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">del</span><span class="params">(<span class="keyword">int</span> val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//第一步:按值val将root树分裂成x树和z树 分裂完了之后x树都是&lt;=val z树都是&gt;val</span></span><br><span class="line">    <span class="built_in">split</span>(root,val,x,z);</span><br><span class="line">    <span class="comment">//第二步:按值val-1将x树分裂成x树和y树 分裂完了之后x树都是&lt;=val-1 y树都是&gt;val-1 也就是说y树都是=val</span></span><br><span class="line">    <span class="built_in">split</span>(x,val<span class="number">-1</span>,x,y);</span><br><span class="line">    <span class="comment">//第三步:将y的左子树和右子树合并 它俩众叛亲离偷偷合并抛弃了父节点y 那么就相当于删除了y这个根</span></span><br><span class="line">    <span class="comment">//然后我们把它俩合并后得到的新树的根节点赋值给y</span></span><br><span class="line">    y=<span class="built_in">merge</span>(tr[y].l,tr[y].r);</span><br><span class="line">    <span class="comment">//第四步:将x树和 合并后得到的新树y合并 又得到一个新树</span></span><br><span class="line">    <span class="comment">//第五步:再将这棵新树和z树合并 最终得到将val删除后的新树</span></span><br><span class="line">    root=<span class="built_in">merge</span>(<span class="built_in">merge</span>(x,y),z);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="查询值的排名"><a href="#查询值的排名" class="headerlink" title="查询值的排名"></a>查询值的排名</h4><p>设要查询的值为val，步骤：</p>
+<ul>
+<li>按值val-1将root树分裂成x树和y树</li>
+<li>那么x树中就都是$\leq val-1$的，统计x树的大小，就可以知道有多少个数比val小，假设有num个</li>
+<li>那么val的排名就是num+1</li>
+<li>最后再把x树和y树合并起来</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//查询val值的排名</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">getrank</span><span class="params">(<span class="keyword">int</span> val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//按值val-1将root树分裂成x树和y树 那么此时x树中节点值都是&lt;=val-1的</span></span><br><span class="line">    <span class="built_in">split</span>(root,val<span class="number">-1</span>,x,y);</span><br><span class="line">    <span class="comment">//统计一下x树中的大小(即可知道有多少个数比val小)</span></span><br><span class="line">    <span class="comment">// 有tr[x].size个数比val小,然后再+1 那么就是val值的排名了</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,tr[x].size+<span class="number">1</span>);</span><br><span class="line">    <span class="comment">//有分裂一定有合并 分离完了要记得合并回去</span></span><br><span class="line">    root=<span class="built_in">merge</span>(x,y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="查询排名的值"><a href="#查询排名的值" class="headerlink" title="查询排名的值"></a>查询排名的值</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//查询排名为rank对应的大数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">getnum</span><span class="params">(<span class="keyword">int</span> rank)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> u=root;</span><br><span class="line">    <span class="keyword">while</span>(u)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(tr[tr[u].l].size+<span class="number">1</span>==rank)    <span class="comment">//找到排名为rank所对应的数 就可以退出了</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(tr[tr[u].l].size&gt;=rank) <span class="comment">//在左子树中</span></span><br><span class="line">            u=tr[u].l;</span><br><span class="line">        <span class="keyword">else</span>    <span class="comment">//在右子树中</span></span><br><span class="line">        &#123;</span><br><span class="line">            rank-=tr[tr[u].l].size+<span class="number">1</span>;</span><br><span class="line">            u=tr[u].r;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,tr[u].val);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="寻找前驱"><a href="#寻找前驱" class="headerlink" title="寻找前驱"></a>寻找前驱</h4><p>假设我们要寻找val这个数的前驱，那么可以按值val-1将root树分裂成x树和y树，再由二叉搜索树和中序序列的性质可知，则x树里面最右边的那个节点的树就是val的前驱</p>
+<p>因为我们分裂后x其实就是它原来父节点的左孩子了，所以我们这里不能写成$u=x.l$</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//寻找前驱</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">pre</span><span class="params">(<span class="keyword">int</span> val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//按值val-1将root数分裂成x树(左子树)和y树(右子树)</span></span><br><span class="line">    <span class="built_in">split</span>(root,val<span class="number">-1</span>,x,y);</span><br><span class="line">    <span class="keyword">int</span> u=x;</span><br><span class="line">    <span class="comment">//找到x树中的最右节点 则它就是val的前驱</span></span><br><span class="line">    <span class="keyword">while</span>(tr[u].r)</span><br><span class="line">        u=tr[u].r;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,tr[u].val);</span><br><span class="line">    <span class="comment">//有分裂一定有合并 分离完了要记得合并回去</span></span><br><span class="line">    root=<span class="built_in">merge</span>(x,y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="寻找后继"><a href="#寻找后继" class="headerlink" title="寻找后继"></a>寻找后继</h4><p>假设我们要寻找val这个数的前驱，那么可以按值val将root树分裂成x树和y树，再由二叉搜索树和中序序列的性质可知，则y树里面最左边的那个节点的树就是val的后继</p>
+<p>因为我们分裂后y其实就是它原来父节点的右孩子了，所以我们这里不能写成$u=y.r$</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//寻找后继</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">nxt</span><span class="params">(<span class="keyword">int</span> val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//按值val将root数分裂成x树(左子树)和y树(右子树)</span></span><br><span class="line">    <span class="built_in">split</span>(root,val,x,y);</span><br><span class="line">    <span class="keyword">int</span> u=y;</span><br><span class="line">    <span class="comment">//找到y树中的最左节点 则它就是val的后继</span></span><br><span class="line">    <span class="keyword">while</span>(tr[u].l)</span><br><span class="line">        u=tr[u].l;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,tr[u].val);</span><br><span class="line">    <span class="comment">//有分裂一定有合并 分离完了要记得合并回去</span></span><br><span class="line">    root=<span class="built_in">merge</span>(x,y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;random&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">1e5</span>+<span class="number">10</span>;</span><br><span class="line"><span class="function">std::mt19937 <span class="title">rnd</span><span class="params">(<span class="number">233</span>)</span></span>;  <span class="comment">//高性能的随机函数   种子取233</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Node</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> l,r;    <span class="comment">//左孩子节点的编号  右孩子节点的编号 编号其实就是下标</span></span><br><span class="line">    <span class="keyword">int</span> val;    <span class="comment">//该节点内的权值</span></span><br><span class="line">    <span class="keyword">int</span> key;    <span class="comment">//该节点的随机索引 即随机优先级</span></span><br><span class="line">    <span class="keyword">int</span> size;   <span class="comment">//以该节点为根的所形成的树的大小</span></span><br><span class="line">&#125;tr[N];</span><br><span class="line"><span class="comment">//idx给每个节点分配的编号(下标) 最后它记录的就是这棵树中节点的总个数</span></span><br><span class="line"><span class="comment">//root记录的就是这棵树的根节点</span></span><br><span class="line"><span class="keyword">int</span> idx,root;</span><br><span class="line"><span class="comment">//x树  y树  z树   后面的操作需要用到  先定义为全局变量</span></span><br><span class="line"><span class="keyword">int</span> x,y,z;</span><br><span class="line"></span><br><span class="line"><span class="comment">//建立新节点  给该节点分配编号 同记录信息</span></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">newnode</span><span class="params">(<span class="keyword">int</span> val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    tr[++idx].val=val;  <span class="comment">//记录该节点的值为val</span></span><br><span class="line">    tr[idx].key=<span class="built_in">rnd</span>();  <span class="comment">//随机生成该节点的优先级</span></span><br><span class="line">    tr[idx].size=<span class="number">1</span>;     <span class="comment">//以该节点为根的树的大小为1</span></span><br><span class="line">    <span class="keyword">return</span> idx;         <span class="comment">//返回分配给该节点的编号idx</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//更新节点的信息  记录以该节点u为根的树的大小</span></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">(<span class="keyword">int</span> u)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    tr[u].size=tr[tr[u].l].size+tr[tr[u].r].size+<span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//分裂操作:按val值将u树分裂成x树和y树</span></span><br><span class="line"><span class="comment">//这里用 引用 将分裂得到的x树和y树 返回回去</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">split</span><span class="params">(<span class="keyword">int</span> u,<span class="keyword">int</span> val,<span class="keyword">int</span> &amp;x,<span class="keyword">int</span> &amp;y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//如果要分裂的当前这棵u树是不存在的 那么不可能分裂出x树和y树</span></span><br><span class="line">    <span class="comment">//所以把x和y都设为0</span></span><br><span class="line">    <span class="keyword">if</span>(!u)</span><br><span class="line">        x=y=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//如果当前节点的值&lt;=val 根据二叉搜索树的性质 该节点的左子树肯定都&lt;=val</span></span><br><span class="line">        <span class="comment">//但是当前节点的右子树中存在大于val的节点  因此我们需要对右子树再进行递归分裂</span></span><br><span class="line">        <span class="keyword">if</span>(tr[u].val&lt;=val)</span><br><span class="line">        &#123;</span><br><span class="line">            x=u;</span><br><span class="line">            <span class="comment">//按val值将tr[u].r右子树分裂成 tr[u].r树 和y树</span></span><br><span class="line">            <span class="built_in">split</span>(tr[u].r,val,tr[u].r,y);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            y=u;</span><br><span class="line">            <span class="comment">//按val值将tr[u].l左子树分裂成x树和tr[u].l树</span></span><br><span class="line">            <span class="built_in">split</span>(tr[u].l,val,x,tr[u].l);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//分裂完了之后 要记得更新节点信息</span></span><br><span class="line">        <span class="built_in">update</span>(u);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//将x树和y树合并 返回的结果是这两棵树合并后的那个根节点</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">merge</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//如果x树不存在y树存在 那么合并后就只有y树 因此返回y树</span></span><br><span class="line">    <span class="comment">//如果y树不存在x树存在 那么合并后就只有x树 因此返回x树</span></span><br><span class="line">    <span class="keyword">if</span>(!x||!y)</span><br><span class="line">        <span class="keyword">return</span> x+y;</span><br><span class="line">    <span class="comment">//这里当作是大根堆来处理 写成&gt; 或者&gt;=都可以</span></span><br><span class="line">    <span class="comment">//也可以当作小根堆来处理 即写成&lt; &lt;= 那么就是小根堆</span></span><br><span class="line">    <span class="keyword">if</span>(tr[x].key&gt;tr[y].key)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//根据二叉堆的大根堆性质tr[x].key&gt;tr[y].key 那么x在y的上方</span></span><br><span class="line">        <span class="comment">//根据二叉搜索树的性质,我们必须保证x树中的值&lt;=y树中的值 所以y树在右子树</span></span><br><span class="line">        <span class="comment">//综上 y树是x的右子树 因此我们把y树和x原来的右子树合并 形成 x树新的右子树</span></span><br><span class="line">        tr[x].r=<span class="built_in">merge</span>(tr[x].r,y);</span><br><span class="line">        <span class="comment">//更新以x为根的树的大小信息</span></span><br><span class="line">        <span class="built_in">update</span>(x);</span><br><span class="line">        <span class="comment">//将y树合并到x树 合并后根节点就是x</span></span><br><span class="line">        <span class="keyword">return</span> x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//根据二叉堆的大根堆性质tr[y].key&gt;tr[x].key 那么y在x的上方</span></span><br><span class="line">        <span class="comment">//根据二叉搜索树的性质,我们必须保证x树中的值&lt;=y树中的值 所以x树在左子树</span></span><br><span class="line">        <span class="comment">//综上 x树是y的左子树 因此我们把x树和y原来的左子树合并 形成 y树新的左子树</span></span><br><span class="line">        tr[y].l=<span class="built_in">merge</span>(x,tr[y].l);</span><br><span class="line">        <span class="comment">//更新以y为根的树的大小信息</span></span><br><span class="line">        <span class="built_in">update</span>(y);</span><br><span class="line">        <span class="comment">//将x树合并到y树 合并后根节点就是y</span></span><br><span class="line">        <span class="keyword">return</span> y;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//插入</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(<span class="keyword">int</span> val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//先按值val分裂成x树和y树</span></span><br><span class="line">    <span class="built_in">split</span>(root,val,x,y);</span><br><span class="line">    <span class="comment">//然后新生成节点newnode(val) 把这个节点和x树合并 得到一棵树</span></span><br><span class="line">    <span class="comment">//我们再将这棵树和y树合并  就得到了插入val后的完整的新树</span></span><br><span class="line">    root=<span class="built_in">merge</span>(<span class="built_in">merge</span>(x, <span class="built_in">newnode</span>(val)),y);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//删除</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">del</span><span class="params">(<span class="keyword">int</span> val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//第一步:按值val将root树分裂成x树和z树 分裂完了之后x树都是&lt;=val z树都是&gt;val</span></span><br><span class="line">    <span class="built_in">split</span>(root,val,x,z);</span><br><span class="line">    <span class="comment">//第二步:按值val-1将x树分裂成x树和y树 分裂完了之后x树都是&lt;=val-1 y树都是&gt;val-1 也就是说y树都是=val</span></span><br><span class="line">    <span class="built_in">split</span>(x,val<span class="number">-1</span>,x,y);</span><br><span class="line">    <span class="comment">//第三步:将y的左子树和右子树合并 它俩众叛亲离偷偷合并抛弃了父节点y 那么就相当于删除了y这个根</span></span><br><span class="line">    <span class="comment">//然后我们把它俩合并后得到的新树的根节点赋值给y</span></span><br><span class="line">    y=<span class="built_in">merge</span>(tr[y].l,tr[y].r);</span><br><span class="line">    <span class="comment">//第四步:将x树和 合并后得到的新树y合并 又得到一个新树</span></span><br><span class="line">    <span class="comment">//第五步:再将这棵新树和z树合并 最终得到将val删除后的新树</span></span><br><span class="line">    root=<span class="built_in">merge</span>(<span class="built_in">merge</span>(x,y),z);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//查询val值的排名</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">getrank</span><span class="params">(<span class="keyword">int</span> val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//按值val-1将root树分裂成x树和y树 那么此时x树中节点值都是&lt;=val-1的</span></span><br><span class="line">    <span class="built_in">split</span>(root,val<span class="number">-1</span>,x,y);</span><br><span class="line">    <span class="comment">//统计一下x树中的大小(即可知道有多少个数比val小)</span></span><br><span class="line">    <span class="comment">// 有tr[x].size个数比val小,然后再+1 那么就是val值的排名了</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,tr[x].size+<span class="number">1</span>);</span><br><span class="line">    <span class="comment">//有分裂一定有合并 分离完了要记得合并回去</span></span><br><span class="line">    root=<span class="built_in">merge</span>(x,y);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//查询排名为rank对应的大数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">getnum</span><span class="params">(<span class="keyword">int</span> rank)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> u=root;</span><br><span class="line">    <span class="keyword">while</span>(u)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(tr[tr[u].l].size+<span class="number">1</span>==rank)    <span class="comment">//找到排名为rank所对应的数 就可以退出了</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(tr[tr[u].l].size&gt;=rank) <span class="comment">//在左子树中</span></span><br><span class="line">            u=tr[u].l;</span><br><span class="line">        <span class="keyword">else</span>    <span class="comment">//在右子树中</span></span><br><span class="line">        &#123;</span><br><span class="line">            rank-=tr[tr[u].l].size+<span class="number">1</span>;</span><br><span class="line">            u=tr[u].r;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,tr[u].val);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//寻找前驱</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">pre</span><span class="params">(<span class="keyword">int</span> val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//按值val-1将root数分裂成x树(左子树)和y树(右子树)</span></span><br><span class="line">    <span class="built_in">split</span>(root,val<span class="number">-1</span>,x,y);</span><br><span class="line">    <span class="keyword">int</span> u=x;</span><br><span class="line">    <span class="comment">//找到x树中的最右节点 则它就是val的前驱</span></span><br><span class="line">    <span class="keyword">while</span>(tr[u].r)</span><br><span class="line">        u=tr[u].r;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,tr[u].val);</span><br><span class="line">    <span class="comment">//有分裂一定有合并 分离完了要记得合并回去</span></span><br><span class="line">    root=<span class="built_in">merge</span>(x,y);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//寻找后继</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">nxt</span><span class="params">(<span class="keyword">int</span> val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//按值val将root数分裂成x树(左子树)和y树(右子树)</span></span><br><span class="line">    <span class="built_in">split</span>(root,val,x,y);</span><br><span class="line">    <span class="keyword">int</span> u=y;</span><br><span class="line">    <span class="comment">//找到y树中的最左节点 则它就是val的后继</span></span><br><span class="line">    <span class="keyword">while</span>(tr[u].l)</span><br><span class="line">        u=tr[u].l;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,tr[u].val);</span><br><span class="line">    <span class="comment">//有分裂一定有合并 分离完了要记得合并回去</span></span><br><span class="line">    root=<span class="built_in">merge</span>(x,y);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> T;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;T);</span><br><span class="line">    <span class="keyword">while</span>(T--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> op,x;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;op,&amp;x);</span><br><span class="line">        <span class="keyword">if</span>(op==<span class="number">1</span>)   <span class="comment">//插入</span></span><br><span class="line">            <span class="built_in">insert</span>(x);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(op==<span class="number">2</span>)  <span class="comment">//删除</span></span><br><span class="line">            <span class="built_in">del</span>(x);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(op==<span class="number">3</span>)  <span class="comment">//求排名</span></span><br><span class="line">            <span class="built_in">getrank</span>(x);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(op==<span class="number">4</span>)  <span class="comment">//求第rank对应的数</span></span><br><span class="line">            <span class="built_in">getnum</span>(x);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(op==<span class="number">5</span>)  <span class="comment">//求数x的前驱</span></span><br><span class="line">            <span class="built_in">pre</span>(x);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(op==<span class="number">6</span>)  <span class="comment">//求数x的后继</span></span><br><span class="line">            <span class="built_in">nxt</span>(x);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
