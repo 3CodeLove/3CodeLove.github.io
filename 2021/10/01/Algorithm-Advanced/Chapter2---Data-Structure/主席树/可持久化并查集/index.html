@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>可持久化并查集 - 3Code_Love个人博客</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="3Code_Love,"> 
+    <meta name="description" content="做一个踏实稳重的人，写出诗一样的代码,可持久化并查集
+题目描述洛谷P3402 可持久化并查集
+
+核心思路 可持久化并查集是建立在可持久化数组上的，在学习可持久化并查集之前，需要先学习主席树(可持久化权值线段树)，权值线段树，可持久化线段,"> 
+    <meta name="author" content="3Code_Love"> 
+    <link rel="alternative" href="atom.xml" title="3Code_Love个人博客" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">3Code_Love个人博客</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://3CodeLove.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">可持久化并查集</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">可持久化并查集</h1>
+        <div class="stuff">
+            <span>十月 01, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%8F%AF%E6%8C%81%E4%B9%85%E5%8C%96%E5%B9%B6%E6%9F%A5%E9%9B%86/" rel="tag">可持久化并查集</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="可持久化并查集"><a href="#可持久化并查集" class="headerlink" title="可持久化并查集"></a>可持久化并查集</h1><hr>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P3402">洛谷P3402 可持久化并查集</a></p>
+<hr>
+<h3 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h3><p> 可持久化并查集是建立在可持久化数组上的，在学习可持久化并查集之前，需要先学习主席树(可持久化权值线段树)，权值线段树，可持久化线段树，移步<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45832461/article/details/120579276">可持久化线段树1</a>和<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45832461/article/details/120571177">可持久化线段树2</a></p>
+<p>可持久化并查集=可持久化+并查集=可持久化数组+并查集=主席树+并查集</p>
+<p>并查集有两种优化方式：</p>
+<ul>
+<li>路径压缩</li>
+<li>按秩合并</li>
+</ul>
+<p>由于需要我们支持的只有集合的合并、查询操作，当我们需要将两个集合合二为一时，无论将哪一个集合连接到另一个集合的下面，都能得到正确的结果。但不同的连接方法存在时间复杂度的差异。具体来说，如果我们将一棵点数与深度都较小的集合树连接到一棵更大的集合树下，显然相比于另一种连接方案，接下来执行查找操作的用时更小。</p>
+<p>如果并查集退化成一条链，那么查询find的时间复杂度就会很高了。所以，我们这里采用按秩合并，即把深度小的合并到深度大的，这样就保持了深度均衡。由于路径压缩单次合并可能造成大量修改，有时路径压缩并不适合使用。例如，在可持久化并查集、线段树分治 + 并查集中，一般使用只启发式合并的并查集。也就是说，我们这道题并不能使用路径压缩。</p>
+<p> 我们的并查集的fa数组是要用可持久化数组来维护的，那么路径压缩基本就不要考虑了。为什么不能考虑路径压缩呢？</p>
+<p>我们来看路径压缩的代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(x!=fa[x])</span><br><span class="line">        fa[x]=<span class="built_in">find</span>(fa[x]);</span><br><span class="line">    <span class="keyword">return</span> fa[x];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 每递归一次，只要进入if语句，fa数组就会有一个位置被修改， 对于普通数组来说，这修改完全没问题，但是不要忘了对于建立在主席树上的可持久化数组每进行一次单点修改就会多一个新的版本存放新的结点。小数据暂且无妨，但是大数据妥妥MLE， 所以路径压缩就不要使用了。</p>
+<p> 因为每个版本的并查集的结点深度可能是不一样的，所以我们还需要要新开一个可持久化数组来记录每个版本的dep数组</p>
+<p>因此对于这道题，可持久化并查集其实就是指的用可持久化数组维护并查集中的<code>fa[]</code>和维护按秩合并所需要的<code>dep[]</code>。 用两个可持久化数组分别维护并查集的fa数组（每个集合的根结点）和dep数组（每个结点的深度）， 并查集要按秩合并，不要路径压缩， 这样就好啦。</p>
+<p>所谓可持久化并查集，可以进行的操作就只有几个：</p>
+<ul>
+<li>合并两个集合（毕竟还是个并查集呀）</li>
+<li>回到历史版本（不然怎么叫可持久化呢)</li>
+<li>查询节点所在集合的祖先，当然，因此也可以判断是否在同一个集合中（毕竟还是个并查集呀）</li>
+</ul>
+<p>对于操作2，我们可以很容易的使用可持久化数组来实现。就直接把当前版本的根节点定为第k个版本的根节点就行了，即$rootfa[i]=rootfa[k]$和$rootdep[i]=rootdep[k]$</p>
+<p>对于操作1，也就是上面所说的按秩合并。对于操作3，也就是在可持久化数组中查询。</p>
+<blockquote>
+<p> 怎样开两个可持久化数组（主席树）记录fa和dep？</p>
+<p>我们可以建立一个双倍大小的内存池，然后建立两个根节点数组<code>rootfa[]</code>和<code>rootdep[]</code>来维护这两个可持久化数组（主席树）的根节点，而内存池的计数器还是就那一个idx就够了。也就是，你要开几个主席树，那么就开多少个root数组。</p>
+<p> 两个可持久化数组是否需要先构建出来，即是否先进行build建树操作？</p>
+<p>对于<code>rootfa[]</code>数组来说是需要的，但是对于<code>rootdep[]</code>数组来说是没有必要的。因为初始时作为并查集的fa数组是要初始化的，即每个节点都独立成一个集合，因此需要建立出来。 对于dep数组来说，初始时所有结点的深度都为0，又由于我们定义该数组为全局的，默认为0，所以并不需要建立出来，这与权值线段树都是同样的道理</p>
+</blockquote>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">2e5</span>+<span class="number">10</span>;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Node</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> l,r,val;</span><br><span class="line">&#125;tr[N*<span class="number">40</span>*<span class="number">2</span>];</span><br><span class="line"><span class="comment">//idx负责给树中的每个结点分配一个编号</span></span><br><span class="line"><span class="comment">//tot负责给树中的每个结点赋一个值</span></span><br><span class="line"><span class="comment">//rootfa[i]记录的是第i个版本的并查集中的集合号(祖宗结点)</span></span><br><span class="line"><span class="comment">//rootdep[i]记录的是第i个版本的并查集中的集合号的深度(祖宗结点的深度)</span></span><br><span class="line"><span class="keyword">int</span> idx,tot,rootfa[N],rootdep[N];</span><br><span class="line"><span class="keyword">int</span> n,m;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">build</span><span class="params">(<span class="keyword">int</span> l,<span class="keyword">int</span> r,<span class="keyword">int</span> &amp;u)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    u=++idx;    <span class="comment">//给结点u分配一个编号</span></span><br><span class="line">    <span class="keyword">if</span>(l==r)</span><br><span class="line">    &#123;   </span><br><span class="line">        tr[u].val=++tot;    <span class="comment">//给结点u赋一个值</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> mid=(l+r)&gt;&gt;<span class="number">1</span>;</span><br><span class="line">    <span class="built_in">build</span>(l,mid,tr[u].l);   <span class="comment">//递归创建左子树</span></span><br><span class="line">    <span class="built_in">build</span>(mid+<span class="number">1</span>,r,tr[u].r); <span class="comment">//递归创建右子树</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">modify</span><span class="params">(<span class="keyword">int</span> l,<span class="keyword">int</span> r,<span class="keyword">int</span> ver,<span class="keyword">int</span> &amp;u,<span class="keyword">int</span> pos,<span class="keyword">int</span> val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    u=++idx;    <span class="comment">//给当前节点u分配一个编号</span></span><br><span class="line">    <span class="comment">//当前版本u继承上一个版本ver</span></span><br><span class="line">    tr[u]=tr[ver];</span><br><span class="line">    <span class="keyword">if</span>(l==r)<span class="comment">//到了叶子结点</span></span><br><span class="line">    &#123;</span><br><span class="line">        tr[u].val=val;  <span class="comment">//将结点u的值修改为val</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> mid=(l+r)&gt;&gt;<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(pos&lt;=mid)    <span class="comment">//递归去修改左子树</span></span><br><span class="line">        <span class="built_in">modify</span>(l,mid,tr[ver].l,tr[u].l,pos,val);</span><br><span class="line">    <span class="keyword">else</span>            <span class="comment">//递归去修改右子树</span></span><br><span class="line">        <span class="built_in">modify</span>(mid+<span class="number">1</span>,r,tr[ver].r,tr[u].r,pos,val);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">query</span><span class="params">(<span class="keyword">int</span> l,<span class="keyword">int</span> r,<span class="keyword">int</span> u,<span class="keyword">int</span> pos)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(l==r)<span class="comment">//到了叶子结点 返回该节点的值</span></span><br><span class="line">        <span class="keyword">return</span> tr[u].val;</span><br><span class="line">    <span class="keyword">int</span> mid=(l+r)&gt;&gt;<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(pos&lt;=mid)    <span class="comment">//递归查询左子树</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">query</span>(l,mid,tr[u].l,pos);</span><br><span class="line">    <span class="keyword">else</span>            <span class="comment">//递归查询右子树</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">query</span>(mid+<span class="number">1</span>,r,tr[u].r,pos);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//要找到第ver个版本中x的父亲</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> ver,<span class="keyword">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//去第ver个版本的线段树(其根节点是rootfa[ver])中查询位置x上的值</span></span><br><span class="line">    <span class="keyword">int</span> fx=<span class="built_in">query</span>(<span class="number">1</span>,n,rootfa[ver],x);</span><br><span class="line">    <span class="keyword">if</span>(x!=fx)</span><br><span class="line">        x=<span class="built_in">find</span>(ver,fx); <span class="comment">//不能进行路径压缩</span></span><br><span class="line">    <span class="keyword">return</span> x;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//将第ver个版本中的集合x和集合y</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">merge</span><span class="params">(<span class="keyword">int</span> ver,<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//传进来的ver是一个全新的版本 我们在op=1时执行了merge操作</span></span><br><span class="line">    <span class="comment">//比如ver=0,我们已经构建好了 然后传进来ver=1 </span></span><br><span class="line">    <span class="comment">//执行merge操作那么此时ver=1这个全新的版本中并没有任何东西 </span></span><br><span class="line">    <span class="comment">//因为我们在执行merge之前并没有弄过rootfa[ver]=rootfa[ver-1] 所以它现在是空的</span></span><br><span class="line">    <span class="comment">//因此如果我们想要寻找当前ver版本中结点x的父亲 那么可以去上一个版本ver-1中找x的父亲</span></span><br><span class="line">    x=<span class="built_in">find</span>(ver<span class="number">-1</span>,x);    <span class="comment">//找到x所在的集合号</span></span><br><span class="line">    y=<span class="built_in">find</span>(ver<span class="number">-1</span>,y);    <span class="comment">//找到y所在的集合号</span></span><br><span class="line">    <span class="keyword">if</span>(x==y)<span class="comment">//在同一个集合中</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//当前版本直接继承上一个版本即可</span></span><br><span class="line">        <span class="comment">//其实就是虽然没有把x和y合并  但是由于我们执行了merge这次操作</span></span><br><span class="line">        <span class="comment">//既然是操作 那么就会产生新版本  所以需要当前版本直接继承上一个版本</span></span><br><span class="line">        rootfa[ver]=rootfa[ver<span class="number">-1</span>];</span><br><span class="line">        rootdep[ver]=rootdep[ver<span class="number">-1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> depx=<span class="built_in">query</span>(<span class="number">1</span>,n,rootdep[ver<span class="number">-1</span>],x);   <span class="comment">//求出x的深度</span></span><br><span class="line">        <span class="keyword">int</span> depy=<span class="built_in">query</span>(<span class="number">1</span>,n,rootdep[ver<span class="number">-1</span>],y);   <span class="comment">//求出y的深度</span></span><br><span class="line">        <span class="keyword">if</span>(depx&lt;depy)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//将深度小的x合并到深度大的y上   含义就是fa[x]=y</span></span><br><span class="line">            <span class="built_in">modify</span>(<span class="number">1</span>,n,rootfa[ver<span class="number">-1</span>],rootfa[ver],x,y);</span><br><span class="line">            <span class="comment">//将深度小的x合并到深度大的y上不会导入深度有变化</span></span><br><span class="line">            <span class="comment">//因此当前版本的深度直接继承上一个版本的深度即可</span></span><br><span class="line">            rootdep[ver]=rootdep[ver<span class="number">-1</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(depy&lt;depx)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//将深度小的y合并到深度大的x上   含义就是fa[y]=x</span></span><br><span class="line">            <span class="built_in">modify</span>(<span class="number">1</span>,n,rootfa[ver<span class="number">-1</span>],rootfa[ver],y,x);</span><br><span class="line">            <span class="comment">//将深度小的x合并到深度大的y上不会导入深度有变化</span></span><br><span class="line">            <span class="comment">//因此当前版本的深度直接继承上一个版本的深度即可</span></span><br><span class="line">            rootdep[ver]=rootdep[ver<span class="number">-1</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>    <span class="comment">//这两个集合的深度相等</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//将x合并到y</span></span><br><span class="line">            <span class="built_in">modify</span>(<span class="number">1</span>,n,rootfa[ver<span class="number">-1</span>],rootfa[ver],x,y);</span><br><span class="line">            <span class="comment">//此时y的深度多1</span></span><br><span class="line">            <span class="built_in">modify</span>(<span class="number">1</span>,n,rootdep[ver<span class="number">-1</span>],rootdep[ver],y,depy+<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;n,&amp;m);</span><br><span class="line">    <span class="built_in">build</span>(<span class="number">1</span>,n,rootfa[<span class="number">0</span>]);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=m;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> op,a,b;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;op);</span><br><span class="line">        <span class="keyword">if</span>(op==<span class="number">1</span>)   <span class="comment">//合并两个集合a,b</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;a,&amp;b);</span><br><span class="line">            <span class="built_in">merge</span>(i,a,b);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(op==<span class="number">2</span>)<span class="comment">//回到第k次操作</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> k;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;k);</span><br><span class="line">            <span class="comment">//将当前版本追溯到第k个版本</span></span><br><span class="line">            rootfa[i]=rootfa[k];</span><br><span class="line">            rootdep[i]=rootdep[k];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(op==<span class="number">3</span>)<span class="comment">//询问a,b是否在同一个集合中</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;a,&amp;b);</span><br><span class="line">            <span class="comment">//询问也是一次操作 但是它没有对上一个版本进行修改</span></span><br><span class="line">            <span class="comment">//所以执行询问时 也算一次操作  那么当前版本直接继承上一个版本即可</span></span><br><span class="line">            rootfa[i]=rootfa[i<span class="number">-1</span>];</span><br><span class="line">            rootdep[i]=rootdep[i<span class="number">-1</span>];</span><br><span class="line">            a=<span class="built_in">find</span>(i,a);</span><br><span class="line">            b=<span class="built_in">find</span>(i,b);</span><br><span class="line">            <span class="keyword">if</span>(a==b)</span><br><span class="line">                <span class="built_in">puts</span>(<span class="string">&quot;1&quot;</span>);</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                <span class="built_in">puts</span>(<span class="string">&quot;0&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/40915694.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/496869422.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='82bf84cbb741980c3d82'
+        data-cs='98761c6eaa1898aa881ff882f68291eda80d5d3b'
+        data-r='blog-comments'
+        data-o='3CodeLove'
+        data-a='3CodeLove'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+</html>
